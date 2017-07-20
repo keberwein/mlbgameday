@@ -2,7 +2,7 @@ Package: tidypitch
 Title: Tools to Extract Transform and Load  Major League Baseball Advanced Media's 'Gameday' Data.
 Version: 0.0.0.9000
 Authors@R: person("Kris", "Eberwein", email = "eberwein@knights.ucf.edu",
-                  role = c("aut", "cre"))Description: What the package does (one paragraph).
+                  role = c("aut", "cre"))
 Description: Scrapes 'Gameday' data from Major League Baseball Advanced Media <http://gd2.mlb.com/components/game/mlb/>.
 Depends: R (>= 3.3.3)
 License: MIT + file LICENSE
@@ -10,3 +10,4 @@ URL: https://github.com/keberwein/tidypitch
 BugReports: https://github.com/keberwein/tidypitch/issues
 Encoding: UTF-8
 LazyData: true
+RoxygenNote: 6.0.1
