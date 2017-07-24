@@ -5,6 +5,16 @@ Authors@R: person("Kris", "Eberwein", email = "eberwein@knights.ucf.edu",
                   role = c("aut", "cre"))
 Description: Scrapes 'Gameday' data from Major League Baseball Advanced Media <http://gd2.mlb.com/components/game/mlb/>.
 Depends: R (>= 3.3.3)
+Imports:
+	magrittr,
+	xml2,
+	dplyr,
+	stringr
+Suggests:
+	testthat,
+	knitr,
+	rmarkdown,
+	pitchRx
 License: MIT + file LICENSE
 URL: https://github.com/keberwein/tidypitch
 BugReports: https://github.com/keberwein/tidypitch/issues
