@@ -1,5 +1,5 @@
 Package: tidypitch
-Title: Tools to Extract Transform and Load  Major League Baseball Advanced Media's 'Gameday' Data.
+Title: Tools to Extract Transform and Load  Major League Baseball Advanced Media's 'Gameday' Data
 Version: 0.0.0.9000
 Authors@R: person("Kris", "Eberwein", email = "eberwein@knights.ucf.edu",
                   role = c("aut", "cre"))

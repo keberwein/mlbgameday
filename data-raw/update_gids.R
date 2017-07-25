@@ -9,6 +9,6 @@ new.gids <- pitchRx:::updateGids(last.date, last.date + 371)
 end = Sys.time()
 time= start-end
 
-gids <- unique(c(gids, new.gids))
+game_ids <- unique(c(gids, new.gids))
 rm(end, last.date, last.game, new.gids, start, time)
-devtools::use_data(gids, overwrite = TRUE)
+devtools::use_data(game_ids, overwrite = TRUE)

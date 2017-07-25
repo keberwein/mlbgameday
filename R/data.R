@@ -6,4 +6,4 @@
 #' 
 #' @format A character vector
 #'
-"gids"
+"game_ids"
