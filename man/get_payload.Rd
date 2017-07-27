@@ -9,7 +9,7 @@ get_payload(url, ...)
 \arguments{
 \item{url}{currently a url}
 
-\item{...}{currently ignored}
+\item{...}{additional arguments}
 }
 \description{
 Get Gameday data from MLBAM.

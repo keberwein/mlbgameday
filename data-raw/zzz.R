@@ -156,8 +156,9 @@ library(xml2);library(dplyr);library(magrittr)
 url <- "http://gd2.mlb.com/components/game/mlb/year_2017/month_05/day_01/gid_2017_05_01_balmlb_bosmlb_1/inning/inning_all.xml"
 file <- read_xml(url)
 
+
 atbat <- xml_find_all(file, "//top")
-pitch <- bind_rows(lapply(atbat, function(x) {
+zpitch <- bind_rows(lapply(atbat, function(x) {
     pitches <- try(xml_find_all(x, "./atbat"), silent=FALSE)
     if (inherits(pitches, "try-error") | length(pitches) == 0) return(NULL)
     pitch_dat <- bind_rows(lapply(pitches, function(y) {
@@ -206,6 +207,41 @@ mini <- bind_rows(lapply(atbat, function(x) {
 
 
 
+url <- "http://gd2.mlb.com/components/game/mlb/year_2017/month_05/day_01/gid_2017_05_01_balmlb_bosmlb_1/game_events.xml"
+file <- read_xml(url)
+top <- xml_find_all(file, "//top")
+bot <- xml_find_all(file, "//bottom")
+
+top <- bind_rows(lapply(top, function(x) {
+    pitches <- try(xml_find_all(x, "./atbat"), silent=FALSE)
+    if (inherits(pitches, "try-error") | length(pitches) == 0) return(NULL)
+    pitch_dat <- bind_rows(lapply(pitches, function(y) {
+        data.frame(t(xml_attrs(y)), stringsAsFactors=FALSE)
+    }))
+}))
+bot <- bind_rows(lapply(bot, function(x) {
+    pitches <- try(xml_find_all(x, "./atbat"), silent=FALSE)
+    if (inherits(pitches, "try-error") | length(pitches) == 0) return(NULL)
+    pitch_dat <- bind_rows(lapply(pitches, function(y) {
+        data.frame(t(xml_attrs(y)), stringsAsFactors=FALSE)
+    }))
+}))
+dat <- bind_rows(top, bot)
+
+
+url <- "http://gd2.mlb.com/components/game/mlb/year_2017/month_05/day_01/gid_2017_05_01_balmlb_bosmlb_1/game.xml"
+file <- read_xml(url)
+xmldat <- xml_find_all(file, "//game")
+dat <- bind_rows(lapply(xmldat, function(x) {
+    node_dat <- try(xml_find_all(x, "./team"), silent=FALSE)
+    if (inherits(node_dat, "try-error") | length(node_dat) == 0) return(NULL)
+    sub_dat <- bind_rows(lapply(node_dat, function(y) {
+        data.frame(t(xml_attrs(y)), stringsAsFactors=FALSE)
+    }))
+}))
+
+
+
 
 get_payload <- function(url){
     file <- read_xml(url)
@@ -223,5 +259,11 @@ get_payload <- function(url){
     }))
 }
 
-z=tidypitch::get_payload(url)
+
+
+library(pitchRx)
+dat <- scrape(start = "2013-06-01", end = "2013-06-01")
+
+
+
 

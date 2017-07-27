@@ -4,9 +4,11 @@
 \alias{payload}
 \alias{payload.default}
 \alias{payload.player}
-\alias{payload.pitch}
-\alias{payload.inning}
+\alias{payload.inning_all}
+\alias{payload.inning_hit}
 \alias{payload.mini}
+\alias{payload.game_events}
+\alias{payload.game}
 \title{Return data from a payload object.}
 \usage{
 payload(obj, ...)
@@ -15,16 +17,20 @@ payload(obj, ...)
 
 \method{payload}{player}(obj, ...)
 
-\method{payload}{pitch}(obj, ...)
+\method{payload}{inning_all}(obj, ...)
 
-\method{payload}{inning}(obj, ...)
+\method{payload}{inning_hit}(obj, ...)
 
 \method{payload}{mini}(obj, ...)
+
+\method{payload}{game_events}(obj, ...)
+
+\method{payload}{game}(obj, ...)
 }
 \arguments{
 \item{obj}{An object created from a obj link}
 
-\item{...}{currently ignored}
+\item{...}{additional arguments}
 }
 \description{
 Return data from a payload object.

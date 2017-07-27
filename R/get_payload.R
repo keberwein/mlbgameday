@@ -1,6 +1,6 @@
 #' Return data from a payload object.
 #' @param obj An object created from a obj link
-#' @param ... currently ignored
+#' @param ... additional arguments
 #' @export
 #' @examples
 #' \dontrun{
@@ -23,8 +23,7 @@ payload.default <- function(obj, ...) {
 #' @export
 
 payload.player <- function(obj, ...) {
-    obj <- structure(obj, class = "character")
-    file <- read_xml(obj)
+    file <- read_xml(obj[1])
     xmldat <- xml_find_all(file, "//team")
     dat <- bind_rows(lapply(xmldat, function(x) {
         node_dat <- try(xml_find_all(x, "./player"), silent=FALSE)
@@ -32,43 +31,44 @@ payload.player <- function(obj, ...) {
         sub_dat <- bind_rows(lapply(node_dat, function(y) {
             data.frame(t(xml_attrs(y)), stringsAsFactors=FALSE)
         }))
-        num_dat <- try(xml_attr(x, "num"))
-        if (inherits(num_dat, "try-error") | length(num_dat) == 0) return(NULL)
-        sub_dat$num_dat <- num_dat
-        sub_dat
     }))
 }
 
 #' @rdname payload
 #' @import xml2
 #' @importFrom dplyr bind_rows
-#' @method payload pitch
+#' @method payload inning_all
 #' @export
 
-payload.pitch <- function(obj, ...) {
-    file <- read_xml(obj)
-    xmldat <- xml_find_all(file, "//top")
-    dat <- bind_rows(lapply(xmldat, function(x) {
+payload.inning_all <- function(obj, ...) {
+    file <- try(read_xml(obj[1]))
+    top <- xml_find_all(file, "//top")
+    bot <- xml_find_all(file, "//bottom")
+    top <- bind_rows(lapply(top, function(x) {
         node_dat <- try(xml_find_all(x, "./atbat"), silent=FALSE)
-        if (inherits(node_dat, "try-error") | length(node_dat) == 0) return(NULL)
+        #if (inherits(node_dat, "try-error") | length(node_dat) == 0) print(warning("URL not found."))
         sub_dat <- bind_rows(lapply(node_dat, function(y) {
             data.frame(t(xml_attrs(y)), stringsAsFactors=FALSE)
         }))
-        num_dat <- try(xml_attr(x, "num"))
-        if (inherits(num_dat, "try-error") | length(num_dat) == 0) return(NULL)
-        sub_dat$num_dat <- num_dat
-        sub_dat
     }))
+    bot <- bind_rows(lapply(bot, function(x) {
+        node_dat <- try(xml_find_all(x, "./atbat"), silent=FALSE)
+        #if (inherits(node_dat, "try-error") | length(node_dat) == 0) print(warning("URL not found."))
+        sub_dat <- bind_rows(lapply(node_dat, function(y) {
+            data.frame(t(xml_attrs(y)), stringsAsFactors=FALSE)
+        }))
+    }))
+    dat <- bind_rows(top, bot)
 }
 
 #' @rdname payload
 #' @import xml2
 #' @importFrom dplyr bind_rows
-#' @method payload inning
+#' @method payload inning_hit
 #' @export
 
-payload.inning <- function(obj, ...) {
-    file <- read_xml(obj)
+payload.inning_hit <- function(obj, ...) {
+    file <- read_xml(obj[1])
     xmldat <- xml_find_all(file, "//hitchart")
     dat <- bind_rows(lapply(xmldat, function(x) {
         node_dat <- try(xml_find_all(x, "./hip"), silent=FALSE)
@@ -76,10 +76,6 @@ payload.inning <- function(obj, ...) {
         sub_dat <- bind_rows(lapply(node_dat, function(y) {
             data.frame(t(xml_attrs(y)), stringsAsFactors=FALSE)
         }))
-        num_dat <- try(xml_attr(x, "num"))
-        if (inherits(num_dat, "try-error") | length(num_dat) == 0) return(NULL)
-        sub_dat$num_dat <- num_dat
-        sub_dat
     }))
 }
 
@@ -90,7 +86,7 @@ payload.inning <- function(obj, ...) {
 #' @export
 
 payload.mini <- function(obj, ...) {
-    file <- read_xml(obj)
+    file <- read_xml(obj[1])
     xmldat <- xml_find_all(file, "//games")
     dat <- bind_rows(lapply(xmldat, function(x) {
         node_dat <- try(xml_find_all(x, "./game"), silent=FALSE)
@@ -98,17 +94,59 @@ payload.mini <- function(obj, ...) {
         sub_dat <- bind_rows(lapply(node_dat, function(y) {
             data.frame(t(xml_attrs(y)), stringsAsFactors=FALSE)
         }))
-        num_dat <- try(xml_attr(x, "num"))
-        if (inherits(num_dat, "try-error") | length(num_dat) == 0) return(NULL)
-        sub_dat$num_dat <- num_dat
-        sub_dat
+    }))
+}
+
+#' @rdname payload
+#' @import xml2
+#' @importFrom dplyr bind_rows
+#' @method payload game_events
+#' @export
+
+payload.game_events <- function(obj, ...) {
+    file <- read_xml(obj[1])
+    top <- xml_find_all(file, "//top")
+    bot <- xml_find_all(file, "//bottom")
+    top <- bind_rows(lapply(top, function(x) {
+        pitches <- try(xml_find_all(x, "./atbat"), silent=FALSE)
+        if (inherits(pitches, "try-error") | length(pitches) == 0) return(NULL)
+        pitch_dat <- bind_rows(lapply(pitches, function(y) {
+            data.frame(t(xml_attrs(y)), stringsAsFactors=FALSE)
+        }))
+    }))
+    bot <- bind_rows(lapply(bot, function(x) {
+        pitches <- try(xml_find_all(x, "./atbat"), silent=FALSE)
+        if (inherits(pitches, "try-error") | length(pitches) == 0) return(NULL)
+        pitch_dat <- bind_rows(lapply(pitches, function(y) {
+            data.frame(t(xml_attrs(y)), stringsAsFactors=FALSE)
+        }))
+    }))
+    dat <- bind_rows(top, bot)
+}
+
+#' @rdname payload
+#' @import xml2
+#' @importFrom dplyr bind_rows
+#' @method payload game
+#' @export
+
+payload.game <- function(obj, ...) {
+    file <- read_xml(obj[1])
+    xmldat <- xml_find_all(file, "//game")
+    dat <- bind_rows(lapply(xmldat, function(x) {
+        node_dat <- try(xml_find_all(x, "./team"), silent=FALSE)
+        if (inherits(node_dat, "try-error") | length(node_dat) == 0) return(NULL)
+        sub_dat <- bind_rows(lapply(node_dat, function(y) {
+            data.frame(t(xml_attrs(y)), stringsAsFactors=FALSE)
+        }))
     }))
 }
 
 #' Get Gameday data from MLBAM.
 #' @param url currently a url
-#' @param ... currently ignored
+#' @param ... additional arguments
 #' @importFrom stringr str_extract
+#' @importFrom dplyr bind_rows
 #' @export
 #' @examples
 #' \dontrun{
@@ -121,12 +159,25 @@ get_payload <- function(url, ...) {
     # Loop through URLs, pull data with correct OO function and rebind those into a single data frame.
     # Will probably have to do several loops, one for each group of URL classes.
     
-    urlType <- stringr::str_extract(url, '\\b[^/]+$')
+    # validate the URLs, make sure none throw a 404 on innings_all becuase the game was cancelled.
+    gamez=validurlz=NULL
+    for(i in 1:length(url)){
+        if(isTRUE(validURL(url[i]))){
+            validurlz[i] <- url[i]
+        }
+    }
     
-    ifelse(urlType=="inning_all.xml", {obj <- structure(url, class = "inning"); innings <- payload(obj)},
-           ifelse())
+    for(i in 1:length(validurlz)){
+        urlType <- stringr::str_extract(validurlz[i], '\\b[^/]+$')
+        if(urlType=="inning_all.xml"){
+            obj <- structure(validurlz[i], class = "inning_all")
+            print(obj)
+            dat <- payload(obj)
+            gamez <- dplyr::bind_rows(gamez, dat)
+        }
+    }
     
-
     
-    return(dat)
+    
 }
+    
