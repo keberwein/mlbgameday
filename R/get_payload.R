@@ -159,25 +159,25 @@ get_payload <- function(url, ...) {
     # Loop through URLs, pull data with correct OO function and rebind those into a single data frame.
     # Will probably have to do several loops, one for each group of URL classes.
     
-    # validate the URLs, make sure none throw a 404 on innings_all becuase the game was cancelled.
-    gamez=validurlz=NULL
-    for(i in 1:length(url)){
-        if(isTRUE(validURL(url[i]))){
-            validurlz[i] <- url[i]
-        }
-    }
-    
     for(i in 1:length(validurlz)){
+        # Find URL types in gids list and apply correct method to each type.
         urlType <- stringr::str_extract(validurlz[i], '\\b[^/]+$')
         if(urlType=="inning_all.xml"){
             obj <- structure(validurlz[i], class = "inning_all")
-            print(obj)
             dat <- payload(obj)
-            gamez <- dplyr::bind_rows(gamez, dat)
+            inning_all <- dplyr::bind_rows(gamez, dat)
         }
     }
-    
-    
-    
 }
-    
+
+# 100 innin_all.xml takes 4.4 minutes. This might be in hte bind_rows piece.
+#start=Sys.time()
+#zzz=tidypitch::get_payload(validurlz)
+#end=Sys.time()
+#time = end - start
+
+# Pitchrx does the same games in 1.12 minutes (full games, not just inning_all)
+#start=Sys.time()
+#zzzpitchrx=pitchRx::scrape(game.ids=game_id)
+#end=Sys.time()
+#time = end - start
