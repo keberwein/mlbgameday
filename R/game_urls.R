@@ -11,7 +11,6 @@
 
 # Create urls based on game_ids
 gameid2url <- function(game_id=NULL) {
-    suffix <- c("/inning/inning_all.xml", "/miniscoreboard.xml")
     # Create an emply list to hold the results of the loop.
     datalist=gidzlist=NULL
     # Loop through gids and convert them to urls.
@@ -57,7 +56,7 @@ gameid2url <- function(game_id=NULL) {
         inningsalllist[i] <- paste0(inningsalllist[i], "/inning/inning_all.xml")
     }
     for(i in seq_along(innignshitlist)){
-        innignshitlist[i] <- paste0(innignshitlist[i], "/inning/inning_all.xml")
+        innignshitlist[i] <- paste0(innignshitlist[i], "/inning/inning_hit.xml")
     }
     for(i in seq_along(playerslist)){
         playerslist[i] <- paste0(playerslist[i], "/players.xml")

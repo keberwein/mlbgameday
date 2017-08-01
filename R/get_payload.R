@@ -72,7 +72,7 @@ payload.inning_hit <- function(obj, ...) {
     xmldat <- xml_find_all(file, "//hitchart")
     dat <- bind_rows(lapply(xmldat, function(x) {
         node_dat <- try(xml_find_all(x, "./hip"), silent=FALSE)
-        if (inherits(node_dat, "try-error") | length(node_dat) == 0) return(NULL)
+        #if (inherits(node_dat, "try-error") | length(node_dat) == 0) return(NULL)
         sub_dat <- bind_rows(lapply(node_dat, function(y) {
             data.frame(t(xml_attrs(y)), stringsAsFactors=FALSE)
         }))
@@ -154,25 +154,32 @@ payload.game <- function(obj, ...) {
 #' }
 #' 
 get_payload <- function(url, ...) {
+    inning_all=inning_hit=NULL
     # Workflow: Need to have a list of URLs. Loop through the list and assign a class to all of them.
     # Maybe assign url classes in a seperate makeURLs function rather than here??
     # Loop through URLs, pull data with correct OO function and rebind those into a single data frame.
     # Will probably have to do several loops, one for each group of URL classes.
     
-    for(i in 1:length(validurlz)){
+    for(i in 1:length(url)){
         # Find URL types in gids list and apply correct method to each type.
-        urlType <- stringr::str_extract(validurlz[i], '\\b[^/]+$')
-        if(urlType=="inning_all.xml"){
-            obj <- structure(validurlz[i], class = "inning_all")
+        urlType <- stringr::str_extract(url[i], '\\b[^/]+$')
+        if(urlType=="inning_hit.xml"){
+            obj <- structure(url[i], class = "inning_hit")
             dat <- payload(obj)
-            inning_all <- dplyr::bind_rows(gamez, dat)
+            inning_hit <- dplyr::bind_rows(inning_hit, dat)
+        }
+        if(urlType=="inning_all.xml"){
+            obj <- structure(url[i], class = "inning_all")
+            dat <- payload(obj)
+            inning_all <- dplyr::bind_rows(inning_all, dat)
         }
     }
+    return(inning_hit)
 }
 
-# 100 innin_all.xml takes 4.4 minutes. This might be in hte bind_rows piece.
+# 100 innin_all.xml takes 48 seconds. This might be in hte bind_rows piece.
 #start=Sys.time()
-#zzz=tidypitch::get_payload(validurlz)
+#zzz=tidypitch::get_payload(url=innignshitlist)
 #end=Sys.time()
 #time = end - start
 
