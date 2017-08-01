@@ -1,4 +1,4 @@
-Package: tidypitch
+Package: tidygameday
 Title: Tools to Extract Transform and Load  Major League Baseball Advanced Media's 'Gameday' Data
 Version: 0.0.0.9000
 Authors@R: person("Kris", "Eberwein", email = "eberwein@knights.ucf.edu",
@@ -16,8 +16,8 @@ Suggests:
 	rmarkdown,
 	pitchRx
 License: MIT + file LICENSE
-URL: https://github.com/keberwein/tidypitch
-BugReports: https://github.com/keberwein/tidypitch/issues
+URL: https://github.com/keberwein/tidygameday
+BugReports: https://github.com/keberwein/tidygameday/issues
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 6.0.1
