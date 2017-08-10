@@ -14,3 +14,14 @@ runtime = end-start
 
 # Find out if these gids were cached in data or pulled from miniscore.
 # Final run time 30.86305 mins with normal cpu and network overhead at house.
+# 
+# 
+# 
+# 
+
+
+startgid <- tidygameday::game_ids[24602]
+endgid <- tidygameday::game_ids[27050]
+mygids <- tidygameday::game_ids[24602:27050]
+
+urlgids <- tidygameday::gameid2url(mygids)

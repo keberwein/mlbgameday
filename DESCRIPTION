@@ -9,7 +9,8 @@ Imports:
 	magrittr,
 	xml2,
 	dplyr,
-	stringr
+	stringr,
+	purrr
 Suggests:
 	testthat,
 	knitr,
