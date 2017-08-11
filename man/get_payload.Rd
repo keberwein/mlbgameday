@@ -4,10 +4,12 @@
 \alias{get_payload}
 \title{Get Gameday data from MLBAM.}
 \usage{
-get_payload(url, ...)
+get_payload(url, cluster = NULL, ...)
 }
 \arguments{
-\item{url}{currently a url}
+\item{url}{currently a url.}
+
+\item{cluster}{A named parallel cluster produced by the \code{parallel} package.}
 
 \item{...}{additional arguments}
 }

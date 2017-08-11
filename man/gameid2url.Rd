@@ -4,10 +4,12 @@
 \alias{gameid2url}
 \title{Create urls from game_ids.}
 \usage{
-gameid2url(game_id = NULL)
+gameid2url(game_id = NULL, cluster = NULL)
 }
 \arguments{
-\item{game_id}{A single \code{game_id} or a list of game_ids}
+\item{game_id}{A single \code{game_id} or a list of game_ids.}
+
+\item{cluster}{A named parallel cluster produced by the \code{parallel} package.}
 
 \item{...}{additional arguments}
 }

@@ -10,7 +10,9 @@ Imports:
 	xml2,
 	dplyr,
 	stringr,
-	purrr
+	purrr,
+	parallel,
+	foreach
 Suggests:
 	testthat,
 	knitr,
