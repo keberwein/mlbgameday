@@ -142,10 +142,11 @@ payload.game <- function(obj, ...) {
 
 #' Get Gameday data from MLBAM.
 #' @param url currently a url.
-#' @param cluster A named parallel cluster produced by the \code{parallel} package.
+#' @param cluster A named parallel cluster produced by the \code{doParallel} package.
 #' @param ... additional arguments
 #' @importFrom stringr str_extract
 #' @importFrom dplyr bind_rows
+#' @import foreach
 #' @export
 #' @examples
 #' \dontrun{
@@ -153,50 +154,29 @@ payload.game <- function(obj, ...) {
 #' }
 #' 
 get_payload <- function(url, cluster=NULL, ...) {
-    inning_all=inning_hit=NULL
-    # Workflow: Need to have a list of URLs. Loop through the list and assign a class to all of them.
-    # Maybe assign url classes in a seperate makeURLs function rather than here??
-    # Loop through URLs, pull data with correct OO function and rebind those into a single data frame.
-    # Will probably have to do several loops, one for each group of URL classes.
-    # 
-    urlType=NULL
-    # If we find a cluster, use a foreach loop, else use map loop.
-    if(!is.null(cluster)){
-        foreach::foreach(i = 1:length(url)) %dopar% {
-            # Find URL types in gids list and apply correct method to each type.
-            urlType <- stringr::str_extract(url[i], '\\b[^/]+$')
-            if(urlType=="inning_hit.xml"){
-                obj <- structure(url[i], class = "inning_hit")
-                dat <- payload(obj)
-                inning_hit <- dplyr::bind_rows(inning_hit, dat)
-            }
-            if(urlType=="inning_all.xml"){
-                obj <- structure(url[i], class = "inning_all")
-                dat <- payload(obj)
-                inning_all <- dplyr::bind_rows(inning_all, dat)
-            }
-        }
-    } else {
-        for(i in 1:length(url)){
-            # Find URL types in gids list and apply correct method to each type.
-            urlType <- stringr::str_extract(url[i], '\\b[^/]+$')
-            if(urlType=="inning_hit.xml"){
-                obj <- structure(url[i], class = "inning_hit")
-                dat <- payload(obj)
-                inning_hit <- dplyr::bind_rows(inning_hit, dat)
-            }
-            if(urlType=="inning_all.xml"){
-                obj <- structure(url[i], class = "inning_all")
-                dat <- payload(obj)
-                inning_all <- dplyr::bind_rows(inning_all, dat)
-            }
-        }
-        return(inning_all)
-    }
-    #return(inning_all)
-}
+    # Need to find way to return a list of data frames.
+    # Re-write the bottom loop OR just have foreeach do both cases, will throw warning, but maybe ok.
+    inning_all=inning_hit=hit_dat=all_dat=NULL
+    #ifelse(!is.null(cluster),
+    #       message("Cluster detected! Data collection may take a while, please be patient."),
+    #       message("Data collection may take a while. If it takes more than 15 minutes, consider using parallel."))
     
-        
-        
+    hit_dat <- list()
+    inning_hit <- foreach::foreach(i = 1:length(url), .combine = dplyr::bind_rows) %dopar% {
+        # Find URL types in gids list and apply correct method to each type.
+        if(isTRUE(class(url[[i]])=="inning_hit")){
+            hit_dat[[i]] <- payload(url[[i]])
+        }
+    }
 
+    all_dat <- list()
+    inning_all <- foreach::foreach(i = 1:length(url), .combine = dplyr::bind_rows) %dopar% {
+        # Find URL types in gids list and apply correct method to each type.
+        if(isTRUE(class(url[[i]])=="inning_all")){
+            all_dat[[i]] <- payload(url[[i]])
+        }
+    }
 
+    df <- list(inning_all, inning_hit)
+    return(df)
+}

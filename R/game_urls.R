@@ -1,11 +1,11 @@
 #' Create urls from game_ids.
 #' @param game_id A single \code{game_id} or a list of game_ids.
-#' @param cluster A named parallel cluster produced by the \code{parallel} package.
+#' @param cluster A named parallel cluster produced by the \code{doParallel} package.
 #' @param ... additional arguments
 #' @importFrom stringr str_sub
 #' @importFrom purrr map_chr
 #' @importFrom dplyr setdiff
-#' @import doParallel
+#' @import foreach
 #' @export
 #' @examples
 #' \dontrun{
@@ -14,19 +14,15 @@
 #' 
 
 # Create urls based on game_ids
-gameid2url <- function(game_id=NULL, cluster=NULL) {
+game_urls <- function(game_id=NULL, cluster=NULL) {
     # Create an emply list to hold the results of the loop.
-    datalist=gidzlist=NULL
+    datalist=i=str_length=NULL
     root <- "http://gd2.mlb.com/components/game/"
     # Loop through gids and convert them to urls.
-    for(i in seq_along(game_id)) {
-        league <- str_sub(game_id[i], -5, -3)
-        yyyy <- str_sub(game_id[i], 5, 8)
-        mm <- str_sub(game_id[i], 10, 11)
-        dd <- str_sub(game_id[i], 13, 14)
-        mlb_url <- paste0(root, league, "/", "year_", yyyy, "/month_", mm, "/day_", dd, "/", game_id)
-        datalist[i] <- mlb_url[i]
-    }
+    datalist <- purrr::map_chr(game_id, function(i){
+        output <- paste0(root, stringr::str_sub(i, -5, -3), "/year_", stringr::str_sub(i, 5, 8), "/month_", 
+                         stringr::str_sub(i, 10, 11), "/day_", stringr::str_sub(i, 13, 14), "/", i)
+    })
     
     # Use miniscorboard to validate urls.
     # If there are more than 1000 gids, use a parallel loop.
@@ -40,33 +36,39 @@ gameid2url <- function(game_id=NULL, cluster=NULL) {
             invalid[i] <- minilist[i]
         }
     },
-    for(i in 1:length(minilist)){
-        if(!isTRUE(RCurl::url.exists(minilist[i]))){
-            invalid[i] <- minilist[i]        
+    invalid <- purrr::map(minilist, function(i){
+        if(!isTRUE(tidygameday::urlTrue(i))){
+            output <- i
         }
-    })
+    }))
     
     # strip out nulls nulls.
     invalid <- Filter(Negate(is.null), invalid) %>% as.character()
     
     # Subset games not played out of minilist and out of base gids.
-    minilist %<>% setdiff(invalid)
-    datalist %<>% setdiff(str_sub(invalid, 1, str_length(invalid)-19))
+    minilist %<>% dplyr::setdiff(invalid)
+    datalist %<>% dplyr::setdiff(stringr::str_sub(invalid, 1, str_length(invalid)-19))
 
     # Append suffix to base URLs. There is probbaly a more elegant way to do this, but this works for now...
-    # Maybe go ahead and assign classes to objects here.
-    inningsalllist <- datalist %>% map_chr(~ paste0(., "/inning/inning_all.xml"))
-    innignshitlist <- datalist %>% map_chr(~ paste0(., "/inning/inning_hit.xml"))
-    playerslist <- datalist %>% map_chr(~ paste0(., "/players.xml"))
-    gameslist <- datalist %>% map_chr(~ paste0(., "/game.xml"))
-    gameeventslist <- datalist %>% map_chr(~ paste0(., "/game_events.xml"))
-
-    gidz <- c(inningsalllist, innignshitlist, minilist, playerslist, gameslist, gameeventslist)
+    # Should try to use map2() here.
+    # This whole thing could be one map2() loop with if() statements...maybe.
+    # Make final urls and assign the correct classes.
+    inningsalllist <- datalist %>% purrr::map(~ paste0(., "/inning/inning_all.xml")) %>%
+        purrr::map(~ structure(., class = "inning_all"))
+    
+    inningshitlist <- datalist %>% purrr::map_chr(~ paste0(., "/inning/inning_hit.xml")) %>%
+        purrr::map(~ structure(., class = "inning_hit"))
+    
+    playerslist <- datalist %>% purrr::map_chr(~ paste0(., "/players.xml")) %>%
+        purrr::map(~ structure(., class = "players"))
+    
+    gameslist <- datalist %>% purrr::map_chr(~ paste0(., "/game.xml")) %>%
+        purrr::map(~ structure(., class = "game"))
+    
+    gameeventslist <- datalist %>% purrr::map_chr(~ paste0(., "/game_events.xml")) %>%
+        purrr::map(~ structure(., class = "game_events"))
+    
+    gidz <- c(inningsalllist, inningshitlist, minilist, playerslist, gameslist, gameeventslist)
     
     return(gidz)
 }
-
-
-
-
-    

@@ -9,7 +9,7 @@ get_payload(url, cluster = NULL, ...)
 \arguments{
 \item{url}{currently a url.}
 
-\item{cluster}{A named parallel cluster produced by the \code{parallel} package.}
+\item{cluster}{A named parallel cluster produced by the \code{doParallel} package.}
 
 \item{...}{additional arguments}
 }

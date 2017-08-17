@@ -22,6 +22,7 @@ NULL
 #' @title urlTrue
 #' @description A utility function to run a tryCatch on a URL. Returns a logical TRUE / FALSE.
 #' @param target url
+#' @importFrom utils capture.output
 #' @export
 urlTrue <- function(target) {  
     tryCatch({  
@@ -32,21 +33,9 @@ urlTrue <- function(target) {
     },  
     error = function(err) {  
         occur <- grep("cannot open the connection", capture.output(err));  
-        if(length(occur) > 0) FALSE;  
-    }  
-    )  
-}
-
-
-#' @title unregister_cluster
-#' @description Unregisters and closes a foreach cluster.
-#' @param cl cluster
-#' @importFrom parallel stopCluster
-#' @export
-unregister_cluster <- function(cl=NULL) {
-    if(is_null(cl)){warning("Please specify the name you registered your foreach cluster with.")}
-    stopCluster(cl)
-    rm(cl)
-    env <- foreach:::.foreachGlobals
-    rm(list=ls(name=env), pos=env)
+        if(length(occur) > 0){
+            close(con)
+            FALSE;
+        } 
+    })  
 }
