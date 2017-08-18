@@ -160,6 +160,23 @@ get_payload <- function(url, cluster=NULL, ...) {
     #ifelse(!is.null(cluster),
     #       message("Cluster detected! Data collection may take a while, please be patient."),
     #       message("Data collection may take a while. If it takes more than 15 minutes, consider using parallel."))
+    #       
+    
+    mini_dat <- list()
+    mini <- foreach::foreach(i = 1:length(url), .combine = dplyr::bind_rows) %dopar% {
+        # Find URL types in gids list and apply correct method to each type.
+        if(isTRUE(class(url[[i]])=="mini")){
+            all_dat[[i]] <- payload(url[[i]])
+        }
+    }
+    
+    player_dat <- list()
+    player <- foreach::foreach(i = 1:length(url), .combine = dplyr::bind_rows) %dopar% {
+        # Find URL types in gids list and apply correct method to each type.
+        if(isTRUE(class(url[[i]])=="player")){
+            all_dat[[i]] <- payload(url[[i]])
+        }
+    }
     
     hit_dat <- list()
     inning_hit <- foreach::foreach(i = 1:length(url), .combine = dplyr::bind_rows) %dopar% {
@@ -177,6 +194,6 @@ get_payload <- function(url, cluster=NULL, ...) {
         }
     }
 
-    df <- list(inning_all, inning_hit)
+    df <- list(inning_all, inning_hit, player, mini)
     return(df)
 }

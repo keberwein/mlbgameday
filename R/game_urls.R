@@ -2,7 +2,7 @@
 #' @param game_id A single \code{game_id} or a list of game_ids.
 #' @param cluster A named parallel cluster produced by the \code{doParallel} package.
 #' @param ... additional arguments
-#' @importFrom stringr str_sub
+#' @importFrom stringr str_sub str_length
 #' @importFrom purrr map_chr
 #' @importFrom dplyr setdiff
 #' @import foreach
@@ -47,7 +47,7 @@ game_urls <- function(game_id=NULL, cluster=NULL) {
     
     # Subset games not played out of minilist and out of base gids.
     minilist %<>% dplyr::setdiff(invalid)
-    datalist %<>% dplyr::setdiff(stringr::str_sub(invalid, 1, str_length(invalid)-19))
+    datalist %<>% dplyr::setdiff(stringr::str_sub(invalid, 1, stringr::str_length(invalid)-19))
 
     # Append suffix to base URLs. There is probbaly a more elegant way to do this, but this works for now...
     # Should try to use map2() here.
@@ -56,19 +56,22 @@ game_urls <- function(game_id=NULL, cluster=NULL) {
     inningsalllist <- datalist %>% purrr::map(~ paste0(., "/inning/inning_all.xml")) %>%
         purrr::map(~ structure(., class = "inning_all"))
     
-    inningshitlist <- datalist %>% purrr::map_chr(~ paste0(., "/inning/inning_hit.xml")) %>%
-        purrr::map(~ structure(., class = "inning_hit"))
+    #inningshitlist <- datalist %>% purrr::map_chr(~ paste0(., "/inning/inning_hit.xml")) %>%
+    #    purrr::map(~ structure(., class = "inning_hit"))
     
-    playerslist <- datalist %>% purrr::map_chr(~ paste0(., "/players.xml")) %>%
-        purrr::map(~ structure(., class = "players"))
+    #playerslist <- datalist %>% purrr::map_chr(~ paste0(., "/players.xml")) %>%
+    #    purrr::map(~ structure(., class = "players"))
     
-    gameslist <- datalist %>% purrr::map_chr(~ paste0(., "/game.xml")) %>%
-        purrr::map(~ structure(., class = "game"))
+    #gameslist <- datalist %>% purrr::map_chr(~ paste0(., "/game.xml")) %>%
+    #    purrr::map(~ structure(., class = "game"))
     
-    gameeventslist <- datalist %>% purrr::map_chr(~ paste0(., "/game_events.xml")) %>%
-        purrr::map(~ structure(., class = "game_events"))
+    #gameeventslist <- datalist %>% purrr::map_chr(~ paste0(., "/game_events.xml")) %>%
+    #    purrr::map(~ structure(., class = "game_events"))
     
-    gidz <- c(inningsalllist, inningshitlist, minilist, playerslist, gameslist, gameeventslist)
+    #gidz <- c(inningsalllist, inningshitlist, minilist, playerslist, gameslist, gameeventslist)
+    
+    gidz <- inningsalllist
+    
     
     return(gidz)
 }
