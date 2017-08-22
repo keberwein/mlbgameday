@@ -27,7 +27,7 @@ shortgids <- tidygameday::game_ids[24602:24800]
 
 start = Sys.time()
 library(doParallel)  
-no_cores <- detectCores() - 2  
+no_cores <- detectCores() - 1  
 cl <- makeCluster(no_cores, type="FORK")  
 registerDoParallel(cl)
 urlgids <- tidygameday::game_urls(mygids, cluster='cl')
@@ -42,27 +42,24 @@ end = Sys.time()
 runtime = end-start
 
 
-no_cores <- detectCores() - 1  
-registerDoParallel(cores=no_cores)  
-cl <- makeCluster(no_cores, type="FORK")
+no_cores <- detectCores() - 6
+cl <- makeCluster(no_cores, type="FORK")  
+registerDoParallel(cl)
 stopImplicitCluster()
 rm(cl)
 
 library(doParallel); library(foreach); library(dplyr); library(purrr); library(stringr); library(xml2); library(magrittr)
 
-# 200 full games (all files) takes 23 seconds. fresh R environ. no parallel. / parallel = 24 sec.
-# Full season inning_all 4 minues in parallel:) pitchRx took 30 min. full gids w DB con.
-# Full season inning_all no parallel 23 minutes. No gid parsing.
-# Full season all gids 41 minutes. No gid parsing.
+# 200 full games takes 7 minutes. fresh R environ. no parallel. / parallel =  1.3 minutes.
+# Full season 17 minues in parallel:) pitchRx took 30 min. full gids w DB con.
+# Need to test this out of parallel and test the non-parallel map function.
+# This works with no cluster, but cluster turns it into an emply list. May have to return the foreach as a single object.
+
 start=Sys.time()
-zzz= tidygameday::get_payload(urlgids, cluster="cl")
+zzz= tidygameday::get_payload(url, cluster="cl")
 end=Sys.time()
 runtime = end - start
 runtime
 
-# Pitchrx does the same games in 1.12 minutes (full games, not just inning_all)
-start=Sys.time()
-zzzpitchrx=pitchRx::scrape(game.ids=game_id)
-end=Sys.time()
-time = end - start
+
 

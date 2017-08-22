@@ -41,23 +41,73 @@ payload.player <- function(obj, ...) {
 #' @method payload inning_all
 #' @export
 
-payload.inning_all <- function(obj, ...) {
-    file <- read_xml(obj[1])
+payload.inning_all <- function(obj, node, ...) {
+    # Grab all the xml nodes we need.
+    file <- read_xml(obj[[1]])
     top <- xml_find_all(file, "//top")
     bot <- xml_find_all(file, "//bottom")
-    top <- bind_rows(map(top, function(x) {
-        node_dat <- xml_find_all(x, "./atbat")
-        sub_dat <- bind_rows(map(node_dat, function(y) {
-            data.frame(t(xml_attrs(y)), stringsAsFactors=FALSE)
+    ab <- xml_find_all(file, "//atbat")
+    # Loop over nodes. There need to be different loops for top and bottom of inning, due to the xml nesting.
+    # Get atbat table.
+    if(node=="atbat"){
+        top <- bind_rows(map(top, function(x) {
+            node_dat <- xml_find_all(x, "./atbat")
+            sub_dat <- bind_rows(map(node_dat, function(y) {
+                data.frame(t(xml_attrs(y)), stringsAsFactors=FALSE)
+            }))
         }))
-    }))
-    bot <- bind_rows(map(bot, function(x) {
-        node_dat <- xml_find_all(x, "./atbat")
-        sub_dat <- bind_rows(map(node_dat, function(y) {
-            data.frame(t(xml_attrs(y)), stringsAsFactors=FALSE)
+        bot <- bind_rows(map(bot, function(x) {
+            node_dat <- xml_find_all(x, "./atbat")
+            sub_dat <- bind_rows(map(node_dat, function(y) {
+                data.frame(t(xml_attrs(y)), stringsAsFactors=FALSE)
+            }))
         }))
-    }))
-    dat <- bind_rows(top, bot)
+        df <- bind_rows(top, bot)
+    }
+    if(node=="action"){
+        # action table
+        tact <- bind_rows(map(top, function(x) {
+            node_dat <- xml_find_all(x, "./action")
+            sub_dat <- bind_rows(map(node_dat, function(y) {
+                data.frame(t(xml_attrs(y)), stringsAsFactors=FALSE)
+            }))
+        }))
+        bact <- bind_rows(map(bot, function(x) {
+            node_dat <- xml_find_all(x, "./action")
+            sub_dat <- bind_rows(map(node_dat, function(y) {
+                data.frame(t(xml_attrs(y)), stringsAsFactors=FALSE)
+            }))
+        }))
+        df <- dplyr::bind_rows(tact, bact)
+    }
+    if(node=="pitch"){
+        # pitch table
+        df <- bind_rows(map(ab, function(x) {
+            node_dat <- xml_find_all(x, "./pitch")
+            sub_dat <- bind_rows(map(node_dat, function(y) {
+                data.frame(t(xml_attrs(y)), stringsAsFactors=FALSE)
+            }))
+        }))
+    }
+    if(node=="runner"){
+        # runner table
+        df <- bind_rows(map(ab, function(x) {
+            node_dat <- xml_find_all(x, "./runner")
+            sub_dat <- bind_rows(map(node_dat, function(y) {
+                data.frame(t(xml_attrs(y)), stringsAsFactors=FALSE)
+            }))
+        })) 
+    }
+    if(node=="po"){
+        # po table
+        df <- bind_rows(map(ab, function(x) {
+            node_dat <- xml_find_all(x, "./po")
+            sub_dat <- bind_rows(map(node_dat, function(y) {
+                data.frame(t(xml_attrs(y)), stringsAsFactors=FALSE)
+            }))
+        }))
+    }
+    return(df)
 }
 
 #' @rdname payload
@@ -162,38 +212,64 @@ get_payload <- function(url, cluster=NULL, ...) {
     #       message("Data collection may take a while. If it takes more than 15 minutes, consider using parallel."))
     #       
     
-    mini_dat <- list()
-    mini <- foreach::foreach(i = 1:length(url), .combine = dplyr::bind_rows) %dopar% {
-        # Find URL types in gids list and apply correct method to each type.
-        if(isTRUE(class(url[[i]])=="mini")){
-            all_dat[[i]] <- payload(url[[i]])
-        }
-    }
+#    mini_dat <- list()
+#    mini <- foreach::foreach(i = 1:length(url), .combine = dplyr::bind_rows) %dopar% {
+#        # Find URL types in gids list and apply correct method to each type.
+#        if(isTRUE(class(url[[i]])=="mini")){
+#            all_dat[[i]] <- payload(url[[i]])
+#        }
+#    }
     
-    player_dat <- list()
-    player <- foreach::foreach(i = 1:length(url), .combine = dplyr::bind_rows) %dopar% {
-        # Find URL types in gids list and apply correct method to each type.
-        if(isTRUE(class(url[[i]])=="player")){
-            all_dat[[i]] <- payload(url[[i]])
-        }
-    }
+#    player_dat <- list()
+#    player <- foreach::foreach(i = 1:length(url), .combine = dplyr::bind_rows) %dopar% {
+#        # Find URL types in gids list and apply correct method to each type.
+#        if(isTRUE(class(url[[i]])=="player")){
+#            all_dat[[i]] <- payload(url[[i]])
+#        }
+#    }
     
-    hit_dat <- list()
-    inning_hit <- foreach::foreach(i = 1:length(url), .combine = dplyr::bind_rows) %dopar% {
-        # Find URL types in gids list and apply correct method to each type.
-        if(isTRUE(class(url[[i]])=="inning_hit")){
-            hit_dat[[i]] <- payload(url[[i]])
-        }
-    }
+#    hit_dat <- list()
+#    inning_hit <- foreach::foreach(i = 1:length(url), .combine = dplyr::bind_rows) %dopar% {
+#        # Find URL types in gids list and apply correct method to each type.
+#        if(isTRUE(class(url[[i]])=="inning_hit")){
+#            hit_dat[[i]] <- payload(url[[i]])
+#        }
+#    }
 
-    all_dat <- list()
-    inning_all <- foreach::foreach(i = 1:length(url), .combine = dplyr::bind_rows) %dopar% {
-        # Find URL types in gids list and apply correct method to each type.
-        if(isTRUE(class(url[[i]])=="inning_all")){
-            all_dat[[i]] <- payload(url[[i]])
-        }
-    }
+    #atbat <- list(); action <- list(); pitch <- list(); runner <- list(); po <- list()
+    lnames <- list(atbat=atbat, action=action, pitch=pitch, runner=runner, po=po)
+    
+    # Need to figure out how to make this one foreach loop. Five loops here seems like too much.
+    out <- foreach::foreach(i = seq_along(url), .combine="comb", .multicombine=T,
+                            .final = function(x) setNames(x, names(lnames)),
+                            .init=list(list(), list(), list(), list(), list())) %dopar% {
+                                list(                        
+                                    atbat <- payload(url[[i]], node="atbat"),
+                                    action <- payload(url[[i]], node="action"),
+                                    pitch <- payload(url[[i]], node="pitch"),
+                                    runner <- payload(url[[i]], node="runner"),
+                                    po <- payload(url[[i]], node="po"))
+                            }
+    # The foreach loop returns a named list of nested data frames. We need to bind the dfs under 
+    # each name and pack the binded dfs back into a list that can be returned.
+    
+    
+}
 
-    df <- list(inning_all, inning_hit, player, mini)
-    return(df)
+#list2env(df[[1]] ,.GlobalEnv)
+
+#z <- out$po
+
+#z = out[[2]]
+#list <- unlist(out$po, recursive = F)
+#zz <- do.call("rbind", list)
+z = bind_rows(out[[1]])
+zz = bind_rows(out[[2]])
+
+ab = bind_rows(out$atbat)
+
+
+
+comb <- function(x, ...) {
+    lapply(1:5, function(i) c(x[[i]], lapply(list(...), function(y) y[,i])))
 }
