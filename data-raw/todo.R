@@ -1,10 +1,6 @@
-# Second pard of get_payload sould be a map function. OK to keep it as a for loop until everything is working.
-# 
-# game_urls bottom peice can be one map2() loop maybe.
-# 
-# get_payload needs to spit out a list of dataframes same as pritchrx.
-# 
-## Keep temporary gids until publish.
+## Need to validate all internal gids...season by season, will take a while.
+
+## Using pitchRx update_gids function. Need to write our own.
 ## 
 ## Add methods for openWAR stuff that doesn't exist in pitchRx.
 ## 
@@ -12,6 +8,6 @@
 ## 
 ## Not gathering everything from game.xml. Got getting time and park, may not need it.
 ## 
-## minor-league and pre-2010 have no inning all???
+## minor-league and pre-2008 have no inning all. Dependable mlb data goes back to 2005 with no inning_all.
 ## 
 ## Look at viz options but don't go nuts.

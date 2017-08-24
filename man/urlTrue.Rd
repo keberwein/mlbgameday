@@ -12,3 +12,4 @@ urlTrue(target)
 \description{
 A utility function to run a tryCatch on a URL. Returns a logical TRUE / FALSE.
 }
+\keyword{internal}

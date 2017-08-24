@@ -23,6 +23,7 @@ NULL
 #' @description A utility function to run a tryCatch on a URL. Returns a logical TRUE / FALSE.
 #' @param target url
 #' @importFrom utils capture.output
+#' @keywords internal
 #' @export
 urlTrue <- function(target) {  
     tryCatch({  
@@ -38,4 +39,15 @@ urlTrue <- function(target) {
             FALSE;
         } 
     })  
+}
+
+#' @title comb
+#' @description Internal combine fucntion for foreach loop used in get_payload()
+#' @param x target
+#' @param ... additional args
+#' @keywords internal
+#' @export
+comb <- function(x, ...) {
+    lapply(seq_along(x),
+           function(i) c(x[[i]], lapply(list(...), function(y) y[[i]])))
 }

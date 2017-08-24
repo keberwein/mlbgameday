@@ -64,6 +64,7 @@ payload.inning_all <- function(obj, node, ...) {
         }))
         df <- bind_rows(top, bot)
     }
+    
     if(node=="action"){
         # action table
         tact <- bind_rows(map(top, function(x) {
@@ -204,42 +205,10 @@ payload.game <- function(obj, ...) {
 #' }
 #' 
 get_payload <- function(url, cluster=NULL, ...) {
-    # Need to find way to return a list of data frames.
-    # Re-write the bottom loop OR just have foreeach do both cases, will throw warning, but maybe ok.
-    inning_all=inning_hit=hit_dat=all_dat=NULL
-    #ifelse(!is.null(cluster),
-    #       message("Cluster detected! Data collection may take a while, please be patient."),
-    #       message("Data collection may take a while. If it takes more than 15 minutes, consider using parallel."))
-    #       
     
-#    mini_dat <- list()
-#    mini <- foreach::foreach(i = 1:length(url), .combine = dplyr::bind_rows) %dopar% {
-#        # Find URL types in gids list and apply correct method to each type.
-#        if(isTRUE(class(url[[i]])=="mini")){
-#            all_dat[[i]] <- payload(url[[i]])
-#        }
-#    }
-    
-#    player_dat <- list()
-#    player <- foreach::foreach(i = 1:length(url), .combine = dplyr::bind_rows) %dopar% {
-#        # Find URL types in gids list and apply correct method to each type.
-#        if(isTRUE(class(url[[i]])=="player")){
-#            all_dat[[i]] <- payload(url[[i]])
-#        }
-#    }
-    
-#    hit_dat <- list()
-#    inning_hit <- foreach::foreach(i = 1:length(url), .combine = dplyr::bind_rows) %dopar% {
-#        # Find URL types in gids list and apply correct method to each type.
-#        if(isTRUE(class(url[[i]])=="inning_hit")){
-#            hit_dat[[i]] <- payload(url[[i]])
-#        }
-#    }
-
-    #atbat <- list(); action <- list(); pitch <- list(); runner <- list(); po <- list()
+    atbat <- list(); action <- list(); pitch <- list(); runner <- list(); po <- list()
     lnames <- list(atbat=atbat, action=action, pitch=pitch, runner=runner, po=po)
-    
-    # Need to figure out how to make this one foreach loop. Five loops here seems like too much.
+
     out <- foreach::foreach(i = seq_along(url), .combine="comb", .multicombine=T,
                             .final = function(x) setNames(x, names(lnames)),
                             .init=list(list(), list(), list(), list(), list())) %dopar% {
@@ -252,24 +221,28 @@ get_payload <- function(url, cluster=NULL, ...) {
                             }
     # The foreach loop returns a named list of nested data frames. We need to bind the dfs under 
     # each name and pack the binded dfs back into a list that can be returned.
+    atbat <- dplyr::bind_rows(out$atbat)
+    action <- dplyr::bind_rows(out$action)
+    pitch <- dplyr::bind_rows(out$pitch)
+    runner <- dplyr::bind_rows(out$runner)
+    po <- dplyr::bind_rows(out$po)
     
+    innings_df <- list(atbat=atbat, action=action, pitch=pitch, runner=runner, po=po)
     
+    end=Sys.time()
+    runtime = end - start
+    runtime
 }
 
-#list2env(df[[1]] ,.GlobalEnv)
+# I tried map and lapply as a non-cluster alternative here. This version is a bit slower than the
+# foreach loop with no cluster. Slower due to the fact it's a nested loop. Need to revisit this.
 
-#z <- out$po
-
-#z = out[[2]]
-#list <- unlist(out$po, recursive = F)
-#zz <- do.call("rbind", list)
-z = bind_rows(out[[1]])
-zz = bind_rows(out[[2]])
-
-ab = bind_rows(out$atbat)
+#out <- map(names(inning), function(x){
+#    out1 <- map(url, function(i) {
+#        payload(i, node=as.character(x))
+#    })
+#})
 
 
 
-comb <- function(x, ...) {
-    lapply(1:5, function(i) c(x[[i]], lapply(list(...), function(y) y[,i])))
-}
+

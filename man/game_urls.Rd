@@ -18,7 +18,7 @@ Create urls from game_ids.
 }
 \examples{
 \dontrun{
-urls <- gameid2url(gids)
+urls <- game_urls(gids)
 }
 
 }

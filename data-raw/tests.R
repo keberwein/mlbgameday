@@ -21,7 +21,7 @@ runtime = end-start
 
 startgid <- tidygameday::game_ids[24602]
 endgid <- tidygameday::game_ids[27050]
-mygids <- tidygameday::game_ids[24602:27050]
+mygids <- tidygameday::game_ids$gid[24602:27050]
 shortgids <- tidygameday::game_ids[24602:24800]
 
 
@@ -42,7 +42,7 @@ end = Sys.time()
 runtime = end-start
 
 
-no_cores <- detectCores() - 6
+no_cores <- detectCores() - 1
 cl <- makeCluster(no_cores, type="FORK")  
 registerDoParallel(cl)
 stopImplicitCluster()
@@ -56,7 +56,12 @@ library(doParallel); library(foreach); library(dplyr); library(purrr); library(s
 # This works with no cluster, but cluster turns it into an emply list. May have to return the foreach as a single object.
 
 start=Sys.time()
-zzz= tidygameday::get_payload(url, cluster="cl")
+
+basegids <- make_gids(start = "2017-06-01", end = "2017-08-22", cluster = "cl")
+
+url <- game_urls(basegids, cluster = "cl")
+
+zzz= tidygameday::get_payload(url, cluster='cl')
 end=Sys.time()
 runtime = end - start
 runtime

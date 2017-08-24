@@ -17,7 +17,7 @@ payload(obj, ...)
 
 \method{payload}{player}(obj, ...)
 
-\method{payload}{inning_all}(obj, ...)
+\method{payload}{inning_all}(obj, node, ...)
 
 \method{payload}{inning_hit}(obj, ...)
 
