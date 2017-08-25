@@ -213,11 +213,11 @@ get_payload <- function(url, cluster=NULL, ...) {
                             .final = function(x) setNames(x, names(lnames)),
                             .init=list(list(), list(), list(), list(), list())) %dopar% {
                                 list(                        
-                                    atbat <- payload(url[[i]], node="atbat"),
-                                    action <- payload(url[[i]], node="action"),
-                                    pitch <- payload(url[[i]], node="pitch"),
-                                    runner <- payload(url[[i]], node="runner"),
-                                    po <- payload(url[[i]], node="po"))
+                                    atbat <- tryCatch(payload(url[[i]], node="atbat"), error=function(e) NULL),
+                                    action <- tryCatch(payload(url[[i]], node="action"), error=function(e) NULL),
+                                    pitch <- tryCatch(payload(url[[i]], node="pitch"), error=function(e) NULL),
+                                    runner <- tryCatch(payload(url[[i]], node="runner"), error=function(e) NULL),
+                                    po <- tryCatch(payload(url[[i]], node="po"), error=function(e) NULL))
                             }
     # The foreach loop returns a named list of nested data frames. We need to bind the dfs under 
     # each name and pack the binded dfs back into a list that can be returned.
@@ -229,9 +229,10 @@ get_payload <- function(url, cluster=NULL, ...) {
     
     innings_df <- list(atbat=atbat, action=action, pitch=pitch, runner=runner, po=po)
     
-    end=Sys.time()
-    runtime = end - start
-    runtime
+    # Release uneeded objects from memory and return innings_df.
+    rm(atbat, action, pitch, runner, po)
+    gc() # May not need this here. Test to see if R returns memory without gc().
+    return(innings_df)
 }
 
 # I tried map and lapply as a non-cluster alternative here. This version is a bit slower than the

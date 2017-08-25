@@ -15,9 +15,8 @@
 
 # Create urls based on game_ids
 game_urls <- function(url_gids=NULL, cluster=NULL) {
-    # Check to see if gids are in the internal dataset. If not, use the make_gids() function to grab them.
+    # Make sure input is a list, so the payload function can read the output correctly.
     
-
 
     # Append suffix to base URLs. There is probbaly a more elegant way to do this, but this works for now...
     # Should try to use map2() here.
@@ -40,8 +39,4 @@ game_urls <- function(url_gids=NULL, cluster=NULL) {
     
     #gidz <- c(inningsalllist, inningshitlist, minilist, playerslist, gameslist, gameeventslist)
     
-    gidz <- inningsalllist
-    
-    
-    return(gidz)
 }

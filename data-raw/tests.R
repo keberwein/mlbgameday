@@ -59,8 +59,10 @@ start=Sys.time()
 
 basegids <- make_gids(start = "2017-06-01", end = "2017-08-22", cluster = "cl")
 
+
 url <- game_urls(basegids, cluster = "cl")
 
+start=Sys.time() ; print(start)
 zzz= tidygameday::get_payload(url, cluster='cl')
 end=Sys.time()
 runtime = end - start

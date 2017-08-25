@@ -4,10 +4,10 @@
 \alias{game_urls}
 \title{Create urls from game_ids.}
 \usage{
-game_urls(game_id = NULL, cluster = NULL)
+game_urls(url_gids = NULL, cluster = NULL)
 }
 \arguments{
-\item{game_id}{A single \code{game_id} or a list of game_ids.}
+\item{url_gids}{A list of gid urls formatted by the \code{make_gids()} function.}
 
 \item{cluster}{A named parallel cluster produced by the \code{doParallel} package.}
 

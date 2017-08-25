@@ -24,6 +24,7 @@ make_gids <- function(start=NULL, end=NULL, league="mlb", cluster=NULL, ...) {
         stop(warning("Please select an earlier end date."))
     }
     root <- paste0("http://gd2.mlb.com/components/game/", league, "/")
+    
     #Format dates
     dateslist <- seq(as.Date(start), as.Date(end), by = "day")
     dates <- paste0("year_", format(dateslist, "%Y"), "/month_",
@@ -35,7 +36,6 @@ make_gids <- function(start=NULL, end=NULL, league="mlb", cluster=NULL, ...) {
     
     # Add a date column to gid data to make life easier.
     gid_dates <- gid_date(game_ids) %>% mutate(gid = as.character(gid))
-    
     last_date <- as.Date(tail(gid_dates$date_dt, 1))
     first_date <- as.Date(head(gid_dates$date_dt, 1))
     
@@ -50,22 +50,20 @@ make_gids <- function(start=NULL, end=NULL, league="mlb", cluster=NULL, ...) {
             select(url) %>% as.list()
     }
     
-    
     # If we have some at the start internally, but are missing end, grab the gids we have and format and grab anything missing.
-    if(end > last_date){
+    # 
+    # 
+    # 
+    # If we have no internal gids, the start date is greater than the last date in the internal data.
+    if(start > last_date){
         # Find gap between the last_date in the gids and the date the user input.
-        gaplist <- seq(as.Date(last_date), as.Date(end), by = "day")
+        gaplist <- seq(as.Date(start), as.Date(end), by = "day")
         gapdates <- paste0("year_", format(gaplist, "%Y"), "/month_",
                         format(gaplist, "%m"), "/day_", format(gaplist, "%d"))
         
-        #### The workflow breaks here. Need to combine the try_gids and validate_gis funcs maybe????
-        
-        # Veryify those gids were games played.
+        # Veryify those gids were games played. If played, scrape the miniscoreboard for that day so we can extract game_id.
         # This piece takes a while. It has to tryCatch every url.
         gapgids <- validate_gids(gapdates, cluster = cluster)
-        
-        # Scrape gids from miniscorboards on those dates.
-        #trygids <- try_gids(gapgids, cluster = cluster)
         
         # Get the other gids not in the end window.
         startgids <- filter(gid_dates, date_dt >= as.Date(start) & date_dt <= as.Date(last_date)) %>%
@@ -78,11 +76,10 @@ make_gids <- function(start=NULL, end=NULL, league="mlb", cluster=NULL, ...) {
                                     str_sub(startgids$gid, 10, 11), "/", "day_", str_sub(startgids$gid, 13, 14), 
                                     "/", startgids$gid)
         
-        startgids <- select(startgids, url) %>% as.list()
+        startgids <- select(startgids, url)
         }
         
-        final_gids <- c(startgids, gapgids)
-        
+        final_gids <- c(startgids$gid, gapgids)
     }
     return(final_gids)
 }

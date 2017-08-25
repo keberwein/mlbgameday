@@ -13,6 +13,8 @@
 
 
 validate_gids <- function(gidslist=NULL, league="mlb", cluster=NULL, ...) {
+    # Rename leauge because it conflicts with some downloaded xml values.
+    lg <- league
     # Create an emply list to hold the results of the loop.
     gidslist_dt=i=str_length=NULL
     root <- "http://gd2.mlb.com/components/game/"
@@ -26,34 +28,23 @@ validate_gids <- function(gidslist=NULL, league="mlb", cluster=NULL, ...) {
     minilist <- gidslist_dt$link %>% purrr::map_chr(~ paste0(., "/miniscoreboard.xml")) %>% 
         purrr::map(~ structure(., class = "mini"))
     
-    # Use foreach if parallel, otherwise use purrr::map.
-    #invalid=NULL
-    #ifelse(!is.null(cluster),
-    #       invalid <- foreach::foreach(i = 1:length(minilist)) %dopar% {
-    #           if(!isTRUE(tidygameday::urlTrue(minilist[i]))){
-    #               invalid[i] <- minilist[i]
-    #           }
-    #       },
-    #       invalid <- purrr::map(minilist, function(i){
-    #           if(!isTRUE(tidygameday::urlTrue(i))){
-    #               output <- i
-    #           }
-    #       }))
-    
     # Do a tryCatch along the dates. If the url exists, get the payload from miniscorboard.
     games=NULL
     ifelse(!is.null(cluster),
            games <- foreach::foreach(i = 1:length(minilist)) %dopar% {
-               if(isTRUE(tidygameday::urlTrue(minilist[[i]]))){
-                   payload(minilist[[i]])
-               }
+                tryCatch(payload(minilist[[i]]), error=function(e) NULL)
            },
            games <- purrr::map(minilist, function(i){
-               if(isTRUE(tidygameday::urlTrue(i))){
-                   minilist(i)
-               }
-               
+                tryCatch(payload(i), error=function(e) NULL)
            }))
+    
+    gidz <- dplyr::bind_rows(games) %>%
+        dplyr::mutate(url = paste0(root, lg, "/", "year_", str_sub(gameday_link, 1, 4), "/", "month_",
+                                                str_sub(gameday_link, 6, 7), "/", "day_", str_sub(gameday_link, 9, 10), 
+                                                "/gid_", gameday_link)) %>% 
+        select(url)
+    # Needs to be a list so payload will read it correct
+    gidz <- gidz$url %>% as.list
     
     return(gidz)
 }
