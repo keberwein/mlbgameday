@@ -7,6 +7,7 @@
 #' @importFrom purrr map
 #' @importFrom stringr str_sub str_replace_all
 #' @importFrom dplyr mutate filter
+#' @importFrom utils data head tail
 #' @import foreach
 #' @export
 #' @examples
@@ -16,15 +17,8 @@
 #' 
 
 make_gids <- function(start=NULL, end=NULL, league="mlb", cluster=NULL, ...) {
-    start <- as.Date(as.character(start)); end <- as.Date(end); league <- tolower(league)
-    if(start < as.Date("2008-01-01")){
-        stop(warning("Please select a later start date. The data are not dependable prior to 2008."))
-    }
-    if(end >= Sys.Date()-1){
-        stop(warning("Please select an earlier end date."))
-    }
     root <- paste0("http://gd2.mlb.com/components/game/", league, "/")
-    
+
     #Format dates
     dateslist <- seq(as.Date(start), as.Date(end), by = "day")
     dates <- paste0("year_", format(dateslist, "%Y"), "/month_",
@@ -35,27 +29,34 @@ make_gids <- function(start=NULL, end=NULL, league="mlb", cluster=NULL, ...) {
     data(game_ids, package = "tidygameday", envir = gidenv)
     
     # Add a date column to gid data to make life easier.
-    gid_dates <- gid_date(game_ids) %>% mutate(gid = as.character(gid))
+    gid_dates <- gid_date(game_ids) %>% dplyr::mutate(gid = as.character(gid))
     last_date <- as.Date(tail(gid_dates$date_dt, 1))
     first_date <- as.Date(head(gid_dates$date_dt, 1))
     
-    
-    # This is probably 1000% broken.
     # If we've got the whole range of gids internally, just grab them and format.
     if(start >= first_date & end <= last_date){
-        final_gids <- dplyr::filter(gid_dates, date_dt >= as.Date(start) & date_dt <= as.Date(last_date)) %>%
-            dplyr::mutate(url = paste0("http://gd2.mlb.com/components/game/", league, "/", 
-                                       "year_", format(date_dt, "%Y"), "/month_",
-                                       format(date_dt, "%m"), "/day_", format(date_dt, "%d"), "/", gid)) %>% 
-            select(url) %>% as.list()
+        final_gids <- dplyr::filter(gid_dates, date_dt >= as.Date(start) & date_dt <= as.Date(end))
+        final_gids$url <- paste0(root, "/year_", stringr::str_sub(final_gids$date_dt, 1, 4), "/month_",
+                                 stringr::str_sub(final_gids$date_dt, 6,7), "/day_", 
+                                 stringr::str_sub(final_gids$date_dt, 9, 10),
+                                 "/", final_gids$gid)
+        final_gids <- final_gids$url %>% as.list()
+    }
+    
+    # If we have no internal gids, the start date is greater than the last date in the internal data.
+    if(start > last_date){
+        # Find gap between the last_date in the gids and the date the user input.
+        newgidz <- seq(as.Date(start), as.Date(end), by = "day")
+        newdates <- paste0("year_", format(newgidz, "%Y"), "/month_",
+                           format(newgidz, "%m"), "/day_", format(newgidz, "%d"))
+        
+        # Scrape the miniscoreboard for that day so we can extract game_id.
+        # This piece takes a while. It has to tryCatch every url.
+        final_gids <- validate_gids(newdates, cluster = cluster)
     }
     
     # If we have some at the start internally, but are missing end, grab the gids we have and format and grab anything missing.
-    # 
-    # 
-    # 
-    # If we have no internal gids, the start date is greater than the last date in the internal data.
-    if(start > last_date){
+    if(start < last_date & end > last_date){
         # Find gap between the last_date in the gids and the date the user input.
         gaplist <- seq(as.Date(start), as.Date(end), by = "day")
         gapdates <- paste0("year_", format(gaplist, "%Y"), "/month_",
@@ -64,44 +65,21 @@ make_gids <- function(start=NULL, end=NULL, league="mlb", cluster=NULL, ...) {
         # Veryify those gids were games played. If played, scrape the miniscoreboard for that day so we can extract game_id.
         # This piece takes a while. It has to tryCatch every url.
         gapgids <- validate_gids(gapdates, cluster = cluster)
-        
+
         # Get the other gids not in the end window.
         startgids <- filter(gid_dates, date_dt >= as.Date(start) & date_dt <= as.Date(last_date)) %>%
             mutate(gid = as.character(gid), date_dt = as.Date(date_dt))
-        
-        # If users start date is before the last_date in the gids, get thsoe gids to combine with the
-        # gapgids. Otherwise the startgids df will be empty, which is fine.
-        if(start < last_date){
+            
         startgids$url <- paste0(root, league, "/", "year", str_sub(startgids$gid, 4, 8), "/", "month_",
-                                    str_sub(startgids$gid, 10, 11), "/", "day_", str_sub(startgids$gid, 13, 14), 
-                                    "/", startgids$gid)
+                                str_sub(startgids$gid, 10, 11), "/", "day_", str_sub(startgids$gid, 13, 14), 
+                                "/", startgids$gid)
         
         startgids <- select(startgids, url)
-        }
         
         final_gids <- c(startgids$gid, gapgids)
     }
-    return(final_gids)
+    
+    made_gids <- game_urls(final_gids)
+    
+    return(made_gids)
 }
-
-
-
-#' Internal function to add a column of dates to a list of gids.
-#' @param gidlist A list from the internal data set \code{game_id}
-#' @param ... additional arguments.
-#' @importFrom dplyr rename
-#' @importFrom stringr str_replace str_sub
-#' @keywords internal
-#' @export
-
-
-gid_date <- function(gidlist=NULL, ...){
-    gidlist <- as.data.frame(gidlist)
-    gidlist <- rename(gidlist, gid = gidlist)
-    gidlist$date_dt <- stringr::str_sub(gidlist$gid, 5, 14) %>% stringr::str_replace_all("_", "-")
-    return(gidlist)
-}
-
-
-
-

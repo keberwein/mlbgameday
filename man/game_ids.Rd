@@ -3,13 +3,16 @@
 \docType{data}
 \name{game_ids}
 \alias{game_ids}
-\title{MLB Gameday IDs}
-\format{A data frame with two columns}
+\title{Internal dataset containing MLB Gameday IDs.}
+\format{An object of class \code{NULL} of length 0.}
 \usage{
-game_ids
+data(game_ids)
 }
 \description{
-A data frame with most available gids and the date at which they were played.
+A character set with most available gids and the date at which they were played.
 Note they are ordered from oldest game to newest game.
 }
-\keyword{datasets}
+\note{
+last updated 2017-08-23
+}
+\keyword{internal}

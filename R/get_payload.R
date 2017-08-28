@@ -1,5 +1,6 @@
 #' Return data from a payload object.
 #' @param obj An object created from a obj link
+#' @param node The xml node to be scraped
 #' @param ... additional arguments
 #' @export
 #' @examples
@@ -192,11 +193,15 @@ payload.game <- function(obj, ...) {
 }
 
 #' Get Gameday data from MLBAM.
-#' @param url currently a url.
+#' @param start A start date passed as a character in ISO 8601 format. \code{"2017-05-01"}
+#' @param end An end date passed as a character in ISO 8601 format. \code{"2017-09-01"}
+#' @param league The leauge to gather gids for. The default is \code{"mlb"}. Other options include \code{"aaa"} and \code{"aa"}
+#' @param dataset The dataset to be scraped. The default is "inning_all." Other options include, "inning_hit", "players",
 #' @param cluster A named parallel cluster produced by the \code{doParallel} package.
 #' @param ... additional arguments
 #' @importFrom stringr str_extract
 #' @importFrom dplyr bind_rows
+#' @importFrom stats setNames
 #' @import foreach
 #' @export
 #' @examples
@@ -204,21 +209,31 @@ payload.game <- function(obj, ...) {
 #' df <- get_payload(url)
 #' }
 #' 
-get_payload <- function(url, cluster=NULL, ...) {
+get_payload <- function(start=NULL, end=NULL, league="mlb", dataset = "inning_all", cluster=NULL, ...) {
+    start <- as.Date(as.character(start)); end <- as.Date(end); league <- tolower(league)
+    if(start < as.Date("2008-01-01")){
+        stop("Please select a later start date. The data are not dependable prior to 2008.")
+    }
+    if(end >= Sys.Date()) stop("Please select an earlier end date.")
+    
+    if(start > end) stop("Your start date appears to occur after your end date.")
+    
+    urlz <- make_gids(start = start, end = end, cluster = cluster)
     
     atbat <- list(); action <- list(); pitch <- list(); runner <- list(); po <- list()
     lnames <- list(atbat=atbat, action=action, pitch=pitch, runner=runner, po=po)
-
-    out <- foreach::foreach(i = seq_along(url), .combine="comb", .multicombine=T,
-                            .final = function(x) setNames(x, names(lnames)),
+    
+    out <- foreach::foreach(i = length(urlz), .combine="comb", .multicombine=T, .inorder=FALSE,
+                            .final = function(x) stats::setNames(x, names(lnames)),
                             .init=list(list(), list(), list(), list(), list())) %dopar% {
                                 list(                        
-                                    atbat <- tryCatch(payload(url[[i]], node="atbat"), error=function(e) NULL),
-                                    action <- tryCatch(payload(url[[i]], node="action"), error=function(e) NULL),
-                                    pitch <- tryCatch(payload(url[[i]], node="pitch"), error=function(e) NULL),
-                                    runner <- tryCatch(payload(url[[i]], node="runner"), error=function(e) NULL),
-                                    po <- tryCatch(payload(url[[i]], node="po"), error=function(e) NULL))
+                                    atbat <- tryCatch(payload(urlz[[i]], node="atbat"), error=function(e) NULL),
+                                    action <- tryCatch(payload(urlz[[i]], node="action"), error=function(e) NULL),
+                                    pitch <- tryCatch(payload(urlz[[i]], node="pitch"), error=function(e) NULL),
+                                    runner <- tryCatch(payload(urlz[[i]], node="runner"), error=function(e) NULL),
+                                    po <- tryCatch(payload(urlz[[i]], node="po"), error=function(e) NULL))
                             }
+    
     # The foreach loop returns a named list of nested data frames. We need to bind the dfs under 
     # each name and pack the binded dfs back into a list that can be returned.
     atbat <- dplyr::bind_rows(out$atbat)

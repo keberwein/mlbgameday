@@ -31,6 +31,8 @@ payload(obj, ...)
 \item{obj}{An object created from a obj link}
 
 \item{...}{additional arguments}
+
+\item{node}{The xml node to be scraped}
 }
 \description{
 Return data from a payload object.

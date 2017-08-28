@@ -11,7 +11,7 @@ validate_gids(gidslist = NULL, league = "mlb", cluster = NULL, ...)
 
 \item{league}{The leauge to gather gids for. The default is \code{"mlb"}. Other options include \code{"aaa"} and \code{"aa"}.}
 
-\item{cluster}{name of the cluster if one exists.}
+\item{cluster}{A named parallel cluster produced by the \code{doParallel} package.}
 
 \item{...}{additional arguments}
 }

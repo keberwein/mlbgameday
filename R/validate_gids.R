@@ -1,16 +1,15 @@
 #' Internal function to validate gids produced by try_gids.
 #' @param gidslist a list of gids.
-#' @param cluster name of the cluster if one exists.
+#' @param cluster A named parallel cluster produced by the \code{doParallel} package.
 #' @param league The leauge to gather gids for. The default is \code{"mlb"}. Other options include \code{"aaa"} and \code{"aa"}.
 #' @param ... additional arguments
 #' @import foreach
 #' @importFrom purrr map map_chr
 #' @importFrom stringr str_sub str_length
-#' @importFrom dplyr setdiff rename
+#' @importFrom dplyr setdiff rename select
 #' @import foreach
 #' @keywords internal
 #' @export
-
 
 validate_gids <- function(gidslist=NULL, league="mlb", cluster=NULL, ...) {
     # Rename leauge because it conflicts with some downloaded xml values.

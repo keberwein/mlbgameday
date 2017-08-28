@@ -4,12 +4,13 @@
 \alias{game_urls}
 \title{Create urls from game_ids.}
 \usage{
-game_urls(url_gids = NULL, cluster = NULL)
+game_urls(url_gids = NULL, dataset = "inning_all", ...)
 }
 \arguments{
 \item{url_gids}{A list of gid urls formatted by the \code{make_gids()} function.}
 
-\item{cluster}{A named parallel cluster produced by the \code{doParallel} package.}
+\item{dataset}{The dataset to be scraped. The default is "inning_all." Other options include, "inning_hit", "players",
+"game", and "game_events".}
 
 \item{...}{additional arguments}
 }
