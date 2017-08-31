@@ -1,79 +1,95 @@
-#' Create urls from game_ids.
-#' @param game_id A single \code{game_id} or a list of game_ids.
-#' @param cluster A named parallel cluster produced by the \code{doParallel} package.
-#' @param ... additional arguments
-#' @importFrom stringr str_sub str_length
-#' @importFrom purrr map_chr
-#' @importFrom dplyr setdiff
-#' @import foreach
-#' @export
-#' @examples
-#' \dontrun{
-#' urls <- gameid2url(gids)
-#' }
-#' 
+file <- xml2::read_xml("http://gd2.mlb.com/components/game/mlb/year_2016/month_09/day_29/gid_2016_09_29_bosmlb_nyamlb_1/inning/inning_all.xml")
+inning <- xml2::xml_find_all(file, "//inning")
 
-# Create urls based on game_ids
-game_urls <- function(game_id=NULL, cluster=NULL) {
-    # Create an emply list to hold the results of the loop.
-    datalist=i=str_length=NULL
-    root <- "http://gd2.mlb.com/components/game/"
-    # Loop through gids and convert them to urls.
-    datalist <- purrr::map_chr(game_id, function(i){
-        output <- paste0(root, stringr::str_sub(i, -5, -3), "/year_", stringr::str_sub(i, 5, 8), "/month_", 
-                         stringr::str_sub(i, 10, 11), "/day_", stringr::str_sub(i, 13, 14), "/", i)
-    })
-    
-    # Use miniscorboard to validate urls.
-    # If there are more than 1000 gids, use a parallel loop.
-    minilist <- datalist %>% purrr::map_chr(~ paste0(., "/miniscoreboard.xml"))
-    
-    # Use foreach if parallel, otherwise use purrr::map.
-    invalid=NULL
-    ifelse(!is.null(cluster),
-           invalid <- foreach::foreach(i = 1:length(minilist)) %dopar% {
-               if(!isTRUE(tidygameday::urlTrue(minilist[i]))){
-                   invalid[i] <- minilist[i]
-               }
-           },
-           invalid <- purrr::map(minilist, function(i){
-               if(!isTRUE(tidygameday::urlTrue(i))){
-                   output <- i
-               }
-           }))
-    
-    # strip out nulls nulls.
-    invalid <- Filter(Negate(is.null), invalid) %>% as.character()
-    
-    # Subset games not played out of minilist and out of base gids.
-    minilist %<>% dplyr::setdiff(invalid)
-    datalist %<>% dplyr::setdiff(stringr::str_sub(invalid, 1, stringr::str_length(invalid)-19))
-    
-    # Append suffix to base URLs. There is probbaly a more elegant way to do this, but this works for now...
-    # Should try to use map2() here.
-    # This whole thing could be one map2() loop with if() statements...maybe.
-    # Make final urls and assign the correct classes.
-    inningsalllist <- datalist %>% purrr::map(~ paste0(., "/inning/inning_all.xml")) %>%
-        purrr::map(~ structure(., class = "inning_all"))
-    
-    #inningshitlist <- datalist %>% purrr::map_chr(~ paste0(., "/inning/inning_hit.xml")) %>%
-    #    purrr::map(~ structure(., class = "inning_hit"))
-    
-    #playerslist <- datalist %>% purrr::map_chr(~ paste0(., "/players.xml")) %>%
-    #    purrr::map(~ structure(., class = "players"))
-    
-    #gameslist <- datalist %>% purrr::map_chr(~ paste0(., "/game.xml")) %>%
-    #    purrr::map(~ structure(., class = "game"))
-    
-    #gameeventslist <- datalist %>% purrr::map_chr(~ paste0(., "/game_events.xml")) %>%
-    #    purrr::map(~ structure(., class = "game_events"))
-    
-    #gidz <- c(inningsalllist, inningshitlist, minilist, playerslist, gameslist, gameeventslist)
-    
-    gidz <- inningsalllist
-    
-    
-    return(gidz)
+y = xml2::xml_find_all(inning, "./top/atbat/pitch")
+
+y = xml2::xml_find_all(inning, "./top/action")
+
+x = inning
+
+node_dat <- c(xml2::xml_find_all(inning, "./top/atbat/pitch"), xml2::xml_find_all(inning, "./top/atbat"))
+
+### Everything works except pitch, which is the biggest table. Possibly due to pitches with no inning???
+### Try a couple normal loops to see if that speeds things up. Running about same as pitchRx in parallel
+
+df <- dplyr::bind_rows(purrr::map(inning, function(x) {
+    node_dat <- c(xml2::xml_find_all(inning, "./top/atbat/pitch"), xml2::xml_find_all(inning, "./bottom/atbat/pitch"))
+    sub_dat <- dplyr::bind_rows(purrr::map(node_dat, function(y) {
+        data.frame(t(xml2::xml_attrs(y)), stringsAsFactors=FALSE)
+    }))
+}))
+
+df <- dplyr::bind_rows(purrr::map(inning, function(x) {
+    node_dat <- c(xml2::xml_find_all(x, "./top/atbat/pitch"), xml2::xml_find_all(x, "./bottom/atbat/pitch"))
+    sub_dat <- dplyr::bind_rows(purrr::map(node_dat, function(y) {
+        data.frame(t(xml2::xml_attrs(y)), stringsAsFactors=FALSE) %>% 
+            dplyr::mutate(inning = xml2::xml_attr(x, "num"), next_ = xml2::xml_attr(x, "next"),
+                         inning_side = xml_name(xml_parent(xml_parent(y))))
+    }))
+}))
+
+
+if(node=="action"){
+    # action table
+    df <- dplyr::bind_rows(purrr::map(inning, function(x) {
+        node_dat <- c(xml2::xml_find_all(x, "./top/action"), xml2::xml_find_all(x, "./bottom/action"))
+        sub_dat <- dplyr::bind_rows(purrr::map(node_dat, function(y) {
+            data.frame(t(xml2::xml_attrs(y)), stringsAsFactors=FALSE) %>% 
+                dplyr::mutate(inning = xml2::xml_attr(x, "num"), next_ = xml2::xml_attr(x, "next"),
+                              inning_side = xml2::xml_name(xml2::xml_parent(y)))
+        }))
+    }))
+}
+
+if(node=="pitch"){
+    # action table
+    tpit <- dplyr::bind_rows(purrr::map(inning, function(x) {
+        node_dat <- xml2::xml_find_all(x, "./top/atbat/pitch")
+        sub_dat <- dplyr::bind_rows(purrr::map(node_dat, function(y) {
+            data.frame(t(xml2::xml_attrs(y)), stringsAsFactors=FALSE)
+        }))
+    }))
+    bpit <- dplyr::bind_rows(purrr::map(inning, function(x) {
+        node_dat <- xml_find_all(x, "./bottom/atbat/pitch")
+        sub_dat <- dplyr::bind_rows(purrr::map(node_dat, function(y) {
+            data.frame(t(xml2::xml_attrs(y)), stringsAsFactors=FALSE)
+        }))
+    }))
+    df <- dplyr::bind_rows(tpit, bpit)
+}
+
+if(node=="runner"){
+    # action table
+    trun <- dplyr::bind_rows(purrr::map(inning, function(x) {
+        node_dat <- xml2::xml_find_all(x, "./top/atbat/runner")
+        sub_dat <- dplyr::bind_rows(purrr::map(node_dat, function(y) {
+            data.frame(t(xml2::xml_attrs(y)), stringsAsFactors=FALSE)
+        }))
+    }))
+    brun <- dplyr::bind_rows(purrr::map(inning, function(x) {
+        node_dat <- xml_find_all(x, "./bottom/atbat/runner")
+        sub_dat <- dplyr::bind_rows(purrr::map(node_dat, function(y) {
+            data.frame(t(xml2::xml_attrs(y)), stringsAsFactors=FALSE)
+        }))
+    }))
+    df <- dplyr::bind_rows(trun, brun)
+}
+
+if(node=="po"){
+    # action table
+    tpo <- dplyr::bind_rows(purrr::map(inning, function(x) {
+        node_dat <- xml2::xml_find_all(x, "./top/atbat/po")
+        sub_dat <- dplyr::bind_rows(purrr::map(node_dat, function(y) {
+            data.frame(t(xml2::xml_attrs(y)), stringsAsFactors=FALSE)
+        }))
+    }))
+    bpo <- dplyr::bind_rows(purrr::map(inning, function(x) {
+        node_dat <- xml_find_all(x, "./bottom/atbat/po")
+        sub_dat <- dplyr::bind_rows(purrr::map(node_dat, function(y) {
+            data.frame(t(xml2::xml_attrs(y)), stringsAsFactors=FALSE)
+        }))
+    }))
+    df <- dplyr::bind_rows(tpo, bpo)
 }
 
 
@@ -83,28 +99,3 @@ game_urls <- function(game_id=NULL, cluster=NULL) {
 
 
 
-
-
-payload.inning_all <- function(obj, node, ...) {
-    # Grab all the xml nodes we need.
-    file <- try(read_xml(obj[[1]]), silent = T)
-    top <- try(xml_find_all(file, "//top"), silent = T)
-    bot <- try(xml_find_all(file, "//bottom"), silent = T)
-    ab <- try(xml_find_all(file, "//atbat"), silent = T)
-    # Loop over nodes. There need to be different loops for top and bottom of inning, due to the xml nesting.
-    # Get atbat table.
-    if(node=="atbat"){
-        top <- bind_rows(map(top, function(x) {
-            node_dat <- try(xml_find_all(x, "./atbat"), silent = T)
-            sub_dat <- try(bind_rows(map(node_dat, function(y) {
-                data.frame(t(try(xml_attrs(y), silent = T)), stringsAsFactors=FALSE)
-            })), silent = T)
-        }))
-        bot <- bind_rows(map(bot, function(x) {
-            node_dat <- try(xml_find_all(x, "./atbat"), silent = T)
-            sub_dat <- try(bind_rows(map(node_dat, function(y) {
-                data.frame(try(t(xml_attrs(y)), silent = T), stringsAsFactors=FALSE)
-            })), silent = T)
-        }))
-        df <- bind_rows(top, bot)
-    }

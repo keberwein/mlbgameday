@@ -1,6 +1,16 @@
 ## Need to validate all internal gids...season by season, will take a while.
 
+## I can try the join on action in the local database.
 ## Get inning_all formated like pitchRx.
+## add date
+## add gameday_link from action table
+## add batter_name from internal database?
+## add pitcher_name from internal database?
+## add next_ 
+## add inning
+## add url 
+## rename des to atbat_des
+## rename atbat_des_es
 
 ## Test other data sets. Will have to write if statement in get_payload.
 

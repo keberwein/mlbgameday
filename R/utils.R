@@ -53,6 +53,7 @@ comb <- function(x, ...) {
            function(i) c(x[[i]], purrr::map(list(...), function(y) y[[i]])))
 }
 
+
 #' Internal function to add a column of dates to a list of gids.
 #' @param gidlist A list from the internal data set \code{game_id}
 #' @param ... additional arguments.
