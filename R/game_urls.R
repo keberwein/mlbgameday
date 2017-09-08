@@ -20,24 +20,19 @@ game_urls <- function(url_gids=NULL, dataset = "inning_all", ...) {
     if(length(dataset) > 1) stop("Please specify a single data set. Due to conflicting table names, scrapes are limieted to a single set.")
     
     if(dataset=="inning_all"){
-        glist <- url_gids %>% purrr::map(~ paste0(., "/inning/inning_all.xml")) %>%
-            purrr::map(~ structure(., class = "inning_all"))
+        glist <- url_gids %>% purrr::map(~ paste0(., "/inning/inning_all.xml"))
     }
     if(dataset=="inning_hit"){
-        glist <- datalist %>% purrr::map_chr(~ paste0(., "/inning/inning_hit.xml")) %>%
-            purrr::map(~ structure(., class = "inning_hit"))
+        glist <- datalist %>% purrr::map_chr(~ paste0(., "/inning/inning_hit.xml"))
     }
     if(dataset=="players"){
-        glist <- datalist %>% purrr::map_chr(~ paste0(., "/players.xml")) %>%
-            purrr::map(~ structure(., class = "players"))
+        glist <- datalist %>% purrr::map_chr(~ paste0(., "/players.xml"))
     }
     if(dataset=="game"){
-        glist <- datalist %>% purrr::map_chr(~ paste0(., "/game.xml")) %>%
-            purrr::map(~ structure(., class = "game"))
+        glist <- datalist %>% purrr::map_chr(~ paste0(., "/game.xml"))
     }
     if(dataset=="game_events"){
-        glist <- datalist %>% purrr::map_chr(~ paste0(., "/game_events.xml")) %>%
-            purrr::map(~ structure(., class = "game_events"))
+        glist <- datalist %>% purrr::map_chr(~ paste0(., "/game_events.xml"))
     }
     return(glist)
 }

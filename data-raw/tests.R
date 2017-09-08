@@ -49,19 +49,25 @@ rm(cl)
 
 library(doParallel); library(foreach); library(dplyr); library(purrr); library(stringr); library(xml2); library(magrittr)
 
-# Full season in parallel =  17 minues. Took pitchRx took 30 min. full gids w DB con.
-# Full season in parallel = 24 minutes current. Faster than PitchRx but still sux.
+# Full season in parallel =  8.3 minues. Took pitchRx took 30 min. full gids w DB con.
 # Full season no parallel =
 urlz=make_gids(start = "2016-10-01", end = "2016-10-02", cluster = NULL)
 
 start=Sys.time() ; print(start)
-zzz= tidygameday::get_payload(start = "2016-10-01", end = "2016-10-02", cluster = "cl")
+zzz= tidygameday::get_payload(start = "2016-10-01", end = "2016-10-02", cluster = NULL)
 end=Sys.time()
 runtime = end - start
 runtime
 
+#pitchrx: 27 sec
+#lapply: 32 seconds.
+#purrr: 31.7
+#data.table not an upgrade.
+#removing trycatch not an upgrade.
+#Removing if statement on trycatch not an upgrade.
+# Try different purrr map functions maybe, map_chr???
 
-start=Sys.time() ; print(start) #7.34 minutes
+start=Sys.time() ; print(start)
 #scrape(start = "2016-04-03", end = "2016-10-02", connect = con)
 prx <- pitchRx::scrape(start = "2016-10-01", end = "2016-10-02")
 end = Sys.time()

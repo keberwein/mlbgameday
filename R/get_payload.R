@@ -1,198 +1,3 @@
-#' Return data from a payload object.
-#' @param obj An object created from a obj link
-#' @param node The xml node to be scraped
-#' @param ... additional arguments
-#' @export
-#' @examples
-#' \dontrun{
-#' df <- payload(obj)}
-#' 
-
-payload <- function(obj, ...) UseMethod("payload", obj)
-
-#' @rdname payload
-#' @method payload default
-#' @export
-payload.default <- function(obj, ...) {
-    warning("Please specify a valid MLBAM URL.")
-}
-
-#' @rdname payload
-#' @import xml2
-#' @importFrom dplyr bind_rows
-#' @importFrom purrr map
-#' @method payload player
-#' @export
-
-payload.player <- function(obj, ...) {
-    file <- read_xml(obj[1])
-    xmldat <- xml_find_all(file, "//team")
-    dat <- bind_rows(map(xmldat, function(x) {
-        node_dat <- xml_find_all(x, "./player")
-        sub_dat <- bind_rows(map(node_dat, function(y) {
-            data.frame(t(xml_attrs(y)), stringsAsFactors=FALSE)
-        }))
-    }))
-}
-
-#' @rdname payload
-#' @import xml2
-#' @importFrom dplyr bind_rows mutate rename
-#' @importFrom purrr map
-#' @method payload inning_all
-#' @export
-
-payload.inning_all <- function(obj, node, ...) {
-    # Grab all the xml nodes we need.
-    file <- xml2::read_xml(obj[[1]])
-    inning <- xml2::xml_find_all(file, "//inning")
-    # Loop over nodes. There need to be different loops for top and bottom of inning, due to the xml nesting.
-    # Get atbat table.
-    if(node=="atbat"){
-        df <- dplyr::bind_rows(purrr::map(inning, function(x) {
-            node_dat <- c(xml2::xml_find_all(x, "./top/atbat"), xml2::xml_find_all(x, "./bottom/atbat"))
-            sub_dat <- dplyr::bind_rows(purrr::map(node_dat, function(y) {
-                data.frame(t(xml2::xml_attrs(y)), stringsAsFactors=FALSE) %>% 
-                    dplyr::mutate(inning = xml2::xml_attr(x, "num"), next_ = xml2::xml_attr(x, "next"),
-                                  inning_side = xml2::xml_name(xml2::xml_parent(y)))
-            }))
-        }))
-    }
-    
-    if(node=="action"){
-        # action table
-        df <- dplyr::bind_rows(purrr::map(inning, function(x) {
-            node_dat <- c(xml2::xml_find_all(x, "./top/action"), xml2::xml_find_all(x, "./bottom/action"))
-            sub_dat <- dplyr::bind_rows(purrr::map(node_dat, function(y) {
-                data.frame(t(xml2::xml_attrs(y)), stringsAsFactors=FALSE) %>% 
-                    dplyr::mutate(inning = xml2::xml_attr(x, "num"), next_ = xml2::xml_attr(x, "next"),
-                                  inning_side = xml2::xml_name(xml2::xml_parent(y)))
-            }))
-        }))
-    }
-    
-    if(node=="pitch"){
-        # action table
-        tpit <- dplyr::bind_rows(purrr::map(inning, function(x) {
-            node_dat <- xml2::xml_find_all(x, "./top/atbat/pitch")
-            sub_dat <- dplyr::bind_rows(purrr::map(node_dat, function(y) {
-                data.frame(t(xml2::xml_attrs(y)), stringsAsFactors=FALSE)
-            }))
-        }))
-        bpit <- dplyr::bind_rows(purrr::map(inning, function(x) {
-            node_dat <- xml_find_all(x, "./bottom/atbat/pitch")
-            sub_dat <- dplyr::bind_rows(purrr::map(node_dat, function(y) {
-                data.frame(t(xml2::xml_attrs(y)), stringsAsFactors=FALSE)
-            }))
-        }))
-        df <- dplyr::bind_rows(tpit, bpit)
-    }
-    
-    if(node=="runner"){
-        # runner table
-        df <- dplyr::bind_rows(purrr::map(inning, function(x) {
-            node_dat <- c(xml2::xml_find_all(x, "./top/atbat/runner"), xml2::xml_find_all(x, "./bottom/atbat/runner"))
-            sub_dat <- dplyr::bind_rows(purrr::map(node_dat, function(y) {
-                data.frame(t(xml2::xml_attrs(y)), stringsAsFactors=FALSE) %>% 
-                    dplyr::mutate(inning = xml2::xml_attr(x, "num"), next_ = xml2::xml_attr(x, "next"),
-                                  inning_side = xml_name(xml_parent(xml_parent(y))))
-            }))
-        }))
-    }
-    
-    if(node=="po"){
-        # po table
-        df <- dplyr::bind_rows(purrr::map(inning, function(x) {
-            node_dat <- c(xml2::xml_find_all(x, "./top/atbat/po"), xml2::xml_find_all(x, "./bottom/atbat/po"))
-            sub_dat <- dplyr::bind_rows(purrr::map(node_dat, function(y) {
-                data.frame(t(xml2::xml_attrs(y)), stringsAsFactors=FALSE) %>% 
-                    dplyr::mutate(inning = xml2::xml_attr(x, "num"), next_ = xml2::xml_attr(x, "next"),
-                                  inning_side = xml_name(xml_parent(xml_parent(y))))
-            }))
-        }))
-    }
-    return(df)
-}
-
-#' @rdname payload
-#' @import xml2
-#' @importFrom dplyr bind_rows
-#' @importFrom purrr map
-#' @method payload inning_hit
-#' @export
-
-payload.inning_hit <- function(obj, ...) {
-    file <- read_xml(obj[1])
-    xmldat <- xml_find_all(file, "//hitchart")
-    dat <- bind_rows(map(xmldat, function(x) {
-        node_dat <- xml_find_all(x, "./hip")
-        sub_dat <- bind_rows(map(node_dat, function(y) {
-            data.frame(t(xml_attrs(y)), stringsAsFactors=FALSE)
-        }))
-    }))
-}
-
-#' @rdname payload
-#' @import xml2
-#' @importFrom dplyr bind_rows
-#' @importFrom purrr map
-#' @method payload mini
-#' @export
-
-payload.mini <- function(obj, ...) {
-    file <- read_xml(obj[1])
-    xmldat <- xml_find_all(file, "//games")
-    dat <- bind_rows(map(xmldat, function(x) {
-        node_dat <- xml_find_all(x, "./game")
-        sub_dat <- bind_rows(map(node_dat, function(y) {
-            data.frame(t(xml_attrs(y)), stringsAsFactors=FALSE)
-        }))
-    }))
-}
-
-#' @rdname payload
-#' @import xml2
-#' @importFrom dplyr bind_rows
-#' @importFrom purrr map
-#' @method payload game_events
-#' @export
-
-payload.game_events <- function(obj, ...) {
-    file <- read_xml(obj[1])
-    top <- xml_find_all(file, "//top")
-    bot <- xml_find_all(file, "//bottom")
-    top <- bind_rows(map(top, function(x) {
-        pitches <- xml_find_all(x, "./atbat")
-        pitch_dat <- bind_rows(map(pitches, function(y) {
-            data.frame(t(xml_attrs(y)), stringsAsFactors=FALSE)
-        }))
-    }))
-    bot <- bind_rows(map(bot, function(x) {
-        pitches <- xml_find_all(x, "./atbat")
-        pitch_dat <- bind_rows(map(pitches, function(y) {
-            data.frame(t(xml_attrs(y)), stringsAsFactors=FALSE)
-        }))
-    }))
-    dat <- bind_rows(top, bot)
-}
-
-#' @rdname payload
-#' @import xml2
-#' @importFrom dplyr bind_rows
-#' @importFrom purrr map
-#' @method payload game
-#' @export
-
-payload.game <- function(obj, ...) {
-    file <- read_xml(obj[1])
-    xmldat <- xml_find_all(file, "//game")
-    dat <- bind_rows(map(xmldat, function(x) {
-        node_dat <- xml_find_all(x, "./team")
-        sub_dat <- bind_rows(map(node_dat, function(y) {
-            data.frame(t(xml_attrs(y)), stringsAsFactors=FALSE)
-        }))
-    }))
-}
 
 #' Get Gameday data from MLBAM.
 #' @param start A start date passed as a character in ISO 8601 format. \code{"2017-05-01"}
@@ -203,6 +8,7 @@ payload.game <- function(obj, ...) {
 #' @param ... additional arguments
 #' @importFrom stringr str_extract
 #' @importFrom dplyr bind_rows
+#' @importFrom purrr map
 #' @importFrom stats setNames
 #' @import foreach
 #' @export
@@ -219,21 +25,70 @@ get_payload <- function(start=NULL, end=NULL, league="mlb", dataset = "inning_al
     if(end >= Sys.Date()) stop("Please select an earlier end date.")
     
     if(start > end) stop("Your start date appears to occur after your end date.")
-    
+    # Get gids via internal function.
     urlz <- make_gids(start = start, end = end, cluster = cluster)
-    
+    # Make some place-holders for the function.
     atbat <- list(); action <- list(); pitch <- list(); runner <- list(); po <- list()
     lnames <- list(atbat=atbat, action=action, pitch=pitch, runner=runner, po=po)
     
     out <- foreach::foreach(i = seq_along(urlz), .combine="comb", .multicombine=T, .inorder=FALSE,
                             .final = function(x) stats::setNames(x, names(lnames)),
                             .init=list(list(), list(), list(), list(), list())) %dopar% {
-                                list(                        
-                                    atbat <- tryCatch(payload(urlz[[i]], node="atbat"), error=function(e) NULL),
-                                    action <- tryCatch(payload(urlz[[i]], node="action"), error=function(e) NULL),
-                                    pitch <- tryCatch(payload(urlz[[i]], node="pitch"), error=function(e) NULL),
-                                    runner <- tryCatch(payload(urlz[[i]], node="runner"), error=function(e) NULL),
-                                    po <- tryCatch(payload(urlz[[i]], node="po"), error=function(e) NULL))
+                                file <- tryCatch(xml2::read_xml(urlz[[i]]), error=function(e) NULL)
+                                if(!is_null(file)){
+                                    atbat_nodes <- c(xml2::xml_find_all(file, "./inning/top/atbat"), 
+                                                     xml2::xml_find_all(file, "./inning/bottom/atbat")) 
+                                    action_nodes <- c(xml2::xml_find_all(file, "./inning/top/action"), 
+                                                      xml2::xml_find_all(file, "./inning/bottom/actioin")) 
+                                    pitch_nodes <- c(xml2::xml_find_all(file, "./inning/top/atbat/pitch"), 
+                                                     xml2::xml_find_all(file, "./inning/bottom/atbat/pitch")) 
+                                    runner_nodes <- c(xml2::xml_find_all(file, "./inning/top/atbat/runner"), 
+                                                      xml2::xml_find_all(file, "./inning/bottom/atbat/runner")) 
+                                    po_nodes <- c(xml2::xml_find_all(file, "./inning/top/atbat/po"), 
+                                                  xml2::xml_find_all(file, "./inning/bottom/atbat/po"))
+                                    
+                                    list(                        
+                                        atbat <- dplyr::bind_rows(purrr::map(atbat_nodes, function(x) {
+                                            out <- data.frame(t(xml2::xml_attrs(x)), stringsAsFactors=FALSE)
+                                            out$inning <- xml2::xml_parent(xml2::xml_parent(x)) %>% xml2::xml_attr("num")
+                                            out$next_ <- xml2::xml_parent(xml2::xml_parent(x)) %>% xml2::xml_attr("next")
+                                            out$inning_side <- ifelse(xml2::xml_name(xml2::xml_parent(x))=="top", "top", "bottom")
+                                            out
+                                        })),
+                                        
+                                        action <- dplyr::bind_rows(purrr::map(action_nodes, function(x) {
+                                            out <- data.frame(t(xml2::xml_attrs(x)), stringsAsFactors=FALSE)
+                                                out$inning <- xml2::xml_parent(xml2::xml_parent(x)) %>% xml2::xml_attr("num")
+                                                out$next_ <- xml2::xml_parent(xml2::xml_parent(x)) %>% xml2::xml_attr("next")
+                                                out$inning_side <- ifelse(xml2::xml_name(xml2::xml_parent(x))=="top", "top", "bottom")
+                                                out
+                                        })),
+                                        
+                                        pitch <- dplyr::bind_rows(purrr::map(pitch_nodes, function(x) {
+                                            out <- data.frame(t(xml2::xml_attrs(x)), stringsAsFactors=FALSE)
+                                            out$inning <- xml2::xml_parent(xml2::xml_parent(xml2::xml_parent(x))) %>% xml2::xml_attr("num")
+                                            out$next_ <- xml2::xml_parent(xml2::xml_parent(xml2::xml_parent(x))) %>% xml2::xml_attr("next")
+                                            out$inning_side <- ifelse(xml2::xml_name(xml2::xml_parent(xml2::xml_parent(x)))=="top", "top", "bottom")
+                                            out
+                                        })),
+                                        
+                                        runner <- dplyr::bind_rows(purrr::map(runner_nodes, function(x) {
+                                            out <- data.frame(t(xml2::xml_attrs(x)), stringsAsFactors=FALSE)
+                                                out$inning <- xml2::xml_parent(xml2::xml_parent(x)) %>% xml2::xml_attr("num")
+                                                out$next_ <- xml2::xml_parent(xml2::xml_parent(x)) %>% xml2::xml_attr("next")
+                                                out$inning_side <- ifelse(xml2::xml_name(xml2::xml_parent(x))=="top", "top", "bottom")
+                                                out
+                                        })),
+                                        
+                                        po <- dplyr::bind_rows(purrr::map(po_nodes, function(x) {
+                                            out <- data.frame(t(xml2::xml_attrs(x)), stringsAsFactors=FALSE)
+                                                out$inning <- xml2::xml_parent(xml2::xml_parent(x)) %>% xml2::xml_attr("num")
+                                                out$next_ <- xml2::xml_parent(xml2::xml_parent(x)) %>% xml2::xml_attr("next")
+                                                out$inning_side <- ifelse(xml2::xml_name(xml2::xml_parent(x))=="top", "top", "bottom")
+                                                out
+                                        }))
+                                    )
+                                }
                             }
     
     # The foreach loop returns a named list of nested data frames. We need to bind the dfs under 
@@ -243,12 +98,7 @@ get_payload <- function(start=NULL, end=NULL, league="mlb", dataset = "inning_al
     pitch <- dplyr::bind_rows(out$pitch)
     runner <- dplyr::bind_rows(out$runner)
     po <- dplyr::bind_rows(out$po)
-    
     innings_df <- list(atbat=atbat, action=action, pitch=pitch, runner=runner, po=po)
-    
-    # Release uneeded objects from memory and return innings_df.
-    #rm(atbat, action, pitch, runner, po)
-    #gc() # May not need this here. Test to see if R returns memory without gc().
     return(innings_df)
 }
 
