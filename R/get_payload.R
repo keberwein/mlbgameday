@@ -8,7 +8,7 @@
 #' @param ... additional arguments
 #' @importFrom stringr str_extract
 #' @importFrom dplyr bind_rows
-#' @importFrom purrr map
+#' @importFrom purrr map_dfr
 #' @importFrom stats setNames
 #' @import foreach
 #' @export
@@ -48,45 +48,45 @@ get_payload <- function(start=NULL, end=NULL, league="mlb", dataset = "inning_al
                                                   xml2::xml_find_all(file, "./inning/bottom/atbat/po"))
                                     
                                     list(                        
-                                        atbat <- dplyr::bind_rows(purrr::map(atbat_nodes, function(x) {
+                                        atbat <- purrr::map_dfr(atbat_nodes, function(x) {
                                             out <- data.frame(t(xml2::xml_attrs(x)), stringsAsFactors=FALSE)
                                             out$inning <- xml2::xml_parent(xml2::xml_parent(x)) %>% xml2::xml_attr("num")
                                             out$next_ <- xml2::xml_parent(xml2::xml_parent(x)) %>% xml2::xml_attr("next")
                                             out$inning_side <- ifelse(xml2::xml_name(xml2::xml_parent(x))=="top", "top", "bottom")
                                             out
-                                        })),
+                                        }),
                                         
-                                        action <- dplyr::bind_rows(purrr::map(action_nodes, function(x) {
+                                        action <- purrr::map_dfr(action_nodes, function(x) {
                                             out <- data.frame(t(xml2::xml_attrs(x)), stringsAsFactors=FALSE)
                                                 out$inning <- xml2::xml_parent(xml2::xml_parent(x)) %>% xml2::xml_attr("num")
                                                 out$next_ <- xml2::xml_parent(xml2::xml_parent(x)) %>% xml2::xml_attr("next")
                                                 out$inning_side <- ifelse(xml2::xml_name(xml2::xml_parent(x))=="top", "top", "bottom")
                                                 out
-                                        })),
+                                        }),
                                         
-                                        pitch <- dplyr::bind_rows(purrr::map(pitch_nodes, function(x) {
+                                        pitch <- purrr::map_dfr(pitch_nodes, function(x) {
                                             out <- data.frame(t(xml2::xml_attrs(x)), stringsAsFactors=FALSE)
                                             out$inning <- xml2::xml_parent(xml2::xml_parent(xml2::xml_parent(x))) %>% xml2::xml_attr("num")
                                             out$next_ <- xml2::xml_parent(xml2::xml_parent(xml2::xml_parent(x))) %>% xml2::xml_attr("next")
                                             out$inning_side <- ifelse(xml2::xml_name(xml2::xml_parent(xml2::xml_parent(x)))=="top", "top", "bottom")
                                             out
-                                        })),
+                                        }),
                                         
-                                        runner <- dplyr::bind_rows(purrr::map(runner_nodes, function(x) {
+                                        runner <- purrr::map_dfr(runner_nodes, function(x) {
                                             out <- data.frame(t(xml2::xml_attrs(x)), stringsAsFactors=FALSE)
                                                 out$inning <- xml2::xml_parent(xml2::xml_parent(x)) %>% xml2::xml_attr("num")
                                                 out$next_ <- xml2::xml_parent(xml2::xml_parent(x)) %>% xml2::xml_attr("next")
                                                 out$inning_side <- ifelse(xml2::xml_name(xml2::xml_parent(x))=="top", "top", "bottom")
                                                 out
-                                        })),
+                                        }),
                                         
-                                        po <- dplyr::bind_rows(purrr::map(po_nodes, function(x) {
+                                        po <- purrr::map_dfr(po_nodes, function(x) {
                                             out <- data.frame(t(xml2::xml_attrs(x)), stringsAsFactors=FALSE)
                                                 out$inning <- xml2::xml_parent(xml2::xml_parent(x)) %>% xml2::xml_attr("num")
                                                 out$next_ <- xml2::xml_parent(xml2::xml_parent(x)) %>% xml2::xml_attr("next")
                                                 out$inning_side <- ifelse(xml2::xml_name(xml2::xml_parent(x))=="top", "top", "bottom")
                                                 out
-                                        }))
+                                        })
                                     )
                                 }
                             }

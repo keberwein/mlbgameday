@@ -61,7 +61,8 @@ runtime
 
 #pitchrx: 27 sec
 #lapply: 32 seconds.
-#purrr: 31.7
+#purrr map: 30.6
+#purr map_dfr 29.9
 #data.table not an upgrade.
 #removing trycatch not an upgrade.
 #Removing if statement on trycatch not an upgrade.
