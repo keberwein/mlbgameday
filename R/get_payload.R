@@ -27,6 +27,7 @@ get_payload <- function(start=NULL, end=NULL, league="mlb", dataset = "inning_al
     if(start > end) stop("Your start date appears to occur after your end date.")
     # Get gids via internal function.
     urlz <- make_gids(start = start, end = end, cluster = cluster)
+    
     # Make some place-holders for the function.
     atbat <- list(); action <- list(); pitch <- list(); runner <- list(); po <- list()
     lnames <- list(atbat=atbat, action=action, pitch=pitch, runner=runner, po=po)
@@ -35,13 +36,13 @@ get_payload <- function(start=NULL, end=NULL, league="mlb", dataset = "inning_al
                             .final = function(x) stats::setNames(x, names(lnames)),
                             .init=list(list(), list(), list(), list(), list())) %dopar% {
                                 file <- tryCatch(xml2::read_xml(urlz[[i]]), error=function(e) NULL)
-                                if(!is_null(file)){
+                                if(!is.null(file)){
                                     atbat_nodes <- c(xml2::xml_find_all(file, "./inning/top/atbat"), 
                                                      xml2::xml_find_all(file, "./inning/bottom/atbat")) 
                                     action_nodes <- c(xml2::xml_find_all(file, "./inning/top/action"), 
                                                       xml2::xml_find_all(file, "./inning/bottom/actioin")) 
-                                    pitch_nodes <- c(xml2::xml_find_all(file, "./inning/top/atbat/pitch"), 
-                                                     xml2::xml_find_all(file, "./inning/bottom/atbat/pitch")) 
+                                    pitch_nodes <- c(xml2::xml_find_all(file, "./inning/top/atbat/pitch"),
+                                                     xml2::xml_find_all(file, "./inning/bottom/atbat/pitch"))
                                     runner_nodes <- c(xml2::xml_find_all(file, "./inning/top/atbat/runner"), 
                                                       xml2::xml_find_all(file, "./inning/bottom/atbat/runner")) 
                                     po_nodes <- c(xml2::xml_find_all(file, "./inning/top/atbat/po"), 
@@ -90,7 +91,7 @@ get_payload <- function(start=NULL, end=NULL, league="mlb", dataset = "inning_al
                                     )
                                 }
                             }
-    
+
     # The foreach loop returns a named list of nested data frames. We need to bind the dfs under 
     # each name and pack the binded dfs back into a list that can be returned.
     atbat <- dplyr::bind_rows(out$atbat)

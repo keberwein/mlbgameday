@@ -50,27 +50,33 @@ rm(cl)
 library(doParallel); library(foreach); library(dplyr); library(purrr); library(stringr); library(xml2); library(magrittr)
 
 # Full season in parallel =  8.3 minues. Took pitchRx took 30 min. full gids w DB con.
-# Full season no parallel =
-urlz=make_gids(start = "2016-10-01", end = "2016-10-02", cluster = NULL)
+# Full season no parallel = 41.02
+# Full season still slower than pitchrx. This may be due to the pitchrx DB con and garbage collection.
+urlz=make_gids(start = "2016-04-03", end = "2016-04-18", cluster = NULL)
 
 start=Sys.time() ; print(start)
-zzz= tidygameday::get_payload(start = "2016-10-01", end = "2016-10-02", cluster = NULL)
+zzz= tidygameday::get_payload(start = "2016-04-03", end = "2016-04-18", cluster = NULL)
 end=Sys.time()
 runtime = end - start
 runtime
 
-#pitchrx: 27 sec
-#lapply: 32 seconds.
-#purrr map: 30.6
-#purr map_dfr 29.9
-#data.table not an upgrade.
-#removing trycatch not an upgrade.
-#Removing if statement on trycatch not an upgrade.
-# Try different purrr map functions maybe, map_chr???
+
 
 start=Sys.time() ; print(start)
 #scrape(start = "2016-04-03", end = "2016-10-02", connect = con)
-prx <- pitchRx::scrape(start = "2016-10-01", end = "2016-10-02")
+prx <- pitchRx::scrape(start = "2016-04-03", end = "2016-04-18")
 end = Sys.time()
 runtime = end-start
 runtime
+
+## 1 Day
+#tidy 24.6 clean environ 
+#pitchrx: 28.8 clean eviron
+#
+## 1 Week
+#tidy 1.26
+#pitchrx 1.23 min.
+#
+## 2 weeks / pitchrx 200 game limit
+#tidy 3.40 min.
+#pitchrx 2.42 min. limit 200 games
