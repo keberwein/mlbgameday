@@ -50,9 +50,9 @@ make_gids <- function(start=NULL, end=NULL, league="mlb", cluster=NULL, ...) {
         newdates <- paste0("year_", format(newgidz, "%Y"), "/month_",
                            format(newgidz, "%m"), "/day_", format(newgidz, "%d"))
         
+
         # Scrape the miniscoreboard for that day so we can extract game_id.
-        # This piece takes a while. It has to tryCatch every url.
-        final_gids <- validate_gids(newdates, cluster = cluster)
+        final_gids <- validate_gids(newdates, cluster=cluster)
     }
     
     # If we have some at the start internally, but are missing end, grab the gids we have and format and grab anything missing.
@@ -64,7 +64,7 @@ make_gids <- function(start=NULL, end=NULL, league="mlb", cluster=NULL, ...) {
         
         # Veryify those gids were games played. If played, scrape the miniscoreboard for that day so we can extract game_id.
         # This piece takes a while. It has to tryCatch every url.
-        gapgids <- validate_gids(gapdates, cluster = cluster)
+        gapgids <- validate_gids(gapdates, cluster=cluster)
 
         # Get the other gids not in the end window.
         startgids <- filter(gid_dates, date_dt >= as.Date(start) & date_dt <= as.Date(last_date)) %>%

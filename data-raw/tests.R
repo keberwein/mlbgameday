@@ -55,7 +55,7 @@ library(doParallel); library(foreach); library(dplyr); library(purrr); library(s
 urlz=make_gids(start = "2016-04-03", end = "2016-04-18", cluster = NULL)
 
 start=Sys.time() ; print(start)
-zzz= tidygameday::get_payload(start = "2016-04-03", end = "2016-04-18", cluster = NULL)
+zzz= tidygameday::get_payload(start = "2017-09-03", end = "2017-09-04", cluster = NULL)
 end=Sys.time()
 runtime = end - start
 runtime
@@ -64,7 +64,7 @@ runtime
 
 start=Sys.time() ; print(start)
 #scrape(start = "2016-04-03", end = "2016-10-02", connect = con)
-prx <- pitchRx::scrape(start = "2016-04-03", end = "2016-04-18")
+prx <- pitchRx::scrape(start = "2017-09-03", end = "2017-09-04")
 end = Sys.time()
 runtime = end-start
 runtime

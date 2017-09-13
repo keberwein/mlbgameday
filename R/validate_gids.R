@@ -24,20 +24,23 @@ validate_gids <- function(gidslist=NULL, league="mlb", cluster=NULL, ...) {
     gidslist_dt$link <- paste0(root, league, "/" ,gidslist_dt$gid)
     
     # Use miniscorboard to validate urls. Set class to mini so we can use the payload function.
-    minilist <- gidslist_dt$link %>% purrr::map_chr(~ paste0(., "/miniscoreboard.xml")) %>% 
-        purrr::map(~ structure(., class = "mini"))
+    minilist <- gidslist_dt$link %>% purrr::map_chr(~ paste0(., "/miniscoreboard.xml"))
     
     # Do a tryCatch along the dates. If the url exists, get the payload from miniscorboard.
-    games=NULL
-    ifelse(!is.null(cluster),
-           games <- foreach::foreach(i = 1:length(minilist)) %dopar% {
-                tryCatch(payload(minilist[[i]]), error=function(e) NULL)
-           },
-           games <- purrr::map(minilist, function(i){
-                tryCatch(payload(i), error=function(e) NULL)
-           }))
+    out <- foreach::foreach(i = seq_along(minilist), .inorder=FALSE) %dopar% {
+                                file <- tryCatch(xml2::read_xml(minilist[[i]]), error=function(e) NULL)
+                                if(!is.null(file)){
+                                    mini_nodes <- xml2::xml_find_all(file, "./game")
+                                        mini <- purrr::map_dfr(mini_nodes, function(x) {
+                                            out <- data.frame(t(xml2::xml_attrs(x)), stringsAsFactors=FALSE)
+                                            out
+                                        })
+                                }
+    }
     
-    gidz <- dplyr::bind_rows(games) %>%
+    games <- dplyr::bind_rows(out)
+    
+    gidz <- games %>%
         dplyr::mutate(url = paste0(root, lg, "/", "year_", str_sub(gameday_link, 1, 4), "/", "month_",
                                                 str_sub(gameday_link, 6, 7), "/", "day_", str_sub(gameday_link, 9, 10), 
                                                 "/gid_", gameday_link)) %>% 

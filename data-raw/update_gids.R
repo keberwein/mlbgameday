@@ -1,17 +1,20 @@
 # Grab new game IDs
-library(pitchRx)
-gids <- pitchRx::gids
+library(dplyr)
+library(stringr)
+library(purrr)
+library(tidygameday)
+
+# Get current game_ids and check for the last date.
+gids <- tidygameday::game_ids
 last.game <- sort(gids)[length(gids)]
-last.date <- as.Date(substr(last.game, 5, 14), format = "%Y_%m_%d")
+last.date <- as.Date(substr(last.game, 5, 14), format = "%Y_%m_%d") %>% + 1
 
-new.gids <- pitchRx:::updateGids(last.date, last.date + 371)
-
-game_ids <- unique(c(gids, new.gids))
-
-# Add a date column
-#game_ids <- as.data.frame(game_ids)
-#game_ids <- rename(game_ids, gid = game_ids)
-#game_ids$date_dt <- stringr::str_sub(game_ids$gid, 5, 14) %>% stringr::str_replace_all("_", "-")
+# use make_gids function to get gids not yet in the internal database.
+new_gids <- tidygameday::make_gids(start = as.character(last.date), end = as.character(Sys.Date()-1))
+# make_gids returns the gids in a url format, so strip these back down to basic format.
+new_gids <- str_sub(new_gids, 66, -16)
+# combine the lists.
+game_ids <- unique(c(gids, new_gids))
 
 rm(end, last.date, last.game, new.gids, start, time)
 devtools::use_data(game_ids, overwrite = TRUE)
