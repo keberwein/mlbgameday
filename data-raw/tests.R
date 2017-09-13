@@ -52,7 +52,7 @@ library(doParallel); library(foreach); library(dplyr); library(purrr); library(s
 # Full season in parallel =  8.3 minues. Took pitchRx took 30 min. full gids w DB con.
 # Full season no parallel = 41.02
 # Full season still slower than pitchrx. This may be due to the pitchrx DB con and garbage collection.
-urlz=make_gids(start = "2016-04-03", end = "2016-04-18", cluster = NULL)
+urlz=make_gids(start = "2016-04-03", end = "2016-04-05", cluster = NULL)
 
 start=Sys.time() ; print(start)
 zzz= tidygameday::get_payload(start = "2017-09-03", end = "2017-09-04", cluster = NULL)
