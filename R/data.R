@@ -10,3 +10,16 @@
 #' @note last updated 2017-08-23
 #'
 "game_ids"
+
+
+#' Internal dataset containing MLB Player IDs.
+#' 
+#' A character set with most player name and player ids.
+#' 
+#' @docType data
+#' @keywords internal
+#' 
+#' @usage data(player_ids)
+#' @note last updated 2017-09-16
+#'
+"player_ids"

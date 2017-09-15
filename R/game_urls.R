@@ -20,7 +20,7 @@ game_urls <- function(url_gids=NULL, dataset = "inning_all", ...) {
     if(length(dataset) > 1) stop("Please specify a single data set. Due to conflicting table names, scrapes are limieted to a single set.")
     
     if(dataset=="inning_all"){
-        glist <- url_gids %>% purrr::map(~ paste0(., "/inning/inning_all.xml"))
+        glist <- url_gids %>% purrr::map_chr(~ paste0(., "/inning/inning_all.xml"))
     }
     if(dataset=="inning_hit"){
         glist <- datalist %>% purrr::map_chr(~ paste0(., "/inning/inning_hit.xml"))

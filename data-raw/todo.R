@@ -1,4 +1,3 @@
-## Add package data with playerIDs.
 
 ## Get inning_all formated like pitchRx.
 ## add batter_name from internal database?
