@@ -45,7 +45,7 @@ for(i in seq_along(urlz)){
             out <- data.frame(t(xml2::xml_attrs(x)), stringsAsFactors=FALSE)
             out$inning <- xml2::xml_parent(xml2::xml_parent(x)) %>% xml2::xml_attr("num")
             out$next_ <- xml2::xml_parent(xml2::xml_parent(x)) %>% xml2::xml_attr("next")
-            out$inning_side <- ifelse(xml2::xml_name(xml2::xml_parent(x))=="top", "top", "bottom")
+            out$inning_side <- xml2::xml_name(xml2::xml_parent(x))
             out$url <- url
             out$date <- date_dt
             out$gameday_link <- gameday_link
@@ -56,7 +56,7 @@ for(i in seq_along(urlz)){
             out <- data.frame(t(xml2::xml_attrs(x)), stringsAsFactors=FALSE)
             out$inning <- xml2::xml_parent(xml2::xml_parent(x)) %>% xml2::xml_attr("num")
             out$next_ <- xml2::xml_parent(xml2::xml_parent(x)) %>% xml2::xml_attr("next")
-            out$inning_side <- ifelse(xml2::xml_name(xml2::xml_parent(x))=="top", "top", "bottom")
+            out$inning_side <- xml2::xml_name(xml2::xml_parent(x))
             out$url <- url
             out$gameday_link <- gameday_link
             out
@@ -66,7 +66,7 @@ for(i in seq_along(urlz)){
             out <- data.frame(t(xml2::xml_attrs(x)), stringsAsFactors=FALSE)
             out$inning <- xml2::xml_parent(xml2::xml_parent(xml2::xml_parent(x))) %>% xml2::xml_attr("num")
             out$next_ <- xml2::xml_parent(xml2::xml_parent(xml2::xml_parent(x))) %>% xml2::xml_attr("next")
-            out$inning_side <- ifelse(xml2::xml_name(xml2::xml_parent(xml2::xml_parent(x)))=="top", "top", "bottom")
+            out$inning_side <- xml2::xml_name(xml2::xml_parent(xml2::xml_parent(x)))
             out$url <- url
             out$gameday_link <- gameday_link
             out
@@ -76,7 +76,7 @@ for(i in seq_along(urlz)){
             out <- data.frame(t(xml2::xml_attrs(x)), stringsAsFactors=FALSE)
             out$inning <- xml2::xml_parent(xml2::xml_parent(x)) %>% xml2::xml_attr("num")
             out$next_ <- xml2::xml_parent(xml2::xml_parent(x)) %>% xml2::xml_attr("next")
-            out$inning_side <- ifelse(xml2::xml_name(xml2::xml_parent(x))=="top", "top", "bottom")
+            out$inning_side <- xml2::xml_name(xml2::xml_parent(x))
             out$url <- url
             out$gameday_link <- gameday_link
             out
@@ -86,16 +86,13 @@ for(i in seq_along(urlz)){
             out <- data.frame(t(xml2::xml_attrs(x)), stringsAsFactors=FALSE)
             out$inning <- xml2::xml_parent(xml2::xml_parent(x)) %>% xml2::xml_attr("num")
             out$next_ <- xml2::xml_parent(xml2::xml_parent(x)) %>% xml2::xml_attr("next")
-            out$inning_side <- ifelse(xml2::xml_name(xml2::xml_parent(x))=="top", "top", "bottom")
+            out$inning_side <- xml2::xml_name(xml2::xml_parent(x))
             out$url <- url
             out$gameday_link <- gameday_link
             out
         })
 
     }
-    
-    rm(action_nodes, atbat_nodes, pitch_nodes, runner_nodes, po_nodes, url, date_dt, gameday_link)
-    gc()
 }
 
 atbat <- dplyr::bind_rows(atbat_df)

@@ -31,11 +31,13 @@ get_payload <- function(start=NULL, end=NULL, league="mlb", dataset = "inning_al
         # Make some place-holders for the function.
         atbat <- list(); action <- list(); pitch <- list(); runner <- list(); po <- list()
         lnames <- list(atbat=atbat, action=action, pitch=pitch, runner=runner, po=po)
-        out <- foreach::foreach(i = seq_along(urlz), .combine="comb", .multicombine=T, .inorder=FALSE,
+        message("Gathering Gameday data, please be patient...")
+        out <- foreach::foreach(i = seq_along(urlz), .combine="comb_pload", .multicombine=T, .inorder=FALSE,
                                 .final = function(x) stats::setNames(x, names(lnames)),
                                 .init=list(list(), list(), list(), list(), list())) %dopar% {
                                     file <- tryCatch(xml2::read_xml(urlz[[i]]), error=function(e) NULL)
                                     if(!is.null(file)){
+                                        #message(as.character(urlz[[i]]))
                                         atbat_nodes <- c(xml2::xml_find_all(file, "./inning/top/atbat"), 
                                                          xml2::xml_find_all(file, "./inning/bottom/atbat")) 
                                         action_nodes <- c(xml2::xml_find_all(file, "./inning/top/action"), 
@@ -49,7 +51,6 @@ get_payload <- function(start=NULL, end=NULL, league="mlb", dataset = "inning_al
                                         url <- urlz[[i]]
                                         date_dt <- stringr::str_sub(urlz[[i]], 71, -39)
                                         gameday_link <- stringr::str_sub(urlz[[i]], 66, -23)
-
 
                                         list(                        
                                             atbat <- purrr::map_dfr(atbat_nodes, function(x) {

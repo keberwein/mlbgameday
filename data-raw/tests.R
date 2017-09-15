@@ -41,7 +41,7 @@ end = Sys.time()
 runtime = end-start
  
 
-no_cores <- detectCores() - 1
+no_cores <- detectCores() - 2
 cl <- makeCluster(no_cores, type="FORK")  
 registerDoParallel(cl)
 stopImplicitCluster()
@@ -55,7 +55,7 @@ library(doParallel); library(foreach); library(dplyr); library(purrr); library(s
 urlz=make_gids(start = "2015-09-03", end = "2015-09-10", cluster = NULL)
 
 start=Sys.time() ; print(start)
-zzz= tidygameday::get_payload(start = "2016-05-03", end = "2016-05-04", cluster = NULL)
+zzz= tidygameday::get_payload(start = "2015-09-03", end = "2015-09-10", cluster = NULL)
 end=Sys.time()
 runtime = end - start
 runtime
@@ -64,17 +64,17 @@ runtime
 
 start=Sys.time() ; print(start)
 #scrape(start = "2016-04-03", end = "2016-10-02", connect = con)
-prx <- pitchRx::scrape(start = "2016-05-03", end = "2016-05-10")
+prx <- pitchRx::scrape(start = "2015-09-03", end = "2015-09-10")
 end = Sys.time()
 runtime = end-start
 runtime
 
 ## 1 Day
-#tidy 32.3 clean environ 
+#tidy 31.3 clean environ 
 #pitchrx: 28.8 clean eviron
 #
 ## 1 Week
-#tidy 1.26
+#tidy 1.90
 #pitchrx 1.23 min.
 #
 ## 2 weeks / pitchrx 200 game limit

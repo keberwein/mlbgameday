@@ -2,7 +2,7 @@
 
 export("%<>%")
 export("%>%")
-export(comb)
+export(comb_pload)
 export(game_urls)
 export(get_payload)
 export(gid_date)

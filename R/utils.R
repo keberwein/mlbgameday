@@ -41,16 +41,16 @@ urlTrue <- function(target) {
     })  
 }
 
-#' @title comb
+#' @title comb_pload
 #' @description Internal combine fucntion for foreach loop used in get_payload()
 #' @param x target
 #' @param ... additional args
 #' @importFrom purrr map
 #' @keywords internal
 #' @export
-comb <- function(x, ...) {
-    purrr::map(seq_along(x),
-           function(i) c(x[[i]], purrr::map(list(...), function(y) y[[i]])))
+comb_pload <- function(x, ...) {
+    lapply(seq_along(x),
+           function(i) c(x[[i]],lapply(list(...), function(y) y[[i]])))
 }
 
 
