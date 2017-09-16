@@ -1,21 +1,43 @@
-urlz <- "http://gd2.mlb.com/components/game/mlb/year_2017/month_09/day_12/gid_2017_09_12_chamlb_kcamlb_1/inning/inning_all.xml"
+urlz <- "http://gd2.mlb.com/components/game/mlb/year_2017/month_09/day_12/gid_2017_09_12_chamlb_kcamlb_1/linescore.xml"
 file <- read_xml(urlz)
 
 
-stringr::str_sub(urlz, 66, -23)
+# Make some place-holders for the function.
+game <- list(); game_media <- list()
+lnames <- list(game=game, game_media=game_media)
+message("Gathering Gameday data, please be patient...")
+out <- foreach::foreach(i = seq_along(urlz), .combine="comb_pload", .multicombine=T, .inorder=FALSE,
+                        .final = function(x) stats::setNames(x, names(lnames)),
+                        .init=list(list(), list(), list(), list(), list())) %dopar% {
+                            file <- tryCatch(xml2::read_xml(urlz[[i]]), error=function(e) NULL)
+                            if(!is.null(file)){
+                                game_nodes <- xml2::xml_find_all(file, "/game")
+                                media_nodes <- xml2::xml_find_all(file, "/game/game_media/media")
 
-atbat_nodes <- c(xml2::xml_find_all(file, "./inning/top/atbat"), 
-                 xml2::xml_find_all(file, "./inning/bottom/atbat")) 
+                                list(
+                                    game <- purrr::map_dfr(game_nodes, function(x) {
+                                        out <- data.frame(t(xml2::xml_attrs(x)), stringsAsFactors=FALSE)
+                                        out
+                                    }),
+                                    
+                                    game_media <- purrr::map_dfr(media_nodes, function(x) {
+                                        out <- data.frame(t(xml2::xml_attrs(x)), stringsAsFactors=FALSE)
+                                        out
+                                    })
+                                )
+                            }
+                        }
 
 
-atbat_df <- purrr::map_dfr(atbat_nodes, function(x) {
-    out <- data.frame(t(xml2::xml_attrs(x)), stringsAsFactors=FALSE)
-    out$inning <- xml2::xml_parent(xml2::xml_parent(x)) %>% xml2::xml_attr("num")
-    out$next_ <- xml2::xml_parent(xml2::xml_parent(x)) %>% xml2::xml_attr("next")
-    out$inning_side <- ifelse(xml2::xml_name(xml2::xml_parent(x))=="top", "top", "bottom")
-    out$
-    out
-})
+
+
+
+
+
+    
+    
+    
+    
 
 for(i in seq_along(urlz)){
     out=urlz[[i]]

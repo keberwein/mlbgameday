@@ -1,4 +1,5 @@
-library(purrr); library(doParallel); library(foreach); library(tidygameday); library(stringr); library(xml2); library(dplyr)
+library(purrr); library(doParallel); library(foreach); library(tidygameday); 
+library(stringr); library(xml2); library(dplyr); library(tidyr)
 # Get a list of the current gids and fromat them to grab the "/players.xml" file for each gid.
 gidenv <- environment()
 data(game_ids, package = "tidygameday", envir = gidenv)
@@ -11,7 +12,7 @@ glist <- game_ids %>%
 
 
 # NOTE: We only need to select the new gids that have been added. Any others would be doing double-work.
-glist = glist[10000:27070]
+glist = glist[1:27070]
 
 
 
@@ -35,8 +36,10 @@ players <- foreach::foreach(i = seq_along(glist)) %dopar% {
 stopImplicitCluster()
 rm(cl)
 
-new_players <- dplyr::bind_rows(players) %>% select("id", "first", "last") %>% unique() %>% 
-    tidyr::unite(full_name, c("first", "last"), sep = " ")
+new_players <- dplyr::bind_rows(players) %>% select("id", "first", "last") %>% 
+    tidyr::unite(full_name, c("first", "last"), sep = " ") %>%
+    filter(!is.na(full_name)) %>% unique()
+    
 
 rm(players, game_ids, glist, playergids, players); gc()
 
@@ -47,6 +50,10 @@ current_players <- tidygameday::player_ids
 # A duplicate column is created on the join due to slight changes in name spellings. OK just to drop it.
 player_ids <- dplyr::left_join(current_players, new_players, by = "id") %>% 
     select("id", "full_name.x") %>% rename(full_name=full_name.x)
+
+# The list returns duplicate ids because players sometimes change thier names. Example, "B.J" Upton began calling himself "Melvin".
+# This is a crude work-around for that, only selecting one name.
+player_ids <- player_ids[!duplicated(player_ids$id),]
 
 
 # Save new ids

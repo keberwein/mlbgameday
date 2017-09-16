@@ -1,8 +1,8 @@
 #' Create game ids from dates.
 #' @param start A start date passed as a character in ISO 8601 format. \code{"2017-05-01"}
 #' @param end An end date passed as a character in ISO 8601 format. \code{"2017-09-01"}
-#' @param cluster A named parallel cluster produced by the \code{doParallel} package.
 #' @param league The leauge to gather gids for. The default is \code{"mlb"}. Other options include \code{"aaa"} and \code{"aa"}.
+#' @param dataset The dataset to be scraped. The default is "inning_all." Other options include, "inning_hit", "players",
 #' @param ... additional arguments
 #' @importFrom purrr map
 #' @importFrom stringr str_sub str_replace_all
@@ -16,7 +16,7 @@
 #' }
 #' 
 
-make_gids <- function(start=NULL, end=NULL, league="mlb", cluster=NULL, ...) {
+make_gids <- function(start=NULL, end=NULL, league="mlb", dataset=NULL, ...) {
     root <- paste0("http://gd2.mlb.com/components/game/", league, "/")
 
     #Format dates
@@ -79,7 +79,7 @@ make_gids <- function(start=NULL, end=NULL, league="mlb", cluster=NULL, ...) {
         final_gids <- c(startgids$gid, gapgids)
     }
     
-    made_gids <- game_urls(final_gids)
+    made_gids <- game_urls(final_gids, dataset = dataset)
     
     return(made_gids)
 }
