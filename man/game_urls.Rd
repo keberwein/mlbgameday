@@ -4,7 +4,7 @@
 \alias{game_urls}
 \title{Create urls from game_ids.}
 \usage{
-game_urls(url_gids = NULL, dataset = "inning_all", ...)
+game_urls(url_gids = NULL, dataset = NULL, ...)
 }
 \arguments{
 \item{url_gids}{A list of gid urls formatted by the \code{make_gids()} function.}

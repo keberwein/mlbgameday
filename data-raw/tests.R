@@ -52,11 +52,11 @@ library(doParallel); library(foreach); library(dplyr); library(purrr); library(s
 # Full season in parallel =  8.3 minues. Took pitchRx took 30 min. full gids w DB con.
 # Full season no parallel = 41.02
 # Full season still slower than pitchrx. This may be due to the pitchrx DB con and garbage collection.
-urlz=make_gids(start = "2015-09-03", end = "2015-09-03", dataset = "linescore")
+urlz=make_gids(start = "2015-09-03", end = "2015-09-03", dataset = "inning_all")
 
 # linescore not working. It's in the dopar loop. Checkt urlz.
 start=Sys.time() ; print(start)
-zzz= tidygameday::get_payload(start = "2015-09-03", end = "2015-09-04", dataset = "linescore")
+zzz= tidygameday::get_payload(start = "2015-09-03", end = "2015-09-04", dataset = "inning_all")
 end=Sys.time()
 runtime = end - start
 runtime

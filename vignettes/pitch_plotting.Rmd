@@ -1,5 +1,5 @@
 ---
-title: "Tidygameday: Plotting Pitches"
+title: "mlbgameday: Plotting Pitches"
 author: "Kris Eberwein"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
@@ -17,8 +17,7 @@ For all of the following examples, we will use The pitch data for Jake Arrieta's
 
 
 ```{r, fig.show='hold'}
-library(tidygameday)
-library(tidyverse)
+library(mlbgameday)
 
 # Grap some Gameday data. We're specifically looking for Jake Arrieta's no-hitter.
 gamedat <- get_payload(start = "2016-04-21", end = "2016-04-21")
@@ -91,11 +90,12 @@ strikes <- subset(pitches, des.x == "Called Strike")
 
 library(pitchRx)
 library(ggplot2)
+library(viridis)
 pitchRx::strikeFX(pitches, geom = "tile") + 
     facet_grid(pitcher_name ~ stand) +
     coord_equal() +
     theme_bw() +
-    viridis::scale_fill_viridis()
+    scale_fill_viridis()
 
 ```
 

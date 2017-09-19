@@ -1,4 +1,3 @@
-# The makeGids aregument needs to be altered to append the corret prefix, i.e. linescore, innings_all etc..
 
 # Add gids list option to get_payload. Should be easy, just replace urlz with the user supplied gids list.
 

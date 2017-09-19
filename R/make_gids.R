@@ -26,7 +26,7 @@ make_gids <- function(start=NULL, end=NULL, league="mlb", dataset=NULL, ...) {
     
     # Check to see if gids within the start and end dates are in the internal dataset. If not, grab them.
     gidenv <- environment()
-    data(game_ids, package = "tidygameday", envir = gidenv)
+    data(game_ids, package = "mlbgameday", envir = gidenv)
     
     # Add a date column to gid data to make life easier.
     gid_dates <- gid_date(game_ids) %>% dplyr::mutate(gid = as.character(gid))

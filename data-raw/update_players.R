@@ -1,8 +1,8 @@
-library(purrr); library(doParallel); library(foreach); library(tidygameday); 
+library(purrr); library(doParallel); library(foreach); library(mlbgameday); 
 library(stringr); library(xml2); library(dplyr); library(tidyr)
 # Get a list of the current gids and fromat them to grab the "/players.xml" file for each gid.
 gidenv <- environment()
-data(game_ids, package = "tidygameday", envir = gidenv)
+data(game_ids, package = "mlbgameday", envir = gidenv)
 root <- paste0("http://gd2.mlb.com/components/game/mlb/")
 # Format the urls.
 glist <- game_ids %>% 
@@ -45,7 +45,7 @@ rm(players, game_ids, glist, playergids, players); gc()
 
 # Now we've got a data frame with uniqe player ids. We need to pull the current player data and do a left join.
 
-current_players <- tidygameday::player_ids
+current_players <- mlbgameday::player_ids
 
 # A duplicate column is created on the join due to slight changes in name spellings. OK just to drop it.
 player_ids <- dplyr::left_join(current_players, new_players, by = "id") %>% 

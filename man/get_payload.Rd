@@ -4,8 +4,8 @@
 \alias{get_payload}
 \title{Get Gameday data from MLBAM.}
 \usage{
-get_payload(start = NULL, end = NULL, league = "mlb",
-  dataset = "inning_all", cluster = NULL, ...)
+get_payload(start = NULL, end = NULL, league = "mlb", dataset = NULL,
+  ...)
 }
 \arguments{
 \item{start}{A start date passed as a character in ISO 8601 format. \code{"2017-05-01"}}
@@ -15,8 +15,6 @@ get_payload(start = NULL, end = NULL, league = "mlb",
 \item{league}{The leauge to gather gids for. The default is \code{"mlb"}. Other options include \code{"aaa"} and \code{"aa"}}
 
 \item{dataset}{The dataset to be scraped. The default is "inning_all." Other options include, "inning_hit", "players",}
-
-\item{cluster}{A named parallel cluster produced by the \code{doParallel} package.}
 
 \item{...}{additional arguments}
 }

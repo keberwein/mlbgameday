@@ -3,20 +3,14 @@
 #' @param end An end date passed as a character in ISO 8601 format. \code{"2017-09-01"}
 #' @param league The leauge to gather gids for. The default is \code{"mlb"}. Other options include \code{"aaa"} and \code{"aa"}
 #' @param dataset The dataset to be scraped. The default is "inning_all." Other options include, "inning_hit", "players",
-#' @param cluster A named parallel cluster produced by the \code{doParallel} package.
 #' @param ... additional arguments
-#' @importFrom stringr str_extract str_sub
-#' @importFrom dplyr bind_rows left_join rename
-#' @importFrom purrr map_dfr
-#' @importFrom stats setNames
-#' @import foreach
 #' @export
 #' @examples
 #' \dontrun{
 #' df <- get_payload(url)
 #' }
 #' 
-get_payload <- function(start=NULL, end=NULL, league="mlb", dataset = NULL, cluster=NULL, ...) {
+get_payload <- function(start=NULL, end=NULL, league="mlb", dataset = NULL, ...) {
     start <- as.Date(as.character(start)); end <- as.Date(end); league <- tolower(league)
     if(is.null(dataset)) dataset <- "inning_all" 
     if(start < as.Date("2008-01-01")){
@@ -28,146 +22,9 @@ get_payload <- function(start=NULL, end=NULL, league="mlb", dataset = NULL, clus
     # Get gids via internal function.
     urlz <- make_gids(start = start, end = end, dataset = dataset)
     
-    if(dataset == "inning_all"){
-        # Make some place-holders for the function.
-        atbat <- list(); action <- list(); pitch <- list(); runner <- list(); po <- list()
-        lnames <- list(atbat=atbat, action=action, pitch=pitch, runner=runner, po=po)
-        message("Gathering Gameday data, please be patient...")
-        out <- foreach::foreach(i = seq_along(urlz), .combine="comb_pload", .multicombine=T, .inorder=FALSE,
-                                .final = function(x) stats::setNames(x, names(lnames)),
-                                .init=list(list(), list(), list(), list(), list())) %dopar% {
-                                    file <- tryCatch(xml2::read_xml(urlz[[i]]), error=function(e) NULL)
-                                    if(!is.null(file)){
-                                        #message(as.character(urlz[[i]]))
-                                        atbat_nodes <- c(xml2::xml_find_all(file, "./inning/top/atbat"), 
-                                                         xml2::xml_find_all(file, "./inning/bottom/atbat")) 
-                                        action_nodes <- c(xml2::xml_find_all(file, "./inning/top/action"), 
-                                                          xml2::xml_find_all(file, "./inning/bottom/actioin")) 
-                                        pitch_nodes <- c(xml2::xml_find_all(file, "./inning/top/atbat/pitch"),
-                                                         xml2::xml_find_all(file, "./inning/bottom/atbat/pitch"))
-                                        runner_nodes <- c(xml2::xml_find_all(file, "./inning/top/atbat/runner"), 
-                                                          xml2::xml_find_all(file, "./inning/bottom/atbat/runner")) 
-                                        po_nodes <- c(xml2::xml_find_all(file, "./inning/top/atbat/po"), 
-                                                      xml2::xml_find_all(file, "./inning/bottom/atbat/po"))
-                                        url <- urlz[[i]]
-                                        date_dt <- stringr::str_sub(urlz[[i]], 71, -39)
-                                        gameday_link <- stringr::str_sub(urlz[[i]], 66, -23)
+    if(dataset == "inning_all") innings_df <- payload.gd_inning_all(urlz)
 
-                                        list(                        
-                                            atbat <- purrr::map_dfr(atbat_nodes, function(x) {
-                                                out <- data.frame(t(xml2::xml_attrs(x)), stringsAsFactors=FALSE)
-                                                out$inning <- xml2::xml_parent(xml2::xml_parent(x)) %>% xml2::xml_attr("num")
-                                                out$next_ <- xml2::xml_parent(xml2::xml_parent(x)) %>% xml2::xml_attr("next")
-                                                out$inning_side <- xml2::xml_name(xml2::xml_parent(x))
-                                                out$url <- url
-                                                out$date <- date_dt
-                                                out$gameday_link <- gameday_link
-                                                out
-                                            }),
-                                            
-                                            action <- purrr::map_dfr(action_nodes, function(x) {
-                                                out <- data.frame(t(xml2::xml_attrs(x)), stringsAsFactors=FALSE)
-                                                out$inning <- xml2::xml_parent(xml2::xml_parent(x)) %>% xml2::xml_attr("num")
-                                                out$next_ <- xml2::xml_parent(xml2::xml_parent(x)) %>% xml2::xml_attr("next")
-                                                out$inning_side <- xml2::xml_name(xml2::xml_parent(x))
-                                                out$url <- url
-                                                out$gameday_link <- gameday_link
-                                                out
-                                            }),
-                                            
-                                            pitch <- purrr::map_dfr(pitch_nodes, function(x) {
-                                                out <- data.frame(t(xml2::xml_attrs(x)), stringsAsFactors=FALSE)
-                                                out$inning <- xml2::xml_parent(xml2::xml_parent(xml2::xml_parent(x))) %>% xml2::xml_attr("num")
-                                                out$next_ <- xml2::xml_parent(xml2::xml_parent(xml2::xml_parent(x))) %>% xml2::xml_attr("next")
-                                                out$inning_side <- xml2::xml_name(xml2::xml_parent(xml2::xml_parent(x)))
-                                                out$url <- url
-                                                out$gameday_link <- gameday_link
-                                                out$num <- xml2::xml_parent(x) %>% xml2::xml_attr("num")
-                                                out$count <- paste(xml2::xml_parent(x) %>% xml2::xml_attr("b"), 
-                                                                   xml2::xml_parent(x) %>% xml2::xml_attr("s"), sep="-")
-                                                out
-                                            }),
-                                            
-                                            runner <- purrr::map_dfr(runner_nodes, function(x) {
-                                                out <- data.frame(t(xml2::xml_attrs(x)), stringsAsFactors=FALSE)
-                                                out$inning <- xml2::xml_parent(xml2::xml_parent(x)) %>% xml2::xml_attr("num")
-                                                out$next_ <- xml2::xml_parent(xml2::xml_parent(x)) %>% xml2::xml_attr("next")
-                                                out$inning_side <- xml2::xml_name(xml2::xml_parent(x))
-                                                out$url <- url
-                                                out$gameday_link <- gameday_link
-                                                out
-                                            }),
-                                            
-                                            po <- purrr::map_dfr(po_nodes, function(x) {
-                                                out <- data.frame(t(xml2::xml_attrs(x)), stringsAsFactors=FALSE)
-                                                out$inning <- xml2::xml_parent(xml2::xml_parent(x)) %>% xml2::xml_attr("num")
-                                                out$next_ <- xml2::xml_parent(xml2::xml_parent(x)) %>% xml2::xml_attr("next")
-                                                out$inning_side <- xml2::xml_name(xml2::xml_parent(x))
-                                                out$url <- url
-                                                out$gameday_link <- gameday_link
-                                                out
-                                            })
-                                        )
-                                    }
-                                }
-        
-        # The foreach loop returns a named list of nested data frames. We need to bind the dfs under 
-        # each name and pack the binded dfs back into a list that can be returned.
-        atbat <- dplyr::bind_rows(out$atbat)
-        action <- dplyr::bind_rows(out$action)
-        pitch <- dplyr::bind_rows(out$pitch)
-        runner <- dplyr::bind_rows(out$runner)
-        po <- dplyr::bind_rows(out$po)
-        innings_df <- list(atbat=atbat, action=action, pitch=pitch, runner=runner, po=po)
-        # Add batter and pitcher names to the atbat data frame
-        player.env <- environment()
-        data(player_ids, package="tidygameday", envir=player.env)
-        player_ids$id <- as.character(player_ids$id)
-        
-        innings_df$atbat %<>% dplyr::left_join(player_ids, by = c("batter" = "id")) %>% 
-            dplyr::left_join(player_ids, by = c("pitcher" = "id")) %>% 
-            dplyr::rename(batter_name=full_name.x, pitcher_name=full_name.y)
-    }
-    
-    if(dataset=="linescore"){
-        # Make some place-holders for the function.
-        game <- list(); game_media <- list()
-        lnames <- list(game=game, game_media=game_media)
-        message("Gathering Gameday data, please be patient...")
-        out <- foreach::foreach(i = seq_along(urlz), .combine="comb_pload", .multicombine=T, .inorder=FALSE,
-                                .final = function(x) stats::setNames(x, names(lnames)),
-                                .init=list(list(), list())) %dopar% {
-                                    file <- tryCatch(xml2::read_xml(urlz[[i]]), error=function(e) NULL)
-                                    if(!is.null(file)){
-                                        game_nodes <- xml2::xml_find_all(file, "/game")
-                                        media_nodes <- xml2::xml_find_all(file, "/game/game_media/media")
-                                        
-                                        list(
-                                            game <- purrr::map_dfr(game_nodes, function(x) {
-                                                out <- data.frame(t(xml2::xml_attrs(x)), stringsAsFactors=FALSE)
-                                                out
-                                            }),
-                                            
-                                            game_media <- purrr::map_dfr(media_nodes, function(x) {
-                                                out <- data.frame(t(xml2::xml_attrs(x)), stringsAsFactors=FALSE)
-                                                out
-                                            })
-                                        )
-                                    }
-                                }
-        game <- dplyr::bind_rows(out$game)
-        game_media <- dplyr::bind_rows(out$game_media)
-        innings_df <- list(game=game, game_media=game_media)
-        }
+    if(dataset=="linescore") innings_df <- payload.gd_linescore(urlz)
     
     return(innings_df)
 }
-
-# I tried map and purrr::map as a non-cluster alternative here. This version is a bit slower than the
-# foreach loop with no cluster. Slower due to the fact it's a nested loop. Need to revisit this.
-
-#out <- map(names(inning), function(x){
-#    out1 <- map(url, function(i) {
-#        payload(i, node=as.character(x))
-#    })
-#})

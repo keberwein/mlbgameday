@@ -4,7 +4,7 @@
 \alias{make_gids}
 \title{Create game ids from dates.}
 \usage{
-make_gids(start = NULL, end = NULL, league = "mlb", cluster = NULL, ...)
+make_gids(start = NULL, end = NULL, league = "mlb", dataset = NULL, ...)
 }
 \arguments{
 \item{start}{A start date passed as a character in ISO 8601 format. \code{"2017-05-01"}}
@@ -13,7 +13,7 @@ make_gids(start = NULL, end = NULL, league = "mlb", cluster = NULL, ...)
 
 \item{league}{The leauge to gather gids for. The default is \code{"mlb"}. Other options include \code{"aaa"} and \code{"aa"}.}
 
-\item{cluster}{A named parallel cluster produced by the \code{doParallel} package.}
+\item{dataset}{The dataset to be scraped. The default is "inning_all." Other options include, "inning_hit", "players",}
 
 \item{...}{additional arguments}
 }

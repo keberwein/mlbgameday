@@ -4,14 +4,12 @@
 \alias{validate_gids}
 \title{Internal function to validate gids produced by try_gids.}
 \usage{
-validate_gids(gidslist = NULL, league = "mlb", cluster = NULL, ...)
+validate_gids(gidslist = NULL, league = "mlb", ...)
 }
 \arguments{
 \item{gidslist}{a list of gids.}
 
 \item{league}{The leauge to gather gids for. The default is \code{"mlb"}. Other options include \code{"aaa"} and \code{"aa"}.}
-
-\item{cluster}{A named parallel cluster produced by the \code{doParallel} package.}
 
 \item{...}{additional arguments}
 }
