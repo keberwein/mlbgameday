@@ -5,4 +5,4 @@
 #' @docType package
 NULL
 
-datalist=i=game_ids=gid=date_dt=gameday_link=data=startgids=full_name.x=full_name.yNULL
+datalist=i=game_ids=gid=date_dt=gameday_link=data=startgids=full_name.x=full_name.y=NULL
