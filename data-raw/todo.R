@@ -1,8 +1,6 @@
 
 # Add gids list option to get_payload. Should be easy, just replace urlz with the user supplied gids list.
 
-# Add an umpire_id dataset similar to player_id.
-
 # Try to append starting pitcher to gids df. For internal gids we may have to loop over all the gids and grab pitcher_id from 1st inning.
 # For external gids, we have have to loop over the gid after TryCatch, which would make things much longer.
 # Write external piece first and see how much longer that takes, may not be worth it.
