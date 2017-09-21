@@ -17,6 +17,9 @@
 #' 
 
 make_gids <- function(start=NULL, end=NULL, league="mlb", dataset=NULL, ...) {
+    if(as.Date(start) < as.Date("2008-02-26")) {
+        warning("The mlbgameday package supports data beginning on '2008-03-26'. Please enter a valid start date")
+    }
     root <- paste0("http://gd2.mlb.com/components/game/", league, "/")
 
     #Format dates
@@ -29,7 +32,7 @@ make_gids <- function(start=NULL, end=NULL, league="mlb", dataset=NULL, ...) {
     data(game_ids, package = "mlbgameday", envir = gidenv)
     
     # Add a date column to gid data to make life easier.
-    gid_dates <- gid_date(game_ids) %>% dplyr::mutate(gid = as.character(gid))
+    gid_dates <- gid_date(game_ids) %>% dplyr::mutate(gid = as.character(gameday_link))
     last_date <- as.Date(tail(gid_dates$date_dt, 1))
     first_date <- as.Date(head(gid_dates$date_dt, 1))
     

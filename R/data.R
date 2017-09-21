@@ -35,3 +35,27 @@
 #' @note last updated 2017-09-16
 #'
 "umpire_ids"
+
+#' Internal dataset containing MLB team IDs.
+#' 
+#' A character set with most player name and player ids.
+#' 
+#' @docType data
+#' @keywords internal
+#' 
+#' @usage data(team_ids)
+#' @note last updated 2017-09-21
+#'
+"team_ids"
+
+#' Internal dataset containing MLB team IDs.
+#' 
+#' A character set with most player name and player ids.
+#' 
+#' @docType data
+#' @keywords internal
+#' 
+#' @usage data(venue_ids)
+#' @note last updated 2017-09-21
+#'
+"venue_ids"

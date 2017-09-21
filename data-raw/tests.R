@@ -56,7 +56,7 @@ urlz=make_gids(start = "2015-09-03", end = "2015-09-03", dataset = "inning_all")
 
 # linescore not working. It's in the dopar loop. Checkt urlz.
 start=Sys.time() ; print(start)
-zzz= tidygameday::get_payload(start = "2015-09-03", end = "2015-09-04", dataset = "inning_all")
+zzz= mlbgameday::get_payload(start = "2015-09-03", end = "2015-09-04", dataset = "linescore")
 end=Sys.time()
 runtime = end - start
 runtime
@@ -65,7 +65,7 @@ runtime
 
 start=Sys.time() ; print(start)
 #scrape(start = "2016-04-03", end = "2016-10-02", connect = con)
-prx <- pitchRx::scrape(start = "2015-09-03", end = "2015-09-10", suffix = "miniscoreboard.xml")
+prx <- pitchRx::scrape(start = "2015-09-03", end = "2015-09-10")
 end = Sys.time()
 runtime = end-start
 runtime

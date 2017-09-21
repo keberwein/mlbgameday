@@ -2,7 +2,8 @@
 #' @param start A start date passed as a character in ISO 8601 format. \code{"2017-05-01"}
 #' @param end An end date passed as a character in ISO 8601 format. \code{"2017-09-01"}
 #' @param league The leauge to gather gids for. The default is \code{"mlb"}. Other options include \code{"aaa"} and \code{"aa"}
-#' @param dataset The dataset to be scraped. The default is "inning_all." Other options include, "inning_hit", "players",
+#' @param dataset The dataset to be scraped. The default is "inning_all." Other options include, "inning_hit", "linescore".
+#' @param game_ids A list of user-supplied gameIds.
 #' @param ... additional arguments
 #' @export
 #' @examples
@@ -10,7 +11,7 @@
 #' df <- get_payload(url)
 #' }
 #' 
-get_payload <- function(start=NULL, end=NULL, league="mlb", dataset = NULL, ...) {
+get_payload <- function(start=NULL, end=NULL, league="mlb", dataset = NULL, game_ids = NULL, ...) {
     start <- as.Date(as.character(start)); end <- as.Date(end); league <- tolower(league)
     if(is.null(dataset)) dataset <- "inning_all" 
     if(start < as.Date("2008-01-01")){

@@ -63,8 +63,6 @@ comb_pload <- function(x, ...) {
 #' @export
 
 gid_date <- function(gidlist=NULL, ...){
-    gidlist <- as.data.frame(gidlist)
-    gidlist <- rename(gidlist, gid = gidlist)
-    gidlist$date_dt <- stringr::str_sub(gidlist$gid, 5, 14) %>% stringr::str_replace_all("_", "-")
+    gidlist$date_dt <- stringr::str_sub(gidlist$gameday_link, 5, 14) %>% stringr::str_replace_all("_", "-")
     return(gidlist)
 }
