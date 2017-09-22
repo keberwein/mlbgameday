@@ -64,6 +64,55 @@ payload.gd_bis_boxscore <- function(urlz, ...) {
 
 #' @rdname payload
 #' @import xml2
+#' @importFrom purrr map_dfr
+#' @importFrom stats setNames
+#' @import foreach
+#' @method payload gd_game_events
+#' @export
+#' 
+payload.gd_game_events <- function(urlz, ...) {
+    message("Gathering Gameday data, please be patient...")
+    innings_df <- foreach::foreach(i = seq_along(urlz), .combine="rbind", .multicombine=T, .inorder=FALSE) %dopar% {
+        file <- tryCatch(xml2::read_xml(urlz[[i]][[1]]), error=function(e) NULL)
+        if(!is.null(file)){
+            pitch_nodes <- c(xml2::xml_find_all(file, "/game/inning/top/atbat/pitch"), 
+                             xml2::xml_find_all(file, "/game/inning/bottom/atbat/pitch")) 
+            events <- purrr::map_dfr(pitch_nodes, function(x) {
+                out <- data.frame(t(xml2::xml_attrs(x)), stringsAsFactors=FALSE)
+                # An inner-loop would be more elegant here, but this way is faster, so...
+                out$num <- xml2::xml_parent(x) %>% xml2::xml_attr("num")
+                out$b <- xml2::xml_parent(x) %>% xml2::xml_attr("b")
+                out$s <- xml2::xml_parent(x) %>% xml2::xml_attr("s")
+                out$o <- xml2::xml_parent(x) %>% xml2::xml_attr("o")
+                out$start_tfs <- xml2::xml_parent(x) %>% xml2::xml_attr("start_tfs")
+                out$start_tfs_zulu <- xml2::xml_parent(x) %>% xml2::xml_attr("start_tfs_zulu")
+                out$batter <- xml2::xml_parent(x) %>% xml2::xml_attr("batter")
+                out$pitcher <- xml2::xml_parent(x) %>% xml2::xml_attr("pitcher")
+                out$des <- xml2::xml_parent(x) %>% xml2::xml_attr("des")
+                out$des_es <- xml2::xml_parent(x) %>% xml2::xml_attr("des_es")
+                out$event_num <- xml2::xml_parent(x) %>% xml2::xml_attr("event_num")
+                out$even <- xml2::xml_parent(x) %>% xml2::xml_attr("event")
+                out$event_es <- xml2::xml_parent(x) %>% xml2::xml_attr("event_es")
+                out$play_guid <- xml2::xml_parent(x) %>% xml2::xml_attr("play_guid")
+                out$home_team_runs <- xml2::xml_parent(x) %>% xml2::xml_attr("home_team_runs")
+                out$away_team_runs <- xml2::xml_parent(x) %>% xml2::xml_attr("away_team_runs")
+                out$b1 <- xml2::xml_parent(x) %>% xml2::xml_attr("b1")
+                out$b2 <- xml2::xml_parent(x) %>% xml2::xml_attr("b2")
+                out$b3 <- xml2::xml_parent(x) %>% xml2::xml_attr("b3")
+                out$inning <- xml2::xml_parent(xml2::xml_parent(xml2::xml_parent(x))) %>% xml2::xml_attr("num")
+                out$inning_side <- xml2::xml_name(xml2::xml_parent(xml2::xml_parent(x)))
+                out
+            })
+        }
+    }
+    return(innings_df)
+}
+    
+
+
+
+#' @rdname payload
+#' @import xml2
 #' @importFrom stringr str_sub
 #' @importFrom dplyr bind_rows left_join rename
 #' @importFrom purrr map_dfr
@@ -187,7 +236,7 @@ payload.gd_inning_all <- function(urlz, ...) {
 #' 
 payload.gd_inning_hit <- function(urlz, ...) {
     message("Gathering Gameday data, please be patient...")
-    out <- foreach::foreach(i = seq_along(urlz), .combine="rbind", .multicombine=T, .inorder=FALSE) %dopar% {
+    innings_df <- foreach::foreach(i = seq_along(urlz), .combine="rbind", .multicombine=T, .inorder=FALSE) %dopar% {
         file <- tryCatch(xml2::read_xml(urlz[[i]][[1]]), error=function(e) NULL)
         if(!is.null(file)){
             hip_nodes <- xml2::xml_find_all(file, "/hitchart/hip")
@@ -197,7 +246,7 @@ payload.gd_inning_hit <- function(urlz, ...) {
             })
         }
     }
-    return(out)
+    return(innings_df)
 }
 
 

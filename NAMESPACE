@@ -2,6 +2,7 @@
 
 S3method(payload,default)
 S3method(payload,gd_bis_boxscore)
+S3method(payload,gd_game_events)
 S3method(payload,gd_inning_all)
 S3method(payload,gd_inning_hit)
 S3method(payload,gd_linescore)

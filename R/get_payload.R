@@ -54,6 +54,8 @@ get_payload <- function(start=NULL, end=NULL, league="mlb", dataset = NULL, game
     
     if(dataset == "bis_boxscore") innings_df <- payload.gd_bis_boxscore(urlz)
     
+    if(dataset == "game_events") innings_df <- payload.gd_game_events(urlz)
+    
     if(dataset == "inning_all") innings_df <- payload.gd_inning_all(urlz)
     
     if(dataset=="inning_hit") innings_df <- payload.gd_inning_hit(urlz)

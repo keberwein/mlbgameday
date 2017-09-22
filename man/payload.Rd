@@ -4,6 +4,7 @@
 \alias{payload}
 \alias{payload.default}
 \alias{payload.gd_bis_boxscore}
+\alias{payload.gd_game_events}
 \alias{payload.gd_inning_all}
 \alias{payload.gd_inning_hit}
 \alias{payload.gd_linescore}
@@ -14,6 +15,8 @@ payload(urlz, ...)
 \method{payload}{default}(urlz, ...)
 
 \method{payload}{gd_bis_boxscore}(urlz, ...)
+
+\method{payload}{gd_game_events}(urlz, ...)
 
 \method{payload}{gd_inning_all}(urlz, ...)
 

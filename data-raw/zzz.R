@@ -1,13 +1,39 @@
-urlz <- "http://gd2.mlb.com/components/game/mlb/year_2017/month_05/day_11/gid_2017_05_11_minmlb_chamlb_1/inning/inning_hit.xml"
+urlz <- "http://gd2.mlb.com/components/game/mlb/year_2017/month_05/day_11/gid_2017_05_11_minmlb_chamlb_1/game_events.xml"
 file <- read_xml(urlz)
 
 
-pitch_nodes <- xml2::xml_find_all(file, "/boxscore/pitching/pitcher")
-bat_nodes <- xml2::xml_find_all(file, "/boxscore/batting/batter")
-game <- purrr::map_dfr(pitch_nodes, function(x) {
-    out <- data.frame(t(xml2::xml_attrs(x)), stringsAsFactors=FALSE)
-    out})
 
+
+
+
+pitch_nodes <- c(xml2::xml_find_all(file, "/game/inning/top/atbat/pitch"), 
+                  xml2::xml_find_all(file, "/game/inning/bottom/atbat/pitch")) 
+events <- purrr::map_dfr(pitch_nodes, function(x) {
+    out <- data.frame(t(xml2::xml_attrs(x)), stringsAsFactors=FALSE)
+    # An inner-loop would be more elegant here, but this way is faster, so...
+    out$num <- xml2::xml_parent(x) %>% xml2::xml_attr("num")
+    out$b <- xml2::xml_parent(x) %>% xml2::xml_attr("b")
+    out$s <- xml2::xml_parent(x) %>% xml2::xml_attr("s")
+    out$o <- xml2::xml_parent(x) %>% xml2::xml_attr("o")
+    out$start_tfs <- xml2::xml_parent(x) %>% xml2::xml_attr("start_tfs")
+    out$start_tfs_zulu <- xml2::xml_parent(x) %>% xml2::xml_attr("start_tfs_zulu")
+    out$batter <- xml2::xml_parent(x) %>% xml2::xml_attr("batter")
+    out$pitcher <- xml2::xml_parent(x) %>% xml2::xml_attr("pitcher")
+    out$des <- xml2::xml_parent(x) %>% xml2::xml_attr("des")
+    out$des_es <- xml2::xml_parent(x) %>% xml2::xml_attr("des_es")
+    out$event_num <- xml2::xml_parent(x) %>% xml2::xml_attr("event_num")
+    out$even <- xml2::xml_parent(x) %>% xml2::xml_attr("event")
+    out$event_es <- xml2::xml_parent(x) %>% xml2::xml_attr("event_es")
+    out$play_guid <- xml2::xml_parent(x) %>% xml2::xml_attr("play_guid")
+    out$home_team_runs <- xml2::xml_parent(x) %>% xml2::xml_attr("home_team_runs")
+    out$away_team_runs <- xml2::xml_parent(x) %>% xml2::xml_attr("away_team_runs")
+    out$b1 <- xml2::xml_parent(x) %>% xml2::xml_attr("b1")
+    out$b2 <- xml2::xml_parent(x) %>% xml2::xml_attr("b2")
+    out$b3 <- xml2::xml_parent(x) %>% xml2::xml_attr("b3")
+    out$inning <- xml2::xml_parent(xml2::xml_parent(xml2::xml_parent(x))) %>% xml2::xml_attr("num")
+    out$inning_side <- xml2::xml_name(xml2::xml_parent(xml2::xml_parent(x)))
+    out
+})
 
 
 # Make some place-holders for the function.

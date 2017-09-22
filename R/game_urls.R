@@ -24,6 +24,11 @@ game_urls <- function(url_gids=NULL, dataset = NULL, ...) {
             purrr::map(~ structure(., class = "gd_bis_boxscore"))
     }
     
+    if(dataset=="game_events"){
+        glist <- url_gids %>% purrr::map_chr(~ paste0(., "/game_events.xml")) %>%
+            purrr::map(~ structure(., class = "gd_game_events"))
+    }
+    
     if(dataset=="inning_all"){
         glist <- url_gids %>% purrr::map_chr(~ paste0(., "/inning/inning_all.xml")) %>%
             purrr::map(~ structure(., class = "gd_inning_all"))
