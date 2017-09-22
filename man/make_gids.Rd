@@ -4,7 +4,8 @@
 \alias{make_gids}
 \title{Create game ids from dates.}
 \usage{
-make_gids(start = NULL, end = NULL, league = "mlb", dataset = NULL, ...)
+make_gids(start = NULL, end = NULL, league = "mlb", dataset = NULL,
+  game_ids = NULL, ...)
 }
 \arguments{
 \item{start}{A start date passed as a character in ISO 8601 format. \code{"2017-05-01"}}
@@ -13,7 +14,9 @@ make_gids(start = NULL, end = NULL, league = "mlb", dataset = NULL, ...)
 
 \item{league}{The leauge to gather gids for. The default is \code{"mlb"}. Other options include \code{"aaa"} and \code{"aa"}.}
 
-\item{dataset}{The dataset to be scraped. The default is "inning_all." Other options include, "inning_hit", "players",}
+\item{dataset}{The dataset to be scraped. The default is "inning_all." Other options include, "inning_hit", "linescore."}
+
+\item{game_ids}{A list of user-supplied gameIds.}
 
 \item{...}{additional arguments}
 }

@@ -42,7 +42,7 @@ runtime = end-start
  
 
 no_cores <- detectCores() - 2
-cl <- makeCluster(no_cores, type="FORK")  
+cl <- makeCluster(no_cores)  
 registerDoParallel(cl)
 stopImplicitCluster()
 rm(cl)
@@ -52,7 +52,8 @@ library(doParallel); library(foreach); library(dplyr); library(purrr); library(s
 # Full season in parallel =  8.3 minues. Took pitchRx took 30 min. full gids w DB con.
 # Full season no parallel = 41.02
 # Full season still slower than pitchrx. This may be due to the pitchrx DB con and garbage collection.
-urlz=make_gids(start = "2015-09-03", end = "2015-09-03", dataset = "inning_all")
+game_ids <- search_gids(team = "indians", start = "2016-05-01", end = "2016-05-01", game_type = "r")
+zzz= mlbgameday::get_payload(game_ids = game_ids, dataset = "inning_all")
 
 # linescore not working. It's in the dopar loop. Checkt urlz.
 start=Sys.time() ; print(start)

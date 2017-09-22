@@ -19,7 +19,9 @@ new_game_ids <- new_gids$game %>% subset(status = "Final",
                                          select = c("gameday_link", "venue", "home_team_city", "home_team_name",
                                                                       "away_team_city", "away_team_name", "game_type", "venue_id",
                                                                       "home_team_id", "away_team_id")) %>%
-    mutate(gameday_link = paste0("gid_", gameday_link))
+    mutate(gameday_link = paste0("gid_", gameday_link)) %>%
+    # Add dates to the df just so we can sort it.
+    mlbgameday::gid_date() %>% arrange(date_dt)
 
 # Combine and re-save the dataframe.
 game_ids <- bind_rows(new_game_ids, gids)
@@ -29,5 +31,8 @@ stopImplicitCluster()
 rm(cl)
 
 devtools::use_data(game_ids, overwrite = TRUE)
+
+
+
 
 

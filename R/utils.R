@@ -66,3 +66,14 @@ gid_date <- function(gidlist=NULL, ...){
     gidlist$date_dt <- stringr::str_sub(gidlist$gameday_link, 5, 14) %>% stringr::str_replace_all("_", "-")
     return(gidlist)
 }
+
+
+#' Internal function to cast the first letter of a word to upper-case.
+#' @param x A word or string to capatalize
+#' @param ... additional arguments.
+#' @keywords internal
+#' @export
+upperfirst <- function(x) {
+    substr(x, 1, 1) <- toupper(substr(x, 1, 1))
+    x
+}
