@@ -1,5 +1,4 @@
 
-# Add gids list option to get_payload. Should be easy, just replace urlz with the user supplied gids list.
 
 ## Test other data sets. Will have to write if statement in get_payload.
 

@@ -10,6 +10,7 @@
 #' @importFrom dplyr mutate filter
 #' @importFrom utils data head tail
 #' @import foreach
+#' @keywords internal
 #' @export
 #' @examples
 #' \dontrun{

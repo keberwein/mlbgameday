@@ -24,8 +24,8 @@ Suggests:
 	rmarkdown,
 	pitchRx
 License: MIT + file LICENSE
-URL: https://github.com/keberwein/tidygameday
-BugReports: https://github.com/keberwein/tidygameday/issues
+URL: https://github.com/keberwein/mlbgameday
+BugReports: https://github.com/keberwein/mlbgameday/issues
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 6.0.1

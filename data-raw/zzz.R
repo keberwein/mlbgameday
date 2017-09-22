@@ -1,26 +1,34 @@
-urlz <- "http://gd2.mlb.com/components/game/mlb/year_2017/month_09/day_12/gid_2017_09_12_chamlb_kcamlb_1/linescore.xml"
+urlz <- "http://gd2.mlb.com/components/game/mlb/year_2017/month_05/day_11/gid_2017_05_11_minmlb_chamlb_1/inning/inning_hit.xml"
 file <- read_xml(urlz)
 
 
+pitch_nodes <- xml2::xml_find_all(file, "/boxscore/pitching/pitcher")
+bat_nodes <- xml2::xml_find_all(file, "/boxscore/batting/batter")
+game <- purrr::map_dfr(pitch_nodes, function(x) {
+    out <- data.frame(t(xml2::xml_attrs(x)), stringsAsFactors=FALSE)
+    out})
+
+
+
 # Make some place-holders for the function.
-game <- list(); game_media <- list()
-lnames <- list(game=game, game_media=game_media)
+batting <- list(); pitching <- list()
+lnames <- list(batting=batting,pitching=pitching)
 message("Gathering Gameday data, please be patient...")
 out <- foreach::foreach(i = seq_along(urlz), .combine="comb_pload", .multicombine=T, .inorder=FALSE,
                         .final = function(x) stats::setNames(x, names(lnames)),
-                        .init=list(list(), list(), list(), list(), list())) %dopar% {
+                        .init=list(list(), list())) %dopar% {
                             file <- tryCatch(xml2::read_xml(urlz[[i]]), error=function(e) NULL)
                             if(!is.null(file)){
-                                game_nodes <- xml2::xml_find_all(file, "/game")
-                                media_nodes <- xml2::xml_find_all(file, "/game/game_media/media")
+                                pitch_nodes <- xml2::xml_find_all(file, "/boxscore/pitching/pitcher")
+                                bat_nodes <- xml2::xml_find_all(file, "/boxscore/batting/batter")
 
                                 list(
-                                    game <- purrr::map_dfr(game_nodes, function(x) {
+                                    batting <- purrr::map_dfr(bat_nodes, function(x) {
                                         out <- data.frame(t(xml2::xml_attrs(x)), stringsAsFactors=FALSE)
                                         out
                                     }),
                                     
-                                    game_media <- purrr::map_dfr(media_nodes, function(x) {
+                                    pitching <- purrr::map_dfr(pitch_nodes, function(x) {
                                         out <- data.frame(t(xml2::xml_attrs(x)), stringsAsFactors=FALSE)
                                         out
                                     })

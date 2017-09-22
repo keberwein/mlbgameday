@@ -19,6 +19,11 @@ game_urls <- function(url_gids=NULL, dataset = NULL, ...) {
     # Make sure input is a list, so the payload function can read the output correctly.
     if(length(dataset) > 1) stop("Please specify a single data set. Due to conflicting table names, scrapes are limieted to a single set.")
     
+    if(dataset=="bis_boxscore"){
+        glist <- url_gids %>% purrr::map_chr(~ paste0(., "/bis_boxscore.xml")) %>%
+            purrr::map(~ structure(., class = "gd_bis_boxscore"))
+    }
+    
     if(dataset=="inning_all"){
         glist <- url_gids %>% purrr::map_chr(~ paste0(., "/inning/inning_all.xml")) %>%
             purrr::map(~ structure(., class = "gd_inning_all"))

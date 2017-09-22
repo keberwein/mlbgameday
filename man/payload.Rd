@@ -3,28 +3,34 @@
 \name{payload}
 \alias{payload}
 \alias{payload.default}
+\alias{payload.gd_bis_boxscore}
 \alias{payload.gd_inning_all}
+\alias{payload.gd_inning_hit}
 \alias{payload.gd_linescore}
-\title{Return data from a payload object.}
+\title{Return data from a payload urlzect.}
 \usage{
-payload(obj, ...)
+payload(urlz, ...)
 
-\method{payload}{default}(obj, ...)
+\method{payload}{default}(urlz, ...)
 
-\method{payload}{gd_inning_all}(obj, ...)
+\method{payload}{gd_bis_boxscore}(urlz, ...)
 
-\method{payload}{gd_linescore}(obj, ...)
+\method{payload}{gd_inning_all}(urlz, ...)
+
+\method{payload}{gd_inning_hit}(urlz, ...)
+
+\method{payload}{gd_linescore}(urlz, ...)
 }
 \arguments{
-\item{obj}{An object created from a obj link}
+\item{urlz}{An urlzect created from a urlz link}
 
 \item{...}{additional arguments}
 }
 \description{
-Return data from a payload object.
+Return data from a payload urlzect.
 }
 \examples{
 \dontrun{
-df <- payload(obj)}
+df <- payload(urlz)}
 
 }

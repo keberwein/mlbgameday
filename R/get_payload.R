@@ -52,7 +52,11 @@ get_payload <- function(start=NULL, end=NULL, league="mlb", dataset = NULL, game
         urlz <- make_gids(start = start, end = end, dataset = dataset)
     }
     
+    if(dataset == "bis_boxscore") innings_df <- payload.gd_bis_boxscore(urlz)
+    
     if(dataset == "inning_all") innings_df <- payload.gd_inning_all(urlz)
+    
+    if(dataset=="inning_hit") innings_df <- payload.gd_inning_hit(urlz)
 
     if(dataset=="linescore") innings_df <- payload.gd_linescore(urlz)
     

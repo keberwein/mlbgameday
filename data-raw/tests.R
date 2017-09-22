@@ -57,11 +57,13 @@ zzz= mlbgameday::get_payload(game_ids = game_ids, dataset = "inning_all")
 
 # linescore not working. It's in the dopar loop. Checkt urlz.
 start=Sys.time() ; print(start)
-zzz= mlbgameday::get_payload(start = "2015-09-03", end = "2015-09-04", dataset = "linescore")
+zzz= mlbgameday::get_payload(start = "2015-09-03", end = "2015-09-04", dataset = "bis_boxscore")
 end=Sys.time()
 runtime = end - start
 runtime
 
+
+urlz <- make_gids(start = "2015-09-03", end = "2015-09-04", dataset = "inning_hit")
 
 
 start=Sys.time() ; print(start)

@@ -1,23 +1,64 @@
 # These methods are more of a functional naming convention than OO programming. This was done so the get_payload script
-# would be shorter and less crowded. URLs are set as class objects by the game_urls function and these methods
+# would be shorter and less crowded. URLs are set as class urlzects by the game_urls function and these methods
 # execute the appropriate function.
 
-#' Return data from a payload object.
-#' @param obj An object created from a obj link
+#' Return data from a payload urlzect.
+#' @param urlz An urlzect created from a urlz link
 #' @param ... additional arguments
 #' @export
 #' @examples
 #' \dontrun{
-#' df <- payload(obj)}
+#' df <- payload(urlz)}
 #' 
 
-payload <- function(obj, ...) UseMethod("payload", obj)
+payload <- function(urlz, ...) UseMethod("payload", urlz)
 
 #' @rdname payload
 #' @method payload default
 #' @export
-payload.default <- function(obj, ...) {
+payload.default <- function(urlz, ...) {
     warning("Please specify a valid MLBAM URL.")
+}
+
+#' @rdname payload
+#' @import xml2
+#' @importFrom stringr str_sub
+#' @importFrom dplyr bind_rows left_join rename
+#' @importFrom purrr map_dfr
+#' @importFrom stats setNames
+#' @import foreach
+#' @method payload gd_bis_boxscore
+#' @export
+payload.gd_bis_boxscore <- function(urlz, ...) {
+    batting <- list(); pitching <- list()
+    lnames <- list(batting=batting,pitching=pitching)
+    message("Gathering Gameday data, please be patient...")
+    out <- foreach::foreach(i = seq_along(urlz), .combine="comb_pload", .multicombine=T, .inorder=FALSE,
+                            .final = function(x) stats::setNames(x, names(lnames)),
+                            .init=list(list(), list())) %dopar% {
+                                file <- tryCatch(xml2::read_xml(urlz[[i]][[1]]), error=function(e) NULL)
+                                if(!is.null(file)){
+                                    pitch_nodes <- xml2::xml_find_all(file, "/boxscore/pitching/pitcher")
+                                    bat_nodes <- xml2::xml_find_all(file, "/boxscore/batting/batter")
+                                    
+                                    list(
+                                        batting <- purrr::map_dfr(bat_nodes, function(x) {
+                                            out <- data.frame(t(xml2::xml_attrs(x)), stringsAsFactors=FALSE)
+                                            out
+                                        }),
+                                        
+                                        pitching <- purrr::map_dfr(pitch_nodes, function(x) {
+                                            out <- data.frame(t(xml2::xml_attrs(x)), stringsAsFactors=FALSE)
+                                            out
+                                        })
+                                    )
+                                }
+                            }
+    batting <- dplyr::bind_rows(out$batting)
+    pitching <- dplyr::bind_rows(out$pitching)
+    innings_df <- list(batting=batting, pitching=pitching)
+    return(innings_df)
+    
 }
 
 
@@ -31,8 +72,7 @@ payload.default <- function(obj, ...) {
 #' @method payload gd_inning_all
 #' @export
 
-payload.gd_inning_all <- function(obj, ...) {
-    urlz <- obj
+payload.gd_inning_all <- function(urlz, ...) {
     # Make some place-holders for the function.
     atbat <- list(); action <- list(); pitch <- list(); runner <- list(); po <- list()
     lnames <- list(atbat=atbat, action=action, pitch=pitch, runner=runner, po=po)
@@ -136,6 +176,32 @@ payload.gd_inning_all <- function(obj, ...) {
     
 }
 
+
+#' @rdname payload
+#' @import xml2
+#' @importFrom purrr map_dfr
+#' @importFrom stats setNames
+#' @import foreach
+#' @method payload gd_inning_hit
+#' @export
+#' 
+payload.gd_inning_hit <- function(urlz, ...) {
+    message("Gathering Gameday data, please be patient...")
+    out <- foreach::foreach(i = seq_along(urlz), .combine="rbind", .multicombine=T, .inorder=FALSE) %dopar% {
+        file <- tryCatch(xml2::read_xml(urlz[[i]][[1]]), error=function(e) NULL)
+        if(!is.null(file)){
+            hip_nodes <- xml2::xml_find_all(file, "/hitchart/hip")
+            game <- purrr::map_dfr(hip_nodes, function(x) {
+                out <- data.frame(t(xml2::xml_attrs(x)), stringsAsFactors=FALSE)
+                out
+            })
+        }
+    }
+    return(out)
+}
+
+
+
 #' @rdname payload
 #' @import xml2
 #' @importFrom dplyr bind_rows rename
@@ -145,8 +211,7 @@ payload.gd_inning_all <- function(obj, ...) {
 #' @method payload gd_linescore
 #' @export
 
-payload.gd_linescore <- function(obj, ...) {
-    urlz <- obj
+payload.gd_linescore <- function(urlz, ...) {
     game <- list(); game_media <- list()
     lnames <- list(game=game, game_media=game_media)
     message("Gathering Gameday data, please be patient...")
@@ -176,3 +241,8 @@ payload.gd_linescore <- function(obj, ...) {
     innings_df <- list(game=game, game_media=game_media)
     return(innings_df)
 }
+
+
+
+
+
