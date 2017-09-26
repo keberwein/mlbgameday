@@ -52,11 +52,18 @@ get_payload <- function(start=NULL, end=NULL, league="mlb", dataset = NULL, game
         urlz <- make_gids(start = start, end = end, dataset = dataset)
     }
     
+    ## HERE: Check the classes instead of the dataset. Maybe a nested ifelse loop would work to
+    # combine multiple data types.
+    # inning_all <- data.frame
+    # inning_all <- bind_rows(x, inning_all)
+    
     if(dataset == "bis_boxscore") innings_df <- payload.gd_bis_boxscore(urlz)
     
     if(dataset == "game_events") innings_df <- payload.gd_game_events(urlz)
     
-    if(dataset == "inning_all") innings_df <- payload.gd_inning_all(urlz)
+    if(dataset == "inning_all") {
+        innings_df <- payload.gd_inning_all(urlz) %>% etl_payload(convert = dataset)
+    }
     
     if(dataset=="inning_hit") innings_df <- payload.gd_inning_hit(urlz)
 

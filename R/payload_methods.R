@@ -2,9 +2,10 @@
 # would be shorter and less crowded. URLs are set as class urlzects by the game_urls function and these methods
 # execute the appropriate function.
 
-#' Return data from a payload urlzect.
+#' Method for paylaod objects.
 #' @param urlz An urlzect created from a urlz link
 #' @param ... additional arguments
+#' @keywords internal
 #' @export
 #' @examples
 #' \dontrun{
@@ -91,7 +92,7 @@ payload.gd_game_events <- function(urlz, ...) {
                 out$des <- xml2::xml_parent(x) %>% xml2::xml_attr("des")
                 out$des_es <- xml2::xml_parent(x) %>% xml2::xml_attr("des_es")
                 out$event_num <- xml2::xml_parent(x) %>% xml2::xml_attr("event_num")
-                out$even <- xml2::xml_parent(x) %>% xml2::xml_attr("event")
+                out$event <- xml2::xml_parent(x) %>% xml2::xml_attr("event")
                 out$event_es <- xml2::xml_parent(x) %>% xml2::xml_attr("event_es")
                 out$play_guid <- xml2::xml_parent(x) %>% xml2::xml_attr("play_guid")
                 out$home_team_runs <- xml2::xml_parent(x) %>% xml2::xml_attr("home_team_runs")
@@ -143,13 +144,13 @@ payload.gd_inning_all <- function(urlz, ...) {
                                     po_nodes <- c(xml2::xml_find_all(file, "./inning/top/atbat/po"), 
                                                   xml2::xml_find_all(file, "./inning/bottom/atbat/po"))
                                     url <- urlz[[i]]
-                                    date_dt <- stringr::str_sub(urlz[[i]], 71, -39)
+                                    date_dt <- as.Date(stringr::str_sub(urlz[[i]], 71, -39), format = "%Y-%m-%d")
                                     gameday_link <- stringr::str_sub(urlz[[i]], 66, -23)
                                     
                                     list(                        
                                         atbat <- purrr::map_dfr(atbat_nodes, function(x) {
                                             out <- data.frame(t(xml2::xml_attrs(x)), stringsAsFactors=FALSE)
-                                            out$inning <- xml2::xml_parent(xml2::xml_parent(x)) %>% xml2::xml_attr("num")
+                                            out$inning <- as.numeric(xml2::xml_parent(xml2::xml_parent(x)) %>% xml2::xml_attr("num"))
                                             out$next_ <- xml2::xml_parent(xml2::xml_parent(x)) %>% xml2::xml_attr("next")
                                             out$inning_side <- xml2::xml_name(xml2::xml_parent(x))
                                             out$url <- url
@@ -160,7 +161,7 @@ payload.gd_inning_all <- function(urlz, ...) {
                                         
                                         action <- purrr::map_dfr(action_nodes, function(x) {
                                             out <- data.frame(t(xml2::xml_attrs(x)), stringsAsFactors=FALSE)
-                                            out$inning <- xml2::xml_parent(xml2::xml_parent(x)) %>% xml2::xml_attr("num")
+                                            out$inning <- as.numeric(xml2::xml_parent(xml2::xml_parent(x)) %>% xml2::xml_attr("num"))
                                             out$next_ <- xml2::xml_parent(xml2::xml_parent(x)) %>% xml2::xml_attr("next")
                                             out$inning_side <- xml2::xml_name(xml2::xml_parent(x))
                                             out$url <- url
@@ -170,12 +171,12 @@ payload.gd_inning_all <- function(urlz, ...) {
                                         
                                         pitch <- purrr::map_dfr(pitch_nodes, function(x) {
                                             out <- data.frame(t(xml2::xml_attrs(x)), stringsAsFactors=FALSE)
-                                            out$inning <- xml2::xml_parent(xml2::xml_parent(xml2::xml_parent(x))) %>% xml2::xml_attr("num")
+                                            out$inning <- as.numeric(xml2::xml_parent(xml2::xml_parent(xml2::xml_parent(x))) %>% xml2::xml_attr("num"))
                                             out$next_ <- xml2::xml_parent(xml2::xml_parent(xml2::xml_parent(x))) %>% xml2::xml_attr("next")
                                             out$inning_side <- xml2::xml_name(xml2::xml_parent(xml2::xml_parent(x)))
                                             out$url <- url
                                             out$gameday_link <- gameday_link
-                                            out$num <- xml2::xml_parent(x) %>% xml2::xml_attr("num")
+                                            out$num <- as.numeric(xml2::xml_parent(x) %>% xml2::xml_attr("num"))
                                             out$count <- paste(xml2::xml_parent(x) %>% xml2::xml_attr("b"), 
                                                                xml2::xml_parent(x) %>% xml2::xml_attr("s"), sep="-")
                                             out
@@ -183,7 +184,7 @@ payload.gd_inning_all <- function(urlz, ...) {
                                         
                                         runner <- purrr::map_dfr(runner_nodes, function(x) {
                                             out <- data.frame(t(xml2::xml_attrs(x)), stringsAsFactors=FALSE)
-                                            out$inning <- xml2::xml_parent(xml2::xml_parent(x)) %>% xml2::xml_attr("num")
+                                            out$inning <- as.numeric(xml2::xml_parent(xml2::xml_parent(x)) %>% xml2::xml_attr("num"))
                                             out$next_ <- xml2::xml_parent(xml2::xml_parent(x)) %>% xml2::xml_attr("next")
                                             out$inning_side <- xml2::xml_name(xml2::xml_parent(x))
                                             out$url <- url
@@ -193,9 +194,9 @@ payload.gd_inning_all <- function(urlz, ...) {
                                         
                                         po <- purrr::map_dfr(po_nodes, function(x) {
                                             out <- data.frame(t(xml2::xml_attrs(x)), stringsAsFactors=FALSE)
-                                            out$inning <- xml2::xml_parent(xml2::xml_parent(x)) %>% xml2::xml_attr("num")
-                                            out$next_ <- xml2::xml_parent(xml2::xml_parent(x)) %>% xml2::xml_attr("next")
-                                            out$inning_side <- xml2::xml_name(xml2::xml_parent(x))
+                                            out$inning <- as.numeric( xml2::xml_parent(xml2::xml_parent(xml2::xml_parent(x))) %>% xml2::xml_attr("num"))
+                                            out$next_ <-  xml2::xml_parent(xml2::xml_parent(xml2::xml_parent(x))) %>% xml2::xml_attr("next")
+                                            out$inning_side <- xml2::xml_name(xml2::xml_parent(xml2::xml_parent(x)))
                                             out$url <- url
                                             out$gameday_link <- gameday_link
                                             out

@@ -8,7 +8,7 @@
 \alias{payload.gd_inning_all}
 \alias{payload.gd_inning_hit}
 \alias{payload.gd_linescore}
-\title{Return data from a payload urlzect.}
+\title{Method for paylaod objects.}
 \usage{
 payload(urlz, ...)
 
@@ -30,10 +30,11 @@ payload(urlz, ...)
 \item{...}{additional arguments}
 }
 \description{
-Return data from a payload urlzect.
+Method for paylaod objects.
 }
 \examples{
 \dontrun{
 df <- payload(urlz)}
 
 }
+\keyword{internal}
