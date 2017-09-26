@@ -3,9 +3,6 @@
 #' @param ... additional arguments
 #' @keywords internal
 #' @export
-#' @examples
-#' \dontrun{
-#' df <- transform_pload(payload_obj)}
 #' 
 
 transform_pload <- function(payload_obj, ...) UseMethod("transform_pload", payload_obj)

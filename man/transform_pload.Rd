@@ -29,9 +29,4 @@ transform_pload(payload_obj, ...)
 \description{
 Method for paylaod objects.
 }
-\examples{
-\dontrun{
-df <- transform_pload(payload_obj)}
-
-}
 \keyword{internal}
