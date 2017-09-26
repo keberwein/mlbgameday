@@ -10,6 +10,8 @@ etl_payload(dataset = NULL, convert = NULL, ...)
 \item{dataset}{The data to be transformed.}
 
 \item{convert}{The playload type to be transformed.}
+
+\item{...}{additional arguments}
 }
 \description{
 An internal function to set data types to various paylaod types.

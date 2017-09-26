@@ -4,7 +4,7 @@
 #' "game", and "game_events".
 #' @param ... additional arguments
 #' @importFrom stringr str_sub str_length
-#' @importFrom purrr map_chr map
+#' @importFrom purrr map_chr
 #' @importFrom dplyr setdiff
 #' @import foreach
 #' @export
@@ -20,26 +20,21 @@ game_urls <- function(url_gids=NULL, dataset = NULL, ...) {
     if(length(dataset) > 1) stop("Please specify a single data set. Due to conflicting table names, scrapes are limieted to a single set.")
     
     if(dataset=="bis_boxscore"){
-        glist <- url_gids %>% purrr::map_chr(~ paste0(., "/bis_boxscore.xml")) %>%
-            purrr::map(~ structure(., class = "gd_bis_boxscore"))
+        glist <- url_gids %>% purrr::map_chr(~ paste0(., "/bis_boxscore.xml"))
     }
     
     if(dataset=="game_events"){
-        glist <- url_gids %>% purrr::map_chr(~ paste0(., "/game_events.xml")) %>%
-            purrr::map(~ structure(., class = "gd_game_events"))
+        glist <- url_gids %>% purrr::map_chr(~ paste0(., "/game_events.xml"))
     }
     
     if(dataset=="inning_all"){
-        glist <- url_gids %>% purrr::map_chr(~ paste0(., "/inning/inning_all.xml")) %>%
-            purrr::map(~ structure(., class = "gd_inning_all"))
+        glist <- url_gids %>% purrr::map_chr(~ paste0(., "/inning/inning_all.xml"))
     }
     if(dataset=="inning_hit"){
-        glist <- url_gids %>% purrr::map_chr(~ paste0(., "/inning/inning_hit.xml")) %>%
-            purrr::map(~ structure(., class = "gd_inning_hit"))
+        glist <- url_gids %>% purrr::map_chr(~ paste0(., "/inning/inning_hit.xml"))
     }
     if(dataset=="linescore"){
-        glist <- url_gids %>% purrr::map_chr(~ paste0(., "/linescore.xml")) %>%
-            purrr::map(~ structure(., class = "gd_linescore"))
+        glist <- url_gids %>% purrr::map_chr(~ paste0(., "/linescore.xml"))
     }
     return(glist)
 }

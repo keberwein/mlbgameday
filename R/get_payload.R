@@ -35,6 +35,8 @@
 #' 
 get_payload <- function(start=NULL, end=NULL, league="mlb", dataset = NULL, game_ids = NULL, ...) {
     if(is.null(dataset)) dataset <- "inning_all"
+    message("Gathering Gameday data, please be patient...")
+    
     
     if(!is.null(game_ids)){
         urlz <- make_gids(game_ids = game_ids, dataset = dataset)
@@ -61,13 +63,16 @@ get_payload <- function(start=NULL, end=NULL, league="mlb", dataset = NULL, game
     
     if(dataset == "game_events") innings_df <- payload.gd_game_events(urlz)
     
-    if(dataset == "inning_all") {
-        innings_df <- payload.gd_inning_all(urlz) %>% etl_payload(convert = dataset)
-    }
+    if(dataset == "inning_all") innings_df <- payload.gd_inning_all(urlz)
     
     if(dataset=="inning_hit") innings_df <- payload.gd_inning_hit(urlz)
 
     if(dataset=="linescore") innings_df <- payload.gd_linescore(urlz)
     
+    innings_df <- transform_pload(innings_df)
+    
     return(innings_df)
 }
+
+
+#innings_df <- structure(innings_df, class="gd_inning_all")

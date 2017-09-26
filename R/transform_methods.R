@@ -1,0 +1,124 @@
+#' Method for paylaod objects.
+#' @param payload_obj An object returned by \code{get_payload()}.
+#' @param ... additional arguments
+#' @keywords internal
+#' @export
+#' @examples
+#' \dontrun{
+#' df <- transform_pload(payload_obj)}
+#' 
+
+transform_pload <- function(payload_obj, ...) UseMethod("transform_pload", payload_obj)
+
+#' @rdname transform_pload
+#' @importFrom dplyr mutate
+#' @method transform_pload list_bis_boxscore
+#' @export
+
+transform_pload.list_bis_boxscore <- function(payload_obj, ...) {
+    payload_obj$batting %<>% dplyr::mutate(id=as.numeric(id), bo=as.numeric(bo), ab=as.numeric(ab), po=as.numeric(po),
+                                         r=as.numeric(r), a=as.numeric(a), bb=as.numeric(bb), sac=as.numeric(sac),
+                                         t=as.numeric(t), sf=as.numeric(sf), h=as.numeric(h), e=as.numeric(e),
+                                         d=as.numeric(d), hbp=as.numeric(hbp), so=as.numeric(so), hr=as.numeric(hr),
+                                         rbi=as.numeric(rbi), lob=as.numeric(lob), fldg=as.double(fldg), avg=as.double(avg),
+                                         go=as.numeric(go), ao=as.numeric(ao), gidp=as.numeric(gidp))
+    
+    payload_obj$pitching %<>% dplyr::mutate(id=as.numeric(id), out=as.numeric(out), bf=as.numeric(bf), er=as.numeric(er),
+                                           r=as.numeric(r), h=as.numeric(h), so=as.numeric(so), hr=as.numeric(hr),
+                                           bb=as.numeric(bb), np=as.numeric(np), s=as.numeric(s), w=as.numeric(w),
+                                           era=as.double(era))
+    
+    return(payload_obj)
+}
+
+#' @rdname transform_pload
+#' @importFrom dplyr mutate
+#' @method transform_pload df_game_events
+#' @export
+
+transform_pload.df_game_events <- function(payload_obj, ...) {
+    # Hack to get dplyr to mutate a generic object class.
+    payload_obj <- structure(payload_obj, class="data.frame")
+
+    payload_obj %<>% dplyr::mutate(start_speed=as.double(start_speed), num=as.numeric(num),
+                                   b=as.numeric(b), s=as.numeric(s), o=as.numeric(o), start_tfs=as.numeric(start_tfs),
+                                   batter=as.numeric(batter), pitcher=as.numeric(pitcher), event_num=as.numeric(event_num),
+                                   home_team_runs=as.numeric(home_team_runs), away_team_runs=as.numeric(away_team_runs),
+                                   inning=as.numeric(inning))
+    # Revert object to the old class for the load functions.
+    return(payload_obj)
+}
+
+#' @rdname transform_pload
+#' @importFrom dplyr mutate
+#' @method transform_pload df_inning_hit
+#' @export
+
+transform_pload.df_inning_hit <- function(payload_obj, ...) {
+    # Hack to get dplyr to mutate a generic object class.
+    payload_obj <- structure(payload_obj, class="data.frame")
+    payload_obj %<>% dplyr::mutate(x=as.double(x), y=as.double(y), batter=as.numeric(batter), pitcher=as.numeric(pitcher),
+                                   inning=as.numeric(inning))
+
+    return(payload_obj)
+}
+
+
+#' @rdname transform_pload
+#' @importFrom dplyr mutate
+#' @method transform_pload list_inning_all
+#' @export
+
+transform_pload.list_inning_all <- function(payload_obj, ...) {
+    payload_obj$atbat %<>% dplyr::mutate(num=as.numeric(num), b=as.numeric(b), s=as.numeric(s), o=as.numeric(o),
+                                         start_tfs=as.numeric(start_tfs), batter=as.numeric(batter), pitcher=as.numeric(pitcher),
+                                         event_num=as.numeric(event_num), home_team_runs=as.numeric(home_team_runs),
+                                         away_team_runs=as.numeric(away_team_runs))
+    
+    payload_obj$action %<>% dplyr::mutate(b=as.numeric(b), s=as.numeric(s), o=as.numeric(o),
+                                          tfs=as.numeric(tfs), player=as.numeric(player), pitch=as.numeric(pitch),
+                                          event_num=as.numeric(event_num), home_team_runs=as.numeric(home_team_runs),
+                                          away_team_runs=as.numeric(away_team_runs))
+    
+    payload_obj$pitch %<>% dplyr::mutate(id=as.numeric(id), tfs=as.numeric(tfs), x=as.numeric(x), y=as.numeric(y),
+                                         event_num=as.numeric(event_num), start_speed=as.numeric(start_speed), 
+                                         end_speed=as.numeric(end_speed), sz_top=as.numeric(sz_top), sz_bot=as.numeric(sz_bot),
+                                         pfx_x=as.numeric(pfx_x), pfx_z=as.numeric(pfx_z), px=as.numeric(px), pz=as.numeric(pz),
+                                         x0=as.numeric(x0), y0=as.numeric(y0), z0=as.numeric(z0), vx0=as.numeric(vx0), 
+                                         vy0=as.numeric(vy0), vz0=as.numeric(vz0), ax=as.numeric(ax), ay=as.numeric(ay),
+                                         az=as.numeric(az), break_y=as.numeric(break_y), break_angle=as.numeric(break_angle),
+                                         break_length=as.numeric(break_length), type_confidence=as.numeric(type_confidence),
+                                         nasty=as.numeric(nasty), spin_dir=as.numeric(spin_dir), spin_rate=as.numeric(spin_rate),
+                                         on_1b=as.numeric(on_1b), on_2b=as.numeric(on_2b), on_3b=as.numeric(on_3b))
+    
+    payload_obj$runner %<>% dplyr::mutate(id=as.numeric(id), event_num=as.numeric(event_num))
+    
+    payload_obj$po %<>% dplyr::mutate(event_num=as.numeric(event_num))
+
+    
+    return(payload_obj)
+}
+
+#' @rdname transform_pload
+#' @importFrom dplyr mutate
+#' @method transform_pload list_linescore
+#' @export
+
+transform_pload.list_linescore <- function(payload_obj, ...) {
+    # TO DO: Need to convert the date/time fields to a 24-hour clock and to a date/time data format.
+    # The way they are now are going to mess up any database we try to load them in to.
+
+    payload_obj$game %<>% dplyr::mutate(game_pk=as.numeric(game_pk), original_date=as.Date(original_date, format="Y/m/d"),
+                                        venue_id=as.numeric(venue_id), scheduled_innings=as.numeric(scheduled_innings),
+                                        away_team_id=as.numeric(away_team_id), away_league_id=as.numeric(away_league_id),
+                                        home_team_id=as.numeric(home_team_id), home_league_id=as.numeric(home_league_id),
+                                        game_nbr=as.numeric(game_nbr), away_win=as.numeric(away_win), away_loss=as.numeric(away_loss),
+                                        home_win=as.numeric(home_win), home_loss=as.numeric(home_loss),
+                                        inning=as.numeric(inning), balls=as.numeric(balls), strikes=as.numeric(strikes),
+                                        outs=as.numeric(outs), away_team_runs=as.numeric(away_team_runs), home_team_runs=as.numeric(home_team_runs),
+                                        away_team_hits=as.numeric(away_team_hits), home_team_hits=as.numeric(home_team_hits), 
+                                        away_team_errors=as.numeric(away_team_errors), home_team_errors=as.numeric(home_team_errors))
+    return(payload_obj)
+}
+
+

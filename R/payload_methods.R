@@ -1,39 +1,20 @@
 # These methods are more of a functional naming convention than OO programming. This was done so the get_payload script
-# would be shorter and less crowded. URLs are set as class urlzects by the game_urls function and these methods
-# execute the appropriate function.
+# would be shorter and less crowded.
 
-#' Method for paylaod objects.
+#' An internal function for bis_boxscore payload.
 #' @param urlz An urlzect created from a urlz link
 #' @param ... additional arguments
 #' @keywords internal
-#' @export
-#' @examples
-#' \dontrun{
-#' df <- payload(urlz)}
-#' 
-
-payload <- function(urlz, ...) UseMethod("payload", urlz)
-
-#' @rdname payload
-#' @method payload default
-#' @export
-payload.default <- function(urlz, ...) {
-    warning("Please specify a valid MLBAM URL.")
-}
-
-#' @rdname payload
 #' @import xml2
 #' @importFrom stringr str_sub
 #' @importFrom dplyr bind_rows left_join rename
 #' @importFrom purrr map_dfr
 #' @importFrom stats setNames
 #' @import foreach
-#' @method payload gd_bis_boxscore
 #' @export
 payload.gd_bis_boxscore <- function(urlz, ...) {
     batting <- list(); pitching <- list()
     lnames <- list(batting=batting,pitching=pitching)
-    message("Gathering Gameday data, please be patient...")
     out <- foreach::foreach(i = seq_along(urlz), .combine="comb_pload", .multicombine=T, .inorder=FALSE,
                             .final = function(x) stats::setNames(x, names(lnames)),
                             .init=list(list(), list())) %dopar% {
@@ -58,21 +39,22 @@ payload.gd_bis_boxscore <- function(urlz, ...) {
     batting <- dplyr::bind_rows(out$batting)
     pitching <- dplyr::bind_rows(out$pitching)
     innings_df <- list(batting=batting, pitching=pitching)
+    innings_df <- structure(innings_df, class="list_bis_boxscore")
     return(innings_df)
     
 }
 
-
-#' @rdname payload
+#' An internal function for game_events paylaod.
+#' @param urlz An urlzect created from a urlz link
+#' @param ... additional arguments
+#' @keywords internal
 #' @import xml2
 #' @importFrom purrr map_dfr
 #' @importFrom stats setNames
 #' @import foreach
-#' @method payload gd_game_events
 #' @export
 #' 
 payload.gd_game_events <- function(urlz, ...) {
-    message("Gathering Gameday data, please be patient...")
     innings_df <- foreach::foreach(i = seq_along(urlz), .combine="rbind", .multicombine=T, .inorder=FALSE) %dopar% {
         file <- tryCatch(xml2::read_xml(urlz[[i]][[1]]), error=function(e) NULL)
         if(!is.null(file)){
@@ -106,27 +88,29 @@ payload.gd_game_events <- function(urlz, ...) {
             })
         }
     }
+    innings_df <- structure(innings_df, class="df_game_events")
+    
     return(innings_df)
 }
     
 
 
-
-#' @rdname payload
+#' An internal function for inning_all payload.
+#' @param urlz An urlzect created from a urlz link
+#' @param ... additional arguments
+#' @keywords internal
 #' @import xml2
 #' @importFrom stringr str_sub
 #' @importFrom dplyr bind_rows left_join rename
 #' @importFrom purrr map_dfr
 #' @importFrom stats setNames
 #' @import foreach
-#' @method payload gd_inning_all
 #' @export
 
 payload.gd_inning_all <- function(urlz, ...) {
     # Make some place-holders for the function.
     atbat <- list(); action <- list(); pitch <- list(); runner <- list(); po <- list()
     lnames <- list(atbat=atbat, action=action, pitch=pitch, runner=runner, po=po)
-    message("Gathering Gameday data, please be patient...")
     out <- foreach::foreach(i = seq_along(urlz), .combine="comb_pload", .multicombine=T, .inorder=FALSE,
                             .final = function(x) stats::setNames(x, names(lnames)),
                             .init=list(list(), list(), list(), list(), list())) %dopar% {
@@ -222,21 +206,23 @@ payload.gd_inning_all <- function(urlz, ...) {
         dplyr::left_join(player_ids, by = c("pitcher" = "id")) %>% 
         dplyr::rename(batter_name=full_name.x, pitcher_name=full_name.y)
     
+    innings_df <- structure(innings_df, class="list_inning_all")
+    
     return(innings_df)
     
 }
 
-
-#' @rdname payload
+#' An internal function for inning_hit payload.
+#' @param urlz An urlzect created from a urlz link
+#' @param ... additional arguments
+#' @keywords internal
 #' @import xml2
 #' @importFrom purrr map_dfr
 #' @importFrom stats setNames
 #' @import foreach
-#' @method payload gd_inning_hit
 #' @export
 #' 
 payload.gd_inning_hit <- function(urlz, ...) {
-    message("Gathering Gameday data, please be patient...")
     innings_df <- foreach::foreach(i = seq_along(urlz), .combine="rbind", .multicombine=T, .inorder=FALSE) %dopar% {
         file <- tryCatch(xml2::read_xml(urlz[[i]][[1]]), error=function(e) NULL)
         if(!is.null(file)){
@@ -247,24 +233,24 @@ payload.gd_inning_hit <- function(urlz, ...) {
             })
         }
     }
+    innings_df <- structure(innings_df, class="df_inning_hit")
     return(innings_df)
 }
 
-
-
-#' @rdname payload
+#' An internal function for linescore playload.
+#' @param urlz An urlzect created from a urlz link
+#' @param ... additional arguments
+#' @keywords internal
 #' @import xml2
 #' @importFrom dplyr bind_rows rename
 #' @importFrom purrr map_dfr
 #' @importFrom stats setNames
 #' @import foreach
-#' @method payload gd_linescore
 #' @export
 
 payload.gd_linescore <- function(urlz, ...) {
     game <- list(); game_media <- list()
     lnames <- list(game=game, game_media=game_media)
-    message("Gathering Gameday data, please be patient...")
     out <- foreach::foreach(i = seq_along(urlz), .combine="comb_pload", .multicombine=T, .inorder=FALSE,
                             .final = function(x) stats::setNames(x, names(lnames)),
                             .init=list(list(), list())) %dopar% {
@@ -289,6 +275,7 @@ payload.gd_linescore <- function(urlz, ...) {
     game <- dplyr::bind_rows(out$game)
     game_media <- dplyr::bind_rows(out$game_media)
     innings_df <- list(game=game, game_media=game_media)
+    innings_df <- structure(innings_df, class="list_linescore")
     return(innings_df)
 }
 
