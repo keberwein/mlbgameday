@@ -63,7 +63,10 @@ runtime = end - start
 runtime
 
 
-urlz <- make_gids(start = "2015-09-03", end = "2015-09-04", dataset = "bis_boxscore")
+urlz <- make_gids(start = "2015-09-03", end = "2015-09-04", dataset = "inning_all")
+
+
+urlz <- search_gids(start = "2016-01-01", end = "2016-12-31", game_type = "r")
 
 
 start=Sys.time() ; print(start)
