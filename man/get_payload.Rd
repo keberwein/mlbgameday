@@ -5,7 +5,7 @@
 \title{Get Gameday data from MLBAM.}
 \usage{
 get_payload(start = NULL, end = NULL, league = "mlb", dataset = NULL,
-  game_ids = NULL, ...)
+  game_ids = NULL, db_con = NULL, ...)
 }
 \arguments{
 \item{start}{A start date passed as a character in ISO 8601 format. \code{"2017-05-01"}}
@@ -19,6 +19,8 @@ get_payload(start = NULL, end = NULL, league = "mlb", dataset = NULL,
 \item{game_ids}{A list of user-supplied gameIds.}
 
 \item{...}{additional arguments}
+
+\item{db_conn}{A database connection from the \code{DBI} package.}
 }
 \description{
 Get Gameday data from MLBAM.

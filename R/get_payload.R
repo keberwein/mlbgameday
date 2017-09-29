@@ -4,7 +4,10 @@
 #' @param league The leauge to gather gids for. The default is \code{"mlb"}. Other options include \code{"aaa"} and \code{"aa"}
 #' @param dataset The dataset to be scraped. The default is "inning_all." Other options include, "inning_hit", "linescore".
 #' @param game_ids A list of user-supplied gameIds.
+#' @param db_conn A database connection from the \code{DBI} package.
 #' @param ... additional arguments
+#' @importFrom DBI dbWriteTable
+#' @import utils
 #' @export
 #' @examples
 #' \dontrun{
@@ -33,7 +36,7 @@
 #' df <- get_payload(game_ids = mygids)
 #' 
 #' 
-get_payload <- function(start=NULL, end=NULL, league="mlb", dataset = NULL, game_ids = NULL, ...) {
+get_payload <- function(start=NULL, end=NULL, league="mlb", dataset = NULL, game_ids = NULL, db_con = NULL, ...) {
     if(is.null(dataset)) dataset <- "inning_all"
     message("Gathering Gameday data, please be patient...")
     
@@ -54,25 +57,41 @@ get_payload <- function(start=NULL, end=NULL, league="mlb", dataset = NULL, game
         urlz <- make_gids(start = start, end = end, dataset = dataset)
     }
     
-    ## HERE: Check the classes instead of the dataset. Maybe a nested ifelse loop would work to
-    # combine multiple data types.
-    # inning_all <- data.frame
-    # inning_all <- bind_rows(x, inning_all)
-    
-    if(dataset == "bis_boxscore") innings_df <- payload.gd_bis_boxscore(urlz)
-    
-    if(dataset == "game_events") innings_df <- payload.gd_game_events(urlz)
-    
-    if(dataset == "inning_all") innings_df <- payload.gd_inning_all(urlz)
-    
-    if(dataset=="inning_hit") innings_df <- payload.gd_inning_hit(urlz)
-
-    if(dataset=="linescore") innings_df <- payload.gd_linescore(urlz)
-    
-    innings_df <- transform_pload(innings_df)
-    
-    return(innings_df)
+    if(!is.null(db_con)){
+        # Chunk out URLs in groups of 300 if a database connection is available.
+        url_chunks <- split(urlz, ceiling(seq_along(urlz)/300))
+        
+        for(i in seq_along(url_chunks)){
+            message(paste0("Processing data chunk ", i, " of ", length(url_chunks)))
+            urlz <- unlist(url_chunks[i])
+            if(dataset == "bis_boxscore") innings_df <- payload.gd_bis_boxscore(urlz)
+            if(dataset == "game_events") innings_df <- payload.gd_game_events(urlz)
+            if(dataset == "inning_all") innings_df <- payload.gd_inning_all(urlz)
+            if(dataset=="inning_hit") innings_df <- payload.gd_inning_hit(urlz)
+            if(dataset=="linescore") innings_df <- payload.gd_linescore(urlz)
+            innings_df <- transform_pload(innings_df)
+            
+            for (i in names(innings_df)) DBI::dbWriteTable(conn = db_con, value = innings_df[[i]], name = i, append = TRUE)
+            # Manual garbage collect after every loop of 300 games.
+            rm(innings_df); gc()
+        }
+        
+    }else{
+        # If no database connection, just return a dataframe.
+        # If the returned dataframe looks like it's going to be large, warn the user.
+        if(length(urlz) > 3500) { # One full season including spring training and playoffs is around 3000 games.
+            if(utils::menu(c("Yes", "No"), 
+                           title="Woah, that's a lot of data! Are you sure you want to continue without a database connection?")!=1){
+                stop(message("Download stopped. Try a database connection or a smaller data set."))
+            }else message("Starting download, this may take a while...")
+        }
+        if(dataset == "bis_boxscore") innings_df <- payload.gd_bis_boxscore(urlz)
+        if(dataset == "game_events") innings_df <- payload.gd_game_events(urlz)
+        if(dataset == "inning_all") innings_df <- payload.gd_inning_all(urlz)
+        if(dataset=="inning_hit") innings_df <- payload.gd_inning_hit(urlz)
+        if(dataset=="linescore") innings_df <- payload.gd_linescore(urlz)
+        innings_df <- transform_pload(innings_df)
+    }
 }
 
 
-#innings_df <- structure(innings_df, class="gd_inning_all")

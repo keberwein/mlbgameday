@@ -8,7 +8,7 @@
 transform_pload <- function(payload_obj, ...) UseMethod("transform_pload", payload_obj)
 
 #' @rdname transform_pload
-#' @importFrom dplyr mutate
+#' @importFrom dplyr mutate select
 #' @method transform_pload list_bis_boxscore
 #' @export
 
@@ -70,12 +70,18 @@ transform_pload.list_inning_all <- function(payload_obj, ...) {
     payload_obj$atbat %<>% dplyr::mutate(num=as.numeric(num), b=as.numeric(b), s=as.numeric(s), o=as.numeric(o),
                                          start_tfs=as.numeric(start_tfs), batter=as.numeric(batter), pitcher=as.numeric(pitcher),
                                          event_num=as.numeric(event_num), home_team_runs=as.numeric(home_team_runs),
-                                         away_team_runs=as.numeric(away_team_runs))
+                                         away_team_runs=as.numeric(away_team_runs)) %>%
+        # Column order gets crossed up in some cases, which makes it difficult to "chunk" into a database. Order manually for now.
+        dplyr::select(num, b, s, o, start_tfs, start_tfs_zulu, batter, stand, b_height, pitcher, p_throws, des, des_es, event_num,     
+            event, event_es, home_team_runs, away_team_runs, inning, next_, inning_side, url, date, gameday_link, score, play_guid,
+            event2, event2_es, event3, event3_es, batter_name, pitcher_name)
     
     payload_obj$action %<>% dplyr::mutate(b=as.numeric(b), s=as.numeric(s), o=as.numeric(o),
                                           tfs=as.numeric(tfs), player=as.numeric(player), pitch=as.numeric(pitch),
                                           event_num=as.numeric(event_num), home_team_runs=as.numeric(home_team_runs),
-                                          away_team_runs=as.numeric(away_team_runs))
+                                          away_team_runs=as.numeric(away_team_runs)) %>%
+        dplyr::select(b, s, o, des, des_es, event, event_es, tfs, tfs_zulu, player, pitch, event_num, play_guid, home_team_runs,
+            away_team_runs, inning, next_, inning_side, url, gameday_link, event2, event2_es)
     
     payload_obj$pitch %<>% dplyr::mutate(id=as.numeric(id), tfs=as.numeric(tfs), x=as.numeric(x), y=as.numeric(y),
                                          event_num=as.numeric(event_num), start_speed=as.numeric(start_speed), 
@@ -86,13 +92,18 @@ transform_pload.list_inning_all <- function(payload_obj, ...) {
                                          az=as.numeric(az), break_y=as.numeric(break_y), break_angle=as.numeric(break_angle),
                                          break_length=as.numeric(break_length), type_confidence=as.numeric(type_confidence),
                                          nasty=as.numeric(nasty), spin_dir=as.numeric(spin_dir), spin_rate=as.numeric(spin_rate),
-                                         on_1b=as.numeric(on_1b), on_2b=as.numeric(on_2b), on_3b=as.numeric(on_3b))
+                                         on_1b=as.numeric(on_1b), on_2b=as.numeric(on_2b), on_3b=as.numeric(on_3b)) %>%
+        dplyr::select(des, des_es, id, type, tfs, tfs_zulu, x, y, event_num, sv_id, play_guid, start_speed, end_speed, sz_top,         
+            sz_bot, pfx_x, pfx_z, px, pz, x0, y0, z0, vx0, vy0, vz0, ax, ay, az, break_y, break_angle, break_length, pitch_type, 
+            type_confidence, zone, nasty, spin_dir, spin_rate, cc, mt, inning, next_, inning_side,    
+            url, gameday_link, num, count, on_2b, on_1b, on_3b)
     
-    payload_obj$runner %<>% dplyr::mutate(id=as.numeric(id), event_num=as.numeric(event_num))
+    payload_obj$runner %<>% dplyr::mutate(id=as.numeric(id), event_num=as.numeric(event_num)) %>%
+        dplyr::select(id, start, end, event, event_num, inning, next_, inning_side, url, gameday_link, score, rbi, earned)
     
-    payload_obj$po %<>% dplyr::mutate(event_num=as.numeric(event_num))
+    payload_obj$po %<>% dplyr::mutate(event_num=as.numeric(event_num)) %>%
+        dplyr::select(des, des_es, event_num, inning, next_, inning_side, url, gameday_link, play_guid, catcher)
 
-    
     return(payload_obj)
 }
 

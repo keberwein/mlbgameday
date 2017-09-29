@@ -36,7 +36,7 @@ runtime
 
 
 start = Sys.time()
-pload <- tidygameday::get_payload(inningsalllist)
+pload <- mlbgameday::get_payload(inningsalllist)
 end = Sys.time()
 runtime = end-start
  
@@ -57,16 +57,36 @@ zzz= mlbgameday::get_payload(game_ids = game_ids, dataset = "inning_all")
 
 # linescore not working. It's in the dopar loop. Checkt urlz.
 start=Sys.time() ; print(start)
-innings_df <- mlbgameday::get_payload(start = "2015-09-03", end = "2015-09-04", dataset = "bis_boxscore")
+innings_df <- mlbgameday::get_payload(start = "2015-09-03", end = "2015-09-04", dataset = "inning_all")
 end=Sys.time()
 runtime = end - start
 runtime
 
 
-urlz <- make_gids(start = "2015-09-03", end = "2015-09-04", dataset = "inning_all")
+
+# database test. two seasons
+no_cores <- detectCores() - 2
+cl <- makeCluster(no_cores)  
+registerDoParallel(cl)
+
+start=Sys.time() ; print(start)
+con <- DBI::dbConnect(RSQLite::SQLite(), dbname = "gameday.sqlite3")
+innings_df <- mlbgameday::get_payload(start = "2015-04-05", end = "2015-10-01", db_con = con)
+end=Sys.time()
+runtime = end - start
+runtime
+
+stopImplicitCluster()
+rm(cl)
+
+DBI::dbDisconnect(con)
+rm(con)
 
 
-urlz <- search_gids(start = "2016-01-01", end = "2016-12-31", game_type = "r")
+
+
+
+
 
 
 start=Sys.time() ; print(start)

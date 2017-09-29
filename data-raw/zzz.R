@@ -16,9 +16,6 @@ atbat <- purrr::map_dfr(atbat_nodes, function(x) {
 })
 
 
-# If database connection is TRUE, read/write data in chunks of 1000, doing a gc() after every loop.
-# We can put this in an outter loop in get_payload. It should slow things down, since it will only loop over a couple of times.
-# If no db connection and data are bigger than 3000 urls, flip a warning and a user acknowlagement "Press Y to continue."
 
-len_urlz <- length(urlz)
+
 

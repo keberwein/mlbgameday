@@ -7,7 +7,7 @@
 #' @keywords internal
 #' @import xml2
 #' @importFrom stringr str_sub
-#' @importFrom dplyr bind_rows left_join rename
+#' @importFrom dplyr bind_rows left_join rename mutate
 #' @importFrom purrr map_dfr
 #' @importFrom stats setNames
 #' @import foreach
@@ -15,7 +15,7 @@
 payload.gd_bis_boxscore <- function(urlz, ...) {
     batting <- list(); pitching <- list()
     lnames <- list(batting=batting,pitching=pitching)
-    out <- foreach::foreach(i = seq_along(urlz), .combine="comb_pload", .multicombine=T, .inorder=FALSE,
+    out <- foreach::foreach(i = seq_along(urlz), .combine="comb_pload", .multicombine=T, .inorder=TRUE,
                             .final = function(x) stats::setNames(x, names(lnames)),
                             .init=list(list(), list())) %dopar% {
                                 file <- tryCatch(xml2::read_xml(urlz[[i]][[1]]), error=function(e) NULL)
@@ -55,7 +55,7 @@ payload.gd_bis_boxscore <- function(urlz, ...) {
 #' @export
 #' 
 payload.gd_game_events <- function(urlz, ...) {
-    innings_df <- foreach::foreach(i = seq_along(urlz), .combine="rbind", .multicombine=T, .inorder=FALSE) %dopar% {
+    innings_df <- foreach::foreach(i = seq_along(urlz), .combine="rbind", .multicombine=T, .inorder=TRUE) %dopar% {
         file <- tryCatch(xml2::read_xml(urlz[[i]][[1]]), error=function(e) NULL)
         if(!is.null(file)){
             pitch_nodes <- c(xml2::xml_find_all(file, "/game/inning/top/atbat/pitch"), 
@@ -111,7 +111,7 @@ payload.gd_inning_all <- function(urlz, ...) {
     # Make some place-holders for the function.
     atbat <- list(); action <- list(); pitch <- list(); runner <- list(); po <- list()
     lnames <- list(atbat=atbat, action=action, pitch=pitch, runner=runner, po=po)
-    out <- foreach::foreach(i = seq_along(urlz), .combine="comb_pload", .multicombine=T, .inorder=FALSE,
+    out <- foreach::foreach(i = seq_along(urlz), .combine="comb_pload", .multicombine=T, .inorder=TRUE,
                             .final = function(x) stats::setNames(x, names(lnames)),
                             .init=list(list(), list(), list(), list(), list())) %dopar% {
                                 file <- tryCatch(xml2::read_xml(urlz[[i]][[1]]), error=function(e) NULL)
@@ -196,6 +196,8 @@ payload.gd_inning_all <- function(urlz, ...) {
     pitch <- dplyr::bind_rows(out$pitch)
     runner <- dplyr::bind_rows(out$runner)
     po <- dplyr::bind_rows(out$po)
+    # Some po documents don't have a "catcher" column. This can cause errors when loading into a database.
+    ifelse("catcher" %in% names(po), po, po <- dplyr::mutate(po, catcher=NA))
     innings_df <- list(atbat=atbat, action=action, pitch=pitch, runner=runner, po=po)
     # Add batter and pitcher names to the atbat data frame
     player.env <- environment()
@@ -223,7 +225,7 @@ payload.gd_inning_all <- function(urlz, ...) {
 #' @export
 #' 
 payload.gd_inning_hit <- function(urlz, ...) {
-    innings_df <- foreach::foreach(i = seq_along(urlz), .combine="rbind", .multicombine=T, .inorder=FALSE) %dopar% {
+    innings_df <- foreach::foreach(i = seq_along(urlz), .combine="rbind", .multicombine=T, .inorder=TRUE) %dopar% {
         file <- tryCatch(xml2::read_xml(urlz[[i]][[1]]), error=function(e) NULL)
         if(!is.null(file)){
             hip_nodes <- xml2::xml_find_all(file, "/hitchart/hip")
@@ -251,7 +253,7 @@ payload.gd_inning_hit <- function(urlz, ...) {
 payload.gd_linescore <- function(urlz, ...) {
     game <- list(); game_media <- list()
     lnames <- list(game=game, game_media=game_media)
-    out <- foreach::foreach(i = seq_along(urlz), .combine="comb_pload", .multicombine=T, .inorder=FALSE,
+    out <- foreach::foreach(i = seq_along(urlz), .combine="comb_pload", .multicombine=T, .inorder=TRUE,
                             .final = function(x) stats::setNames(x, names(lnames)),
                             .init=list(list(), list())) %dopar% {
                                 file <- tryCatch(xml2::read_xml(urlz[[i]][[1]]), error=function(e) NULL)
