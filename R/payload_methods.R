@@ -196,8 +196,7 @@ payload.gd_inning_all <- function(urlz, ...) {
     pitch <- dplyr::bind_rows(out$pitch)
     runner <- dplyr::bind_rows(out$runner)
     po <- dplyr::bind_rows(out$po)
-    # Some po documents don't have a "catcher" column. This can cause errors when loading into a database.
-    ifelse("catcher" %in% names(po), po, po <- dplyr::mutate(po, catcher=NA))
+
     innings_df <- list(atbat=atbat, action=action, pitch=pitch, runner=runner, po=po)
     # Add batter and pitcher names to the atbat data frame
     player.env <- environment()

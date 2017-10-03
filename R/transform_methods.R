@@ -67,23 +67,42 @@ transform_pload.df_inning_hit <- function(payload_obj, ...) {
 #' @export
 
 transform_pload.list_inning_all <- function(payload_obj, ...) {
-    payload_obj$atbat %<>% dplyr::mutate(num=as.numeric(num), b=as.numeric(b), s=as.numeric(s), o=as.numeric(o),
+    payload_obj$atbat %<>%
+        # Data prior to 2015 is missing several fields. Add those as null so the database is consistant.
+        dplyr::mutate(play_guid = if (exists('play_guid', where = payload_obj$atbat)) play_guid else NA,
+                      event3 = if (exists('event3', where = payload_obj$atbat)) event3 else NA,
+                      event3_es = if (exists('event3_es', where = payload_obj$atbat)) event3_es else NA,
+                      des_es = if (exists('des_es', where = payload_obj$atbat)) des_es else NA) %>%
+
+        dplyr::mutate(num=as.numeric(num), b=as.numeric(b), s=as.numeric(s), o=as.numeric(o),
                                          start_tfs=as.numeric(start_tfs), batter=as.numeric(batter), pitcher=as.numeric(pitcher),
                                          event_num=as.numeric(event_num), home_team_runs=as.numeric(home_team_runs),
                                          away_team_runs=as.numeric(away_team_runs)) %>%
-        # Column order gets crossed up in some cases, which makes it difficult to "chunk" into a database. Order manually for now.
+        
+    # Column order gets crossed up in some cases, which makes it difficult to "chunk" into a database. Order manually for now.
         dplyr::select(num, b, s, o, start_tfs, start_tfs_zulu, batter, stand, b_height, pitcher, p_throws, des, des_es, event_num,     
             event, event_es, home_team_runs, away_team_runs, inning, next_, inning_side, url, date, gameday_link, score, play_guid,
             event2, event2_es, event3, event3_es, batter_name, pitcher_name)
     
-    payload_obj$action %<>% dplyr::mutate(b=as.numeric(b), s=as.numeric(s), o=as.numeric(o),
+    payload_obj$action %<>% 
+        # Add columns that may not exist.
+        dplyr::mutate(play_guid = if (exists('play_guid', where = payload_obj$action)) play_guid else NA,
+                      des_es = if (exists('des_es', where = payload_obj$action)) des_es else NA) %>%
+
+        dplyr::mutate(b=as.numeric(b), s=as.numeric(s), o=as.numeric(o),
                                           tfs=as.numeric(tfs), player=as.numeric(player), pitch=as.numeric(pitch),
                                           event_num=as.numeric(event_num), home_team_runs=as.numeric(home_team_runs),
                                           away_team_runs=as.numeric(away_team_runs)) %>%
+
         dplyr::select(b, s, o, des, des_es, event, event_es, tfs, tfs_zulu, player, pitch, event_num, play_guid, home_team_runs,
             away_team_runs, inning, next_, inning_side, url, gameday_link, event2, event2_es)
     
-    payload_obj$pitch %<>% dplyr::mutate(id=as.numeric(id), tfs=as.numeric(tfs), x=as.numeric(x), y=as.numeric(y),
+    payload_obj$pitch %<>%
+        # Add columns that may not exist.
+        dplyr::mutate(play_guid = if (exists('play_guid', where = payload_obj$pitch)) play_guid else NA,
+                      des_es = if (exists('des_es', where = payload_obj$pitch)) des_es else NA) %>%
+
+        dplyr::mutate(id=as.numeric(id), tfs=as.numeric(tfs), x=as.numeric(x), y=as.numeric(y),
                                          event_num=as.numeric(event_num), start_speed=as.numeric(start_speed), 
                                          end_speed=as.numeric(end_speed), sz_top=as.numeric(sz_top), sz_bot=as.numeric(sz_bot),
                                          pfx_x=as.numeric(pfx_x), pfx_z=as.numeric(pfx_z), px=as.numeric(px), pz=as.numeric(pz),
@@ -93,6 +112,7 @@ transform_pload.list_inning_all <- function(payload_obj, ...) {
                                          break_length=as.numeric(break_length), type_confidence=as.numeric(type_confidence),
                                          nasty=as.numeric(nasty), spin_dir=as.numeric(spin_dir), spin_rate=as.numeric(spin_rate),
                                          on_1b=as.numeric(on_1b), on_2b=as.numeric(on_2b), on_3b=as.numeric(on_3b)) %>%
+        
         dplyr::select(des, des_es, id, type, tfs, tfs_zulu, x, y, event_num, sv_id, play_guid, start_speed, end_speed, sz_top,         
             sz_bot, pfx_x, pfx_z, px, pz, x0, y0, z0, vx0, vy0, vz0, ax, ay, az, break_y, break_angle, break_length, pitch_type, 
             type_confidence, zone, nasty, spin_dir, spin_rate, cc, mt, inning, next_, inning_side,    
@@ -102,6 +122,11 @@ transform_pload.list_inning_all <- function(payload_obj, ...) {
         dplyr::select(id, start, end, event, event_num, inning, next_, inning_side, url, gameday_link, score, rbi, earned)
     
     payload_obj$po %<>% dplyr::mutate(event_num=as.numeric(event_num)) %>%
+        # Add columns that may not exist.
+        dplyr::mutate(play_guid = if (exists('play_guid', where = payload_obj$po)) play_guid else NA,
+                      catcher = if (exists('catcher', where = payload_obj$po)) catcher else NA,
+                      des_es = if (exists('des_es', where = payload_obj$po)) des_es else NA) %>%
+
         dplyr::select(des, des_es, event_num, inning, next_, inning_side, url, gameday_link, play_guid, catcher)
 
     return(payload_obj)

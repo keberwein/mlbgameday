@@ -69,12 +69,15 @@ no_cores <- detectCores() - 2
 cl <- makeCluster(no_cores)  
 registerDoParallel(cl)
 
+print(pryr::mem_used())
 start=Sys.time() ; print(start)
 con <- DBI::dbConnect(RSQLite::SQLite(), dbname = "gameday.sqlite3")
-innings_df <- mlbgameday::get_payload(start = "2015-04-05", end = "2015-10-01", db_con = con)
+innings_df <- mlbgameday::get_payload(start = "2009-01-01", end = "2009-06-30", db_con = con)
 end=Sys.time()
 runtime = end - start
 runtime
+print(pryr::mem_used())
+
 
 stopImplicitCluster()
 rm(cl)
@@ -82,7 +85,7 @@ rm(cl)
 DBI::dbDisconnect(con)
 rm(con)
 
-
+# object 'play_guid' not found 2008-2011
 
 
 
