@@ -23,6 +23,10 @@ game_urls <- function(url_gids=NULL, dataset = NULL, ...) {
         glist <- url_gids %>% purrr::map_chr(~ paste0(., "/bis_boxscore.xml"))
     }
     
+    if(dataset=="game"){
+        glist <- url_gids %>% purrr::map_chr(~ paste0(., "/game.xml"))
+    }
+    
     if(dataset=="game_events"){
         glist <- url_gids %>% purrr::map_chr(~ paste0(., "/game_events.xml"))
     }
@@ -30,11 +34,14 @@ game_urls <- function(url_gids=NULL, dataset = NULL, ...) {
     if(dataset=="inning_all"){
         glist <- url_gids %>% purrr::map_chr(~ paste0(., "/inning/inning_all.xml"))
     }
+    
     if(dataset=="inning_hit"){
         glist <- url_gids %>% purrr::map_chr(~ paste0(., "/inning/inning_hit.xml"))
     }
+    
     if(dataset=="linescore"){
         glist <- url_gids %>% purrr::map_chr(~ paste0(., "/linescore.xml"))
     }
+    
     return(glist)
 }

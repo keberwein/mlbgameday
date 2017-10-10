@@ -7,6 +7,7 @@
 \alias{transform_pload.df_inning_hit}
 \alias{transform_pload.list_inning_all}
 \alias{transform_pload.list_linescore}
+\alias{transform_pload.df_game}
 \title{Method for paylaod objects.}
 \usage{
 transform_pload(payload_obj, ...)
@@ -20,6 +21,8 @@ transform_pload(payload_obj, ...)
 \method{transform_pload}{list_inning_all}(payload_obj, ...)
 
 \method{transform_pload}{list_linescore}(payload_obj, ...)
+
+\method{transform_pload}{df_game}(payload_obj, ...)
 }
 \arguments{
 \item{payload_obj}{An object returned by \code{get_payload()}.}

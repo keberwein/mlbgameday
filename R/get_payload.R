@@ -69,6 +69,7 @@ get_payload <- function(start=NULL, end=NULL, league="mlb", dataset = NULL, game
             if(dataset == "inning_all") innings_df <- payload.gd_inning_all(urlz)
             if(dataset=="inning_hit") innings_df <- payload.gd_inning_hit(urlz)
             if(dataset=="linescore") innings_df <- payload.gd_linescore(urlz)
+            if(dataset=="game") innings_df <- payload.gd_game(urlz)
             innings_df <- transform_pload(innings_df)
             
             for (i in names(innings_df)) DBI::dbWriteTable(conn = db_con, value = innings_df[[i]], name = i, append = TRUE)
@@ -90,6 +91,7 @@ get_payload <- function(start=NULL, end=NULL, league="mlb", dataset = NULL, game
         if(dataset == "inning_all") innings_df <- payload.gd_inning_all(urlz)
         if(dataset=="inning_hit") innings_df <- payload.gd_inning_hit(urlz)
         if(dataset=="linescore") innings_df <- payload.gd_linescore(urlz)
+        if(dataset=="game") innings_df <- payload.gd_game(urlz)
         innings_df <- transform_pload(innings_df)
     }
 }

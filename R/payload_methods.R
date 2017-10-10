@@ -281,6 +281,35 @@ payload.gd_linescore <- function(urlz, ...) {
 }
 
 
+#' An internal function for game payload.
+#' @param urlz An urlzect created from a urlz link
+#' @param ... additional arguments
+#' @keywords internal
+#' @import xml2
+#' @importFrom purrr map_dfr
+#' @importFrom stats setNames
+#' @import foreach
+#' @export
+#' 
+payload.gd_game <- function(urlz, ...) {
+    innings_df <- foreach::foreach(i = seq_along(urlz), .combine="rbind", .multicombine=T, .inorder=TRUE) %dopar% {
+        file <- tryCatch(xml2::read_xml(urlz[[i]][[1]]), error=function(e) NULL)
+        if(!is.null(file)){
+            game_nodes <- xml2::xml_find_all(file, "/game/team")
+            game <- purrr::map_dfr(game_nodes, function(x) {
+                out <- data.frame(t(xml2::xml_attrs(x)), stringsAsFactors=FALSE)
+                out$type <- xml2::xml_parent(x) %>% xml2::xml_attr("type")
+                out$local_game_time <- xml2::xml_parent(x) %>% xml2::xml_attr("local_game_time")
+                out$game_pk <- xml2::xml_parent(x) %>% xml2::xml_attr("game_pk")
+                out$game_time_et <- xml2::xml_parent(x) %>% xml2::xml_attr("game_time_et")
+                out$gameday_sw <- xml2::xml_parent(x) %>% xml2::xml_attr("gameday_sw")
+                out
+            })
+        }
+    }
+    innings_df <- structure(innings_df, class="df_game")
+    return(innings_df)
+}
 
 
 

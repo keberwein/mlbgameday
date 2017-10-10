@@ -165,3 +165,17 @@ transform_pload.list_linescore <- function(payload_obj, ...) {
 }
 
 
+#' @rdname transform_pload
+#' @importFrom dplyr mutate
+#' @method transform_pload df_game
+#' @export
+
+transform_pload.df_game <- function(payload_obj, ...) {
+    payload_obj <- structure(payload_obj, class="data.frame")
+    
+    payload_obj %<>% dplyr::mutate(id=as.numeric(id), w=as.numeric(w), l=as.numeric(l), league_id=as.numeric(league_id),
+                                          game_pk=as.numeric(game_pk))
+    
+    return(payload_obj)
+}
+

@@ -57,7 +57,7 @@ zzz= mlbgameday::get_payload(game_ids = game_ids, dataset = "inning_all")
 
 # linescore not working. It's in the dopar loop. Checkt urlz.
 start=Sys.time() ; print(start)
-innings_df <- mlbgameday::get_payload(start = "2015-09-03", end = "2015-09-04", dataset = "inning_all")
+innings_df <- mlbgameday::get_payload(start = "2015-09-03", end = "2015-09-04", dataset = "game")
 end=Sys.time()
 runtime = end - start
 runtime
@@ -110,3 +110,8 @@ runtime
 ## 2 weeks / pitchrx 200 game limit
 #tidy 3.40 min.
 #pitchrx 2.42 min. limit 200 games
+#
+
+library(openWAR)
+gd <- gameday()
+
