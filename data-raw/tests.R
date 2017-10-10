@@ -72,7 +72,7 @@ registerDoParallel(cl)
 print(pryr::mem_used())
 start=Sys.time() ; print(start)
 con <- DBI::dbConnect(RSQLite::SQLite(), dbname = "gameday.sqlite3")
-innings_df <- mlbgameday::get_payload(start = "2009-01-01", end = "2009-06-30", db_con = con)
+innings_df <- mlbgameday::get_payload(start = "2008-11-26", end = "2009-12-30", db_con = con)
 end=Sys.time()
 runtime = end - start
 runtime

@@ -69,7 +69,9 @@ transform_pload.df_inning_hit <- function(payload_obj, ...) {
 transform_pload.list_inning_all <- function(payload_obj, ...) {
     payload_obj$atbat %<>%
         # Data prior to 2015 is missing several fields. Add those as null so the database is consistant.
-        dplyr::mutate(play_guid = if (exists('play_guid', where = payload_obj$atbat)) play_guid else NA,
+       dplyr::mutate(play_guid = if (exists('play_guid', where = payload_obj$atbat)) play_guid else NA,
+                      event2 = if (exists('event2', where = payload_obj$atbat)) event2 else NA,
+                      event2_es = if (exists('event2_es', where = payload_obj$atbat)) event2_es else NA,
                       event3 = if (exists('event3', where = payload_obj$atbat)) event3 else NA,
                       event3_es = if (exists('event3_es', where = payload_obj$atbat)) event3_es else NA,
                       des_es = if (exists('des_es', where = payload_obj$atbat)) des_es else NA) %>%
@@ -87,6 +89,8 @@ transform_pload.list_inning_all <- function(payload_obj, ...) {
     payload_obj$action %<>% 
         # Add columns that may not exist.
         dplyr::mutate(play_guid = if (exists('play_guid', where = payload_obj$action)) play_guid else NA,
+                      event2 = if (exists('event2', where = payload_obj$action)) event2 else NA,
+                      event2_es = if (exists('event2_es', where = payload_obj$action)) event2_es else NA,
                       des_es = if (exists('des_es', where = payload_obj$action)) des_es else NA) %>%
 
         dplyr::mutate(b=as.numeric(b), s=as.numeric(s), o=as.numeric(o),
@@ -100,8 +104,12 @@ transform_pload.list_inning_all <- function(payload_obj, ...) {
     payload_obj$pitch %<>%
         # Add columns that may not exist.
         dplyr::mutate(play_guid = if (exists('play_guid', where = payload_obj$pitch)) play_guid else NA,
-                      des_es = if (exists('des_es', where = payload_obj$pitch)) des_es else NA) %>%
-
+                      des_es = if (exists('des_es', where = payload_obj$pitch)) des_es else NA,
+                      event2 = if (exists('event2', where = payload_obj$pitch)) event2 else NA,
+                      event2_es = if (exists('event2_es', where = payload_obj$pitch)) event2_es else NA,
+                      # tfs and tfs_zulu columns may be blank for older data sets. If blank, set them to NA.
+                      tfs = ifelse(tfs == "", NA, tfs), tfs_zulu = ifelse(tfs_zulu == "", NA, tfs_zulu)) %>%
+        
         dplyr::mutate(id=as.numeric(id), tfs=as.numeric(tfs), x=as.numeric(x), y=as.numeric(y),
                                          event_num=as.numeric(event_num), start_speed=as.numeric(start_speed), 
                                          end_speed=as.numeric(end_speed), sz_top=as.numeric(sz_top), sz_bot=as.numeric(sz_bot),
@@ -121,12 +129,14 @@ transform_pload.list_inning_all <- function(payload_obj, ...) {
     payload_obj$runner %<>% dplyr::mutate(id=as.numeric(id), event_num=as.numeric(event_num)) %>%
         dplyr::select(id, start, end, event, event_num, inning, next_, inning_side, url, gameday_link, score, rbi, earned)
     
-    payload_obj$po %<>% dplyr::mutate(event_num=as.numeric(event_num)) %>%
+    payload_obj$po %<>% 
         # Add columns that may not exist.
         dplyr::mutate(play_guid = if (exists('play_guid', where = payload_obj$po)) play_guid else NA,
                       catcher = if (exists('catcher', where = payload_obj$po)) catcher else NA,
-                      des_es = if (exists('des_es', where = payload_obj$po)) des_es else NA) %>%
-
+                      des_es = if (exists('des_es', where = payload_obj$po)) des_es else NA,
+                      event_num = if (exists('event_num', where = payload_obj$po)) event_num else NA,
+                      event_num  = as.numeric(event_num)) %>%
+        
         dplyr::select(des, des_es, event_num, inning, next_, inning_side, url, gameday_link, play_guid, catcher)
 
     return(payload_obj)
