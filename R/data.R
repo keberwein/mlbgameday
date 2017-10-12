@@ -59,3 +59,14 @@
 #' @note last updated 2017-09-21
 #'
 "venue_ids"
+
+#' Internal dataset with coordinates for an average strike zone. K-zone oundreis borrowed from the book "Analyzing Baseball Data with R."
+#' 
+#' 
+#' @docType data
+#' @keywords internal
+#' 
+#' @usage data(kzone)
+#' @note last updated 2017-10-12
+#'
+"kzone"

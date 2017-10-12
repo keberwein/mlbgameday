@@ -18,7 +18,7 @@ The package is primarily a data package, and has no native plotting tools. Howev
 For all of the following examples, we will use The pitch data for Jake Arrieta's no-hitter, which occurred on April 21, 2016.
 
 
-```{r, fig.show='hold'}
+```{r}
 library(mlbgameday)
 library(dplyr)
 
@@ -29,39 +29,26 @@ gamedat <- get_payload(start = "2016-04-21", end = "2016-04-21")
 pitches <- inner_join(gamedat$pitch, gamedat$atbat, by = c("num", "url")) %>%
     subset(pitcher_name == "Jake Arrieta")
 
-# Convert relevant data to numeric.
-pitches <- mutate(pitches, px = as.numeric(px), pz = as.numeric(pz), start_speed = as.numeric(start_speed))
-
 ```
 
 ## Ggplot2
 
 The ggplot2 package can be used stand-alone, or in conjunction with Carson Silvert's pitchRx package, which has additional visualization offerings that are based on ggplot2.
 
-```{r, fig.show='hold'}
+```{r}
 library(ggplot2)
 
-# maybe put these measurements in the package somewhere.
-# # Strikezone Boundreis borrowed from the book "Analyzing Baseball Data with R."
-topKzone <- 3.5
-botKzone <- 1.6
-inKzone <- -.95
-outKzone <- 0.95
-kZone = data.frame(
-    x = c(inKzone, inKzone, outKzone, outKzone, inKzone)
-    , y = c(botKzone, topKzone, topKzone, botKzone, botKzone)
-)
-
 # basic example
-ggplot(data=pitches, aes(x=px, y=pz, shape=type, col=pitch_type)) +
-    geom_point()
+ggplot() +
+    geom_point(data=pitches, aes(x=px, y=pz, shape=type, col=pitch_type)) +
+    coord_equal() + geom_path(aes(x, y), data = mlbgameday::kzone)
 
 
 # basic example with stand.
 ggplot() +
     geom_point(data=pitches, aes(x=px, y=pz, shape=type, col=pitch_type)) +
     facet_grid(. ~ stand) + coord_equal() +
-    geom_path(aes(x, y), data = kZone)
+    geom_path(aes(x, y), data = mlbgameday::kzone)
 
 
 ```
@@ -86,7 +73,7 @@ ggplot() +
 
 For this visualization, we will subset the data to only pitches that the umpire called a strike. This will give us location densities of all called strikes in that game with a view from the umpire's prospective.
 
-```{r, fig.show='hold'}
+```{r}
 # Subset the data to only called strikes.
 strikes <- subset(pitches, des.x == "Called Strike")
 
@@ -104,7 +91,7 @@ pitchRx::strikeFX(pitches, geom = "tile") +
 
 The plotly package is the "go-to" package for many who wish to create interactive visualizations or Shiny applications.
 
-```{r, fig.show='hold'}
+```{r}
 library(plotly)
 plot_ly(pitches, x = ~px, y = ~pz, mode = 'markers', 
         color = ~pitch_type, marker = list(size = 7, line = list(color = ~pitch_type, width = 1)),

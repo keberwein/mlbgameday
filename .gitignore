@@ -3,3 +3,6 @@
 .RData
 inst/doc
 mlbgameday.Rproj
+README.Rmd
+.travis.yml
+cran-comments.md

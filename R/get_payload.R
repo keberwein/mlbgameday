@@ -77,6 +77,9 @@ get_payload <- function(start=NULL, end=NULL, league="mlb", dataset = NULL, game
             rm(innings_df); gc()
         }
         
+        DBI::dbDisconnect(db_con)
+        message("Disconnecting from the database.")
+        
     }else{
         # If no database connection, just return a dataframe.
         # If the returned dataframe looks like it's going to be large, warn the user.
