@@ -43,14 +43,6 @@ ggplot() +
     geom_point(data=pitches, aes(x=px, y=pz, shape=type, col=pitch_type)) +
     coord_equal() + geom_path(aes(x, y), data = mlbgameday::kzone)
 
-
-# basic example with stand.
-ggplot() +
-    geom_point(data=pitches, aes(x=px, y=pz, shape=type, col=pitch_type)) +
-    facet_grid(. ~ stand) + coord_equal() +
-    geom_path(aes(x, y), data = mlbgameday::kzone)
-
-
 ```
 
 ## Batting Stance
@@ -63,7 +55,7 @@ Using the same simple ggplot example, we can use `facet_grid(. ~ stand)` to segm
 ggplot() +
     geom_point(data=pitches, aes(x=px, y=pz, shape=type, col=pitch_type)) +
     facet_grid(. ~ stand) + coord_equal() +
-    geom_path(aes(x, y), data = kZone)
+    geom_path(aes(x, y), data =  mlbgameday::kzone)
 
 
 ```

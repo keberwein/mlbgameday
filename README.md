@@ -46,17 +46,39 @@ head(innings_df$atbat, 1)
 #> 1 Devaris Gordon Stephen Strasburg
 ```
 
+``` r
+head(innings_df$atbat, 1)
+#>   num b s o start_tfs       start_tfs_zulu batter stand b_height pitcher
+#> 1   1 2 2 1    170552 2017-04-03T17:05:52Z 543829     L     5-11  544931
+#>   p_throws                                                  des
+#> 1        R Dee Gordon lines out to left fielder Jayson Werth.  
+#>                                                                des_es
+#> 1 Dee Gordon batea línea de out a jardinero izquierdo Jayson Werth.  
+#>   event_num   event     event_es home_team_runs away_team_runs inning
+#> 1        11 Lineout Línea de Out              0              0      1
+#>   next_ inning_side
+#> 1     Y         top
+#>                                                                                                                      url
+#> 1 http://gd2.mlb.com/components/game/mlb//year_2017/month_04/day_03/gid_2017_04_03_miamlb_wasmlb_1/inning/inning_all.xml
+#>   date                    gameday_link score
+#> 1 <NA> /gid_2017_04_03_miamlb_wasmlb_1  <NA>
+#>                              play_guid event2 event2_es event3 event3_es
+#> 1 76e23666-26f1-4339-967f-c6f759d864f4   <NA>      <NA>   <NA>      <NA>
+#>      batter_name      pitcher_name
+#> 1 Devaris Gordon Stephen Strasburg
+```
+
 Parallel Processing
 -------------------
 
-The package's internal functions are optimized to work with the `doParallel` package. By default, the R language will use one core of our CPU. The `doParallel` package enables us to use several cores, which will execute tasks simultaneously. For example, in standard regular season play for all teams, the function has to process over 2,400 individual files, which depending on your system, can take more than thirty minutes. Parallel processing speeds this process up by several times.
+The package's internal functions are optimized to work with the `doParallel` package. By default, the R language will use one core of our CPU. The `doParallel` package enables us to use several cores, which will execute tasks simultaneously. In a standard regular season for all teams, the function has to process more than 2,400 individual files, which depending on your system, can take quite some time. Parallel processing speeds this process up by several times, depending on how many processor cores we choose to use.
 
 ``` r
 library(mlbgameday)
 library(doParallel)
 
 # First we need to register our parallel cluster.
-# We're setting the number of cores to use as the machine's maximum number of cores minus one for background processes.
+# Set the number of cores to use as the machine's maximum number of cores minus 1 for background processes.
 no_cores <- detectCores() - 1
 cl <- makeCluster(no_cores)  
 registerDoParallel(cl)
@@ -85,7 +107,7 @@ no_cores <- detectCores() - 1
 cl <- makeCluster(no_cores)  
 registerDoParallel(cl)
 
-# Create the database
+# Create the database in our working directory.
 con <- dbConnect(RSQLite::SQLite(), dbname = "gameday.sqlite3")
 
 # Collect all games, including pre and post-season for the 2016 season.
@@ -99,7 +121,7 @@ rm(cl)
 Gameday Data Sets
 -----------------
 
-Those familiar with Carson Sievert's `pitchRx` package probably recognize the default format returned by the `get_payload` function. The format was intentionally designed to be similar to the data returned by the `pitchRx` package for those who may be keeping persistent databases. The default data set returned is "inning\_all," however there are several more options including:
+Those familiar with Carson Sievert's `pitchRx` package probably recognize the default data format returned by the `get_payload()` function. The format was intentionally designed to be similar to the data returned by the `pitchRx` package for those who may be keeping persistent databases. The default data set returned is "inning\_all," however there are several more options including:
 
 -   inning\_hit
 
