@@ -4,7 +4,7 @@
 Why mlbgameday?
 ---------------
 
-Designed to facilitate extract, transform and load for MLB “gameday” data. The package is optimized for parallel processing of data that may be larger than memory. There are other packages in the R universe that were built to perform statistics and visualizations on these data, but `mlbgameday` is concerned primarily with data collection. More uses of these data can be found in the `pitchRx`, `openWAR`, and `baseballr` packages.
+Designed to facilitate extract, transform and load for MLBAM “gameday” data. The package is optimized for parallel processing of data that may be larger than memory. There are other packages in the R universe that were built to perform statistics and visualizations on these data, but `mlbgameday` is concerned primarily with data collection. More uses of these data can be found in the `pitchRx`, `openWAR`, and `baseballr` packages.
 
 Install
 -------

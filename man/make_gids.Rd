@@ -24,9 +24,9 @@ make_gids(start = NULL, end = NULL, league = "mlb", dataset = NULL,
 Create game ids from dates.
 }
 \examples{
-\dontrun{
-urls <- make_gids(start, end)
-}
+
+gids <- make_gids(start = "2016-06-01", end = "2016-06-01", dataset="inning_all")
+
 
 }
 \keyword{internal}

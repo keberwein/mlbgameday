@@ -1,9 +1,9 @@
 Package: mlbgameday
-Title: Tools to Extract Transform and Load  Major League Baseball Advanced Media's 'Gameday' Data
+Title: Tools to Extract Transform and Load data from Major League Baseball Advanced Media (MLBAM)
 Version: 0.0.0.9002
 Authors@R: person("Kris", "Eberwein", email = "eberwein@knights.ucf.edu",
                   role = c("aut", "cre"))
-Description: Scrapes 'Gameday' data from Major League Baseball Advanced Media <http://gd2.mlb.com/components/game/mlb/>.
+Description: Scrapes 'Gameday' data from Major League Baseball Advanced Media <http://gd2.mlb.com/components/game/mlb/>. Additional tools to parallelize large data sets and write them to a database.
 Depends:
 	R (>= 3.3.3)
 Imports:

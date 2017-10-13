@@ -10,11 +10,11 @@
 #' @import utils
 #' @export
 #' @examples
-#' \dontrun{
+#' 
 #' # Make a request for a single day.
-#' df <- get_paylaod(start = "2016-06-01", end = "2016-06-02")
+#' df <- get_payload(start = "2016-06-01", end = "2016-06-01")
 #' 
-#' 
+#' \dontrun{
 #' # Run larger requests in parallel.
 #' library(doParallel)
 #' library(foreach)
@@ -23,7 +23,7 @@
 #' cl <- makeCluster(no_cores) 
 #' registerDoParallel(cl)
 #' 
-#' df <- get_paylaod(start = "2016-01-01", end = "2017-01-01")
+#' df <- get_payload(start = "2016-01-01", end = "2017-01-01")
 #' 
 #' stopImplicitCluster()
 #' rm(cl)

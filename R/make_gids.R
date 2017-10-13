@@ -13,9 +13,9 @@
 #' @keywords internal
 #' @export
 #' @examples
-#' \dontrun{
-#' urls <- make_gids(start, end)
-#' }
+#'
+#' gids <- make_gids(start = "2016-06-01", end = "2016-06-01", dataset="inning_all")
+#' 
 #' 
 
 make_gids <- function(start=NULL, end=NULL, league="mlb", dataset=NULL, game_ids=NULL, ...) {

@@ -90,8 +90,6 @@ library(mlbgameday)
 
 gids <- search_gids(team = "marlins", start = "2010-01-01", end = "2011-01-01", venue = "Marlins Park")
 
-gids <- search_gids(team = "marlins", start = "2010-01-01", end = "2011-01-01", venue = "Sun Life Stadium")
-
 
 ```
 

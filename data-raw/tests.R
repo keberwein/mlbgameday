@@ -89,7 +89,7 @@ rm(con)
 
 
 
-
+gids <- make_gids(start = "2016-06-01", end = "2016-06-01", dataset="inning_all")
 
 
 start=Sys.time() ; print(start)

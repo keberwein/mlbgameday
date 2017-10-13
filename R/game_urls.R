@@ -5,21 +5,20 @@
 #' @param ... additional arguments
 #' @importFrom stringr str_sub str_length
 #' @importFrom purrr map_chr
-#' @importFrom dplyr setdiff
-#' @import foreach
 #' @export
 #' @examples
-#' \dontrun{
+#' gids <- make_gids(start = "2016-06-01", end = "2016-06-01", dataset="inning_all")
 #' urls <- game_urls(gids)
-#' }
+#' 
 #' 
 
 # Create urls based on game_ids
 game_urls <- function(url_gids=NULL, dataset = NULL, ...) {
+    if(is.null(dataset)) dataset <- "inning_all"
     # Make sure input is a list, so the payload function can read the output correctly.
     if(length(dataset) > 1) stop("Please specify a single data set. Due to conflicting table names, scrapes are limieted to a single set.")
     
-    if(dataset=="bis_boxscore")  glist <- url_gids %>% purrr::map_chr(~ paste0(., "/bis_boxscore.xml"))
+    if(dataset=="bis_boxscore") glist <- url_gids %>% purrr::map_chr(~ paste0(., "/bis_boxscore.xml"))
     
     if(dataset=="game") glist <- url_gids %>% purrr::map_chr(~ paste0(., "/game.xml"))
 

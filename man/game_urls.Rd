@@ -18,8 +18,8 @@ game_urls(url_gids = NULL, dataset = NULL, ...)
 Create urls from game_ids.
 }
 \examples{
-\dontrun{
+gids <- make_gids(start = "2016-06-01", end = "2016-06-01", dataset="inning_all")
 urls <- game_urls(gids)
-}
+
 
 }
