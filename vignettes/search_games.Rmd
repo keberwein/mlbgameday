@@ -1,0 +1,110 @@
+---
+title: "mlbgameday: Search Games"
+author: "Kris Eberwein"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+```{r setup, include=TRUE}
+```
+
+In many cases, we may want to search for a specific player, stadium, or team. The `search_gids()` function provide limited functionality for such searches. Arguments include; team=NULL, start=NULL, end=NULL, venue=NULL, game_type=NULL, home_only=FALSE, away_only=FALSE.
+
+# Examples
+
+Find only regular season games for the 2016 season.
+
+```{r, eval=FALSE}
+library(mlbgameday)
+
+gids <- search_gids(start = "2016-01-01", end = "2017-01-01", game_type = "r")
+
+```
+
+Find only regular season games played at Wrigley Field in 2016.
+
+```{r, eval=FALSE}
+library(mlbgameday)
+
+gids <- search_gids(start = "2016-01-01", end = "2017-01-01", game_type = "r", venue = "Wrigley Field")
+
+# This also works with a "fuzzy search"
+
+gids <- search_gids(start = "2016-01-01", end = "2017-01-01", game_type = "r", venue = "Wrigley")
+
+
+```
+
+## Game Types
+
+The `game_type = ` argument accects the following:
+
+* "r" = regular season
+
+* "d" = divisional playoffs
+
+* "l" = leauge playoffs
+
+* "w" = World Series
+
+* "a" = all-star games
+
+* "s" = spring training
+
+* "e" = exabition game
+
+Find only home games played by the Cleveland Indians in the regular season (regardless of stadium).
+
+```{r, eval=FALSE}
+library(mlbgameday)
+
+gids <- search_gids(team = "indians", start = "2015-01-01", end = "2015-01-01", game_type = "r")
+
+```
+
+## Venue
+
+The `search_gids()` function performs a "fuzzy match," on names of teams and ball parks. For example, we don't have to type out "Oriole Park at Camden Yards," simply "Camden" or "Camden Yards" will work.
+
+```{r, eval=FALSE}
+library(mlbgameday)
+
+# This workds.
+
+gids <- search_gids(team = "orioles", start = "2016-01-01", end = "2017-01-01", venue = "Oriole Park at Camden Yards")
+
+# This also works.
+
+gids <- search_gids(team = "orioles", start = "2016-01-01", end = "2017-01-01", venue = "Camden")
+
+
+```
+
+Be careful about venue changes or venue name changes. For example, "Marlins Park" opened in 2012, so the follwoing will not work.
+
+```{r, eval=FALSE}
+library(mlbgameday)
+
+gids <- search_gids(team = "marlins", start = "2010-01-01", end = "2011-01-01", venue = "Marlins Park")
+
+gids <- search_gids(team = "marlins", start = "2010-01-01", end = "2011-01-01", venue = "Sun Life Stadium")
+
+
+```
+
+Instead, we would have to use the name of the old stadium. If we're not sure, the safest way would be to use `home_only = TRUE`.
+
+```{r, eval=FALSE}
+library(mlbgameday)
+
+gids <- search_gids(team = "marlins", start = "2010-01-01", end = "2011-01-01", venue = "Sun Life Stadium")
+
+# This will return the same result if we don't know the name of the stadium.
+
+gids <- search_gids(team = "marlins", start = "2010-01-01", end = "2011-01-01", home_only = TRUE, game_type = "r")
+
+
+```
