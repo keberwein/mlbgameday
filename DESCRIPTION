@@ -1,6 +1,6 @@
 Package: mlbgameday
 Title: Tools to Extract Transform and Load  Major League Baseball Advanced Media's 'Gameday' Data
-Version: 0.0.0.9001
+Version: 0.0.0.9002
 Authors@R: person("Kris", "Eberwein", email = "eberwein@knights.ucf.edu",
                   role = c("aut", "cre"))
 Description: Scrapes 'Gameday' data from Major League Baseball Advanced Media <http://gd2.mlb.com/components/game/mlb/>.
@@ -23,7 +23,13 @@ Suggests:
 	testthat,
 	knitr,
 	rmarkdown,
-	pitchRx
+	pitchRx,
+	viridis,
+	openWAR,
+	ggplot2,
+	plotly,
+	RSQLite,
+	dbplyr
 License: MIT + file LICENSE
 URL: https://github.com/keberwein/mlbgameday
 BugReports: https://github.com/keberwein/mlbgameday/issues

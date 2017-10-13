@@ -46,6 +46,8 @@ head(innings_df$atbat, 1)
 #> 1 Devaris Gordon Stephen Strasburg
 ```
 
+Take a peek at the data.
+
 ``` r
 head(innings_df$atbat, 1)
 #>   num b s o start_tfs       start_tfs_zulu batter stand b_height pitcher

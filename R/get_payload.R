@@ -78,7 +78,7 @@ get_payload <- function(start=NULL, end=NULL, league="mlb", dataset = NULL, game
         }
         
         DBI::dbDisconnect(db_con)
-        message("Disconnecting from the database.")
+        message(paste0("Transaction complete, disconnecting from the database.", " ", Sys.time()))
         
     }else{
         # If no database connection, just return a dataframe.
