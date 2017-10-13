@@ -18,9 +18,9 @@ get_payload(start = NULL, end = NULL, league = "mlb", dataset = NULL,
 
 \item{game_ids}{A list of user-supplied gameIds.}
 
-\item{...}{additional arguments}
+\item{db_con}{A database connection from the \code{DBI} package.}
 
-\item{db_conn}{A database connection from the \code{DBI} package.}
+\item{...}{additional arguments}
 }
 \description{
 Get Gameday data from MLBAM.

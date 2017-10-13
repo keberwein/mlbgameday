@@ -73,6 +73,8 @@ stopImplicitCluster()
 rm(cl)
 ```
 
+Note: The `mlbgameday` package is inteded for use on a single machine, using multiple cores. However, it may be possible to use a cluster of multiple machines as well. For more on parallel processing, please see the [package vignettes](https://github.com/keberwein/mlbgameday/tree/master/vignettes)
+
 Databases
 ---------
 
@@ -85,7 +87,7 @@ library(DBI)
 library(RSQLite)
 
 # First we need to register our parallel cluster.
-no_cores <- detectCores() - 1
+no_cores <- detectCores() - 2
 cl <- makeCluster(no_cores)  
 registerDoParallel(cl)
 
@@ -164,3 +166,8 @@ ggplot() +
 ```
 
 ![](https://github.com/keberwein/keberwein.github.io/blob/master/images/mlbgameday/gamedaystand.png?raw=true)
+
+Acknowledgements
+----------------
+
+This package was inspired by the [mlbgame](https://github.com/panzarino/mlbgame) Python library by Zach Panzarino, the [pitchRx](https://github.com/cpsievert/pitchRx) package by Carson Sievert and the [openWAR](https://github.com/beanumber/openWAR) package by Ben Baumer and Gregory Matthews.

@@ -4,7 +4,7 @@
 #' @param league The leauge to gather gids for. The default is \code{"mlb"}. Other options include \code{"aaa"} and \code{"aa"}
 #' @param dataset The dataset to be scraped. The default is "inning_all." Other options include, "inning_hit", "linescore".
 #' @param game_ids A list of user-supplied gameIds.
-#' @param db_conn A database connection from the \code{DBI} package.
+#' @param db_con A database connection from the \code{DBI} package.
 #' @param ... additional arguments
 #' @importFrom DBI dbWriteTable
 #' @import utils
