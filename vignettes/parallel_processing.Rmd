@@ -14,7 +14,7 @@ vignette: >
 
 ## Why Parallel?
 
-Due to the large size of the data, it was discovered that parallel processing allows us to gather and transform the data faster then with conventional single-core methods. The `get_payload()` function is faster by several orders of magnitude when a registered cluster is present.
+Due to the large size of the data, it was discovered that parallel processing allows us to gather and transform the data faster than with conventional single-core methods. The `get_payload()` function is faster by several orders of magnitude when a registered cluster is present.
 
 The package leverages the `doParallel` and `foreach` packages for parallelism. These packages were chose due to better performance and portability. Note: There are several other parallel packages in the R universe, but `mlbgameday` was designed to work specifically with `doParallel` and `foreach`, other parallel packages will not work.
 

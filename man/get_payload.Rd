@@ -27,10 +27,11 @@ Get Gameday data from MLBAM.
 }
 \examples{
 
+\dontrun{
 # Make a request for a single day.
 df <- get_payload(start = "2016-06-01", end = "2016-06-01")
 
-\dontrun{
+
 # Run larger requests in parallel.
 library(doParallel)
 library(foreach)
@@ -45,6 +46,7 @@ stopImplicitCluster()
 rm(cl)
 
 }
+
 # Supply your own custom vector of game ids.
 
 mygids <- search_gids(team = "indians", start = "2016-05-01", end = "2016-05-01")

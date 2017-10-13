@@ -61,7 +61,7 @@ get_payload <- function(start=NULL, end=NULL, league="mlb", dataset = NULL, game
     
     if(!is.null(db_con)){
         # Chunk out URLs in groups of 300 if a database connection is available.
-        url_chunks <- split(urlz, ceiling(seq_along(urlz)/300))
+        url_chunks <- split(urlz, ceiling(seq_along(urlz)/500))
         
         for(i in seq_along(url_chunks)){
             message(paste0("Processing data chunk ", i, " of ", length(url_chunks)))
