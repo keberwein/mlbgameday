@@ -4,7 +4,7 @@
 Why mlbgameday?
 ---------------
 
-Designed to facilitate extract, transform and load for MLB “gameday” data. The package is optimized for parallel processing and dealing with data, which may be larger than memory. There are other packages in the R universe that were built to perform statistics and visualizations on these data, but `mlbgameday` is concerned primarily with fast and efficient loading of data, using modern data extraction techniques.
+Designed to facilitate extract, transform and load for MLB “gameday” data. The package is optimized for parallel processing of data that may be larger than memory. There are other packages in the R universe that were built to perform statistics and visualizations on these data, but `mlbgameday` is concerned primarily with data collection. More uses of these data can be found in the `pitchRx`, `openWAR`, and `baseballr` packages.
 
 Install
 -------
@@ -18,7 +18,7 @@ devtools::install_github("keberwein/mlbgameday")
 Basic Usage
 -----------
 
-Although the package is optimized for parallel processing, it will also work without registering a parallel back-end. When only querying a single day's data, a parallel back-end may not provide much additional performance. However, parallel back-ends are suggested for larger data sets, as the process will be faster by several orders of magnitude.
+Although the package is optimized for parallel processing, it will also work without registering a parallel backend. When only querying a single day's data, a parallel backend may not provide much additional performance. However, parallel backends are suggested for larger data sets, as the process will be faster by several orders of magnitude.
 
 ``` r
 library(mlbgameday)
