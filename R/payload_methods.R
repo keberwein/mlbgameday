@@ -60,6 +60,10 @@ payload.gd_game_events <- function(urlz, ...) {
         if(!is.null(file)){
             pitch_nodes <- c(xml2::xml_find_all(file, "/game/inning/top/atbat/pitch"), 
                              xml2::xml_find_all(file, "/game/inning/bottom/atbat/pitch")) 
+            
+            date_dt <- as.Date(stringr::str_sub(urlz[[i]], 70, -39), format = "%Y-%m-%d")
+            gameday_link <- stringr::str_sub(urlz[[i]], 66, -23)
+            
             events <- purrr::map_dfr(pitch_nodes, function(x) {
                 out <- data.frame(t(xml2::xml_attrs(x)), stringsAsFactors=FALSE)
                 # An inner-loop would be more elegant here, but this way is faster, so...
@@ -84,6 +88,8 @@ payload.gd_game_events <- function(urlz, ...) {
                 out$b3 <- xml2::xml_parent(x) %>% xml2::xml_attr("b3")
                 out$inning <- xml2::xml_parent(xml2::xml_parent(xml2::xml_parent(x))) %>% xml2::xml_attr("num")
                 out$inning_side <- xml2::xml_name(xml2::xml_parent(xml2::xml_parent(x)))
+                out$date <- date_dt
+                out$gameday_link <- gameday_link
                 out
             })
         }
@@ -128,7 +134,7 @@ payload.gd_inning_all <- function(urlz, ...) {
                                     po_nodes <- c(xml2::xml_find_all(file, "./inning/top/atbat/po"), 
                                                   xml2::xml_find_all(file, "./inning/bottom/atbat/po"))
                                     url <- urlz[[i]]
-                                    date_dt <- as.Date(stringr::str_sub(urlz[[i]], 71, -39), format = "%Y-%m-%d")
+                                    date_dt <- as.Date(stringr::str_sub(urlz[[i]], 70, -39), format = "%Y-%m-%d")
                                     gameday_link <- stringr::str_sub(urlz[[i]], 66, -23)
                                     
                                     list(                        
@@ -227,9 +233,13 @@ payload.gd_inning_hit <- function(urlz, ...) {
     innings_df <- foreach::foreach(i = seq_along(urlz), .combine="rbind", .multicombine=T, .inorder=TRUE) %dopar% {
         file <- tryCatch(xml2::read_xml(urlz[[i]][[1]]), error=function(e) NULL)
         if(!is.null(file)){
+            date_dt <- as.Date(stringr::str_sub(urlz[[1]], 70, -39), format = "%Y-%m-%d")
+            gameday_link <- stringr::str_sub(urlz[[i]], 66, -23)
             hip_nodes <- xml2::xml_find_all(file, "/hitchart/hip")
             game <- purrr::map_dfr(hip_nodes, function(x) {
                 out <- data.frame(t(xml2::xml_attrs(x)), stringsAsFactors=FALSE)
+                out$date <- date_dt
+                out$gameday_link <- gameday_link
                 out
             })
         }
@@ -257,12 +267,16 @@ payload.gd_linescore <- function(urlz, ...) {
                             .init=list(list(), list())) %dopar% {
                                 file <- tryCatch(xml2::read_xml(urlz[[i]][[1]]), error=function(e) NULL)
                                 if(!is.null(file)){
+                                    date_dt <- as.Date(stringr::str_sub(urlz[[1]], 70, -39), format = "%Y-%m-%d")
+                                    gameday_link <- stringr::str_sub(urlz[[i]], 66, -23)
                                     game_nodes <- xml2::xml_find_all(file, "/game")
                                     media_nodes <- xml2::xml_find_all(file, "/game/game_media/media")
                                     
                                     list(
                                         game <- purrr::map_dfr(game_nodes, function(x) {
                                             out <- data.frame(t(xml2::xml_attrs(x)), stringsAsFactors=FALSE)
+                                            out$date <- date_dt
+                                            out$gameday_link <- gameday_link
                                             out
                                         }),
                                         
@@ -295,6 +309,8 @@ payload.gd_game <- function(urlz, ...) {
     innings_df <- foreach::foreach(i = seq_along(urlz), .combine="rbind", .multicombine=T, .inorder=TRUE) %dopar% {
         file <- tryCatch(xml2::read_xml(urlz[[i]][[1]]), error=function(e) NULL)
         if(!is.null(file)){
+            date_dt <- as.Date(stringr::str_sub(urlz[[1]], 70, -39), format = "%Y-%m-%d")
+            gameday_link <- stringr::str_sub(urlz[[i]], 66, -23)
             game_nodes <- xml2::xml_find_all(file, "/game/team")
             game <- purrr::map_dfr(game_nodes, function(x) {
                 out <- data.frame(t(xml2::xml_attrs(x)), stringsAsFactors=FALSE)
@@ -303,6 +319,8 @@ payload.gd_game <- function(urlz, ...) {
                 out$game_pk <- xml2::xml_parent(x) %>% xml2::xml_attr("game_pk")
                 out$game_time_et <- xml2::xml_parent(x) %>% xml2::xml_attr("game_time_et")
                 out$gameday_sw <- xml2::xml_parent(x) %>% xml2::xml_attr("gameday_sw")
+                out$date <- date_dt
+                out$gameday_link <- gameday_link
                 out
             })
         }
