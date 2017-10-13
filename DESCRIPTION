@@ -25,7 +25,6 @@ Suggests:
 	rmarkdown,
 	pitchRx,
 	viridis,
-	openWAR,
 	ggplot2,
 	plotly,
 	RSQLite,

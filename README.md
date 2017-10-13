@@ -24,26 +24,6 @@ Although the package is optimized for parallel processing, it will also work wit
 library(mlbgameday)
 
 innings_df <- get_payload(start = "2017-04-03", end = "2017-04-04")
-
-head(innings_df$atbat, 1)
-#>   num b s o start_tfs       start_tfs_zulu batter stand b_height pitcher
-#> 1   1 2 2 1    170552 2017-04-03T17:05:52Z 543829     L     5-11  544931
-#>   p_throws                                                  des
-#> 1        R Dee Gordon lines out to left fielder Jayson Werth.  
-#>                                                                des_es
-#> 1 Dee Gordon batea línea de out a jardinero izquierdo Jayson Werth.  
-#>   event_num   event     event_es home_team_runs away_team_runs inning
-#> 1        11 Lineout Línea de Out              0              0      1
-#>   next_ inning_side
-#> 1     Y         top
-#>                                                                                                                      url
-#> 1 http://gd2.mlb.com/components/game/mlb//year_2017/month_04/day_03/gid_2017_04_03_miamlb_wasmlb_1/inning/inning_all.xml
-#>   date                    gameday_link score
-#> 1 <NA> /gid_2017_04_03_miamlb_wasmlb_1  <NA>
-#>                              play_guid event2 event2_es event3 event3_es
-#> 1 76e23666-26f1-4339-967f-c6f759d864f4   <NA>      <NA>   <NA>      <NA>
-#>      batter_name      pitcher_name
-#> 1 Devaris Gordon Stephen Strasburg
 ```
 
 Take a peek at the data.
@@ -96,7 +76,7 @@ rm(cl)
 Databases
 ---------
 
-When collecting several seasons worth of data, the data may become larger than memory. If this is the case, the `mlbgameday` package includes functionality to break the data into "chunks" and load into a database. Database connections are provided by the `DBI` package, which includes connections for most modern relational databases. Below is an example that creates a SQLite database in our working directory and populates it with MLBgameday data.
+When collecting several seasons worth of data, the data may become larger than memory. If this is the case, the `mlbgameday` package includes functionality to break the data into "chunks" and load into a database. Database connections are provided by the `DBI` package, which includes connections for most modern relational databases. Below is an example that creates a SQLite database in our working directory and populates it with MLBgameday data. Although this technique is fast, it is also a system intensive process. The authors of `mlbgameday` suggest loading no more than a single season per R session.
 
 ``` r
 library(mlbgameday)
@@ -119,6 +99,8 @@ innings_df <- get_payload(start = "2016-01-01", end = "2017-01-01", db_con = con
 stopImplicitCluster()
 rm(cl)
 ```
+
+For a more in-depth look at reading and writing to databases, please see the [package vignettes.](https://github.com/keberwein/mlbgameday/tree/master/vignettes)
 
 Gameday Data Sets
 -----------------

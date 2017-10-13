@@ -11,7 +11,9 @@ vignette: >
 ```{r setup, include=TRUE}
 ```
 
-Relational databases provide an easy way to work with data that are larger than memory. Gameday data can grow rather large, so the `mlbgameday` package provides techniques for using databases.
+Relational databases provide an easy way to work with data that are larger than memory. Gameday data can grow rather large, so the `mlbgameday` package processes the data in "chunks" to alleviate memory overhead. Despite this technique, large payload requests can be highly system intensive. The authors of `mlbgameday` suggest loading no more than a single season per R session.
+
+## Connection Types
 
 The package uses database connections from the `DBI` package. The package documentation uses SQLite for examples, but `DBI` provides connection methods for most popular databases. Note, we will need to download the appropriate package to use the various connections. The various packages include:
 
@@ -33,6 +35,7 @@ library(RSQLite)
 library(DBI)
 
 # Create SQLite database.
+
 con <- DBI::dbConnect(RSQLite::SQLite(), dbname = "gameday.sqlite3")
 
 ```
@@ -42,15 +45,19 @@ Now that the empty database is created in our working directory, we can populate
 ```{r}
 
 # Create a list of game_ids for the 2016 World Series.
+
 game_ids <- search_gids(start = "2016-10-01", end = "2016-12-01", game_type = "w")
 
 # Gather data and write to database.
+
 get_payload(game_ids = game_ids, dataset = "inning_all", db_con = con)
 
 # Re-connect to database since the get_payload() function closed the connection.
+
 con <- DBI::dbConnect(RSQLite::SQLite(), dbname = "gameday.sqlite3")
 
-# Take a look at our tables
+# Take a look at our tables.
+
 dbListTables(con)
 
 ```
@@ -63,6 +70,7 @@ There are several methods for working with data in-database. Most commonly, if t
 
 # Bring data from database into memory via standard SQL.
 # Query a data frame of all pitches thrown by Andrew Miller in the 2016 World Series.
+
 millerTime <- dbGetQuery(con,
                 "SELECT * FROM pitch p
                 LEFT JOIN atbat a ON a.num = p.num
@@ -81,6 +89,7 @@ atbat <- tbl(con, "atbat")
 pitch <- tbl(con, "pitch")
 
 # Notice pitch and atbat are not data frames, rather they are database connections.
+
 summary(atbat)
 
 query <- pitch %>% left_join(atbat, by = c("num", "url")) %>% 
@@ -91,10 +100,12 @@ query <- pitch %>% left_join(atbat, by = c("num", "url")) %>%
 ```{r}
 
 # Construct a query using dplyr verbs. Notice here that the "query" still hasn't loaded any data.
+
 query <- pitch %>% left_join(atbat, by = c("num", "url")) %>% 
     filter(batter_name == "Kyle Schwarber")
 
 # Once we have the subset we want, we can pull that into the R enviornment as a data frame.
+
 schwarber <- collect(query)
 
 ```
