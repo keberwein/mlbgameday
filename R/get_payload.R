@@ -89,7 +89,9 @@ get_payload <- function(start=NULL, end=NULL, league="mlb", dataset = NULL, game
             if(utils::menu(c("Yes", "No"), 
                            title="Woah, that's a lot of data! Are you sure you want to continue without a database connection?")!=1){
                 stop(message("Download stopped. Try a database connection or a smaller data set."))
-            }else message("Starting download, this may take a while...")
+            }else{ 
+                message("Starting download, this may take a while...") 
+            }
         }
         if(dataset == "bis_boxscore") innings_df <- payload.gd_bis_boxscore(urlz)
         if(dataset == "game_events") innings_df <- payload.gd_game_events(urlz)

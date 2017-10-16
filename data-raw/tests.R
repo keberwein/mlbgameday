@@ -40,14 +40,14 @@ runtime
 
 
 # database test. two seasons
-no_cores <- detectCores() - 2
+no_cores <- detectCores() - 1
 cl <- makeCluster(no_cores)  
 registerDoParallel(cl)
 
 print(pryr::mem_used())
 start=Sys.time() ; print(start)
-con <- DBI::dbConnect(RSQLite::SQLite(), dbname = "gameday.sqlite3")
-innings_df <- get_payload(start = "2010-01-01", end = "2010-10-01", db_con = con)
+#con <- DBI::dbConnect(RSQLite::SQLite(), dbname = "gameday.sqlite3")
+innings_df <- mlbgameday::get_payload(start = "2010-04-01", end = "2010-10-01", db_con = NULL)
 end=Sys.time()
 runtime = end - start
 runtime
@@ -64,7 +64,8 @@ rm(con)
 
 
 
-gids <- make_gids(start = "2016-06-01", end = "2016-06-01", dataset="inning_all")
+innings_df <- get_payload(start = "2013-06-01", end = "2013-09-02", dataset="game_events")
+
 
 
 start=Sys.time() ; print(start)

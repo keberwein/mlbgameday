@@ -6,7 +6,7 @@
 #' @param ... additional arguments
 #' @keywords internal
 #' @import xml2
-#' @importFrom stringr str_sub
+#' @importFrom stringr str_sub str_replace_all
 #' @importFrom dplyr bind_rows left_join rename mutate
 #' @importFrom purrr map_dfr
 #' @importFrom stats setNames
@@ -20,17 +20,24 @@ payload.gd_bis_boxscore <- function(urlz, ...) {
                             .init=list(list(), list())) %dopar% {
                                 file <- tryCatch(xml2::read_xml(urlz[[i]][[1]]), error=function(e) NULL)
                                 if(!is.null(file)){
+                                    date_dt <- stringr::str_sub(urlz[[i]], 71, 80) %>% stringr::str_replace_all("_", "-") %>%
+                                        as.Date(format = "%Y-%m-%d")
+                                    gameday_link <- stringr::str_sub(urlz[[i]], 66, -23)
                                     pitch_nodes <- xml2::xml_find_all(file, "/boxscore/pitching/pitcher")
                                     bat_nodes <- xml2::xml_find_all(file, "/boxscore/batting/batter")
                                     
                                     list(
                                         batting <- purrr::map_dfr(bat_nodes, function(x) {
                                             out <- data.frame(t(xml2::xml_attrs(x)), stringsAsFactors=FALSE)
+                                            out$date <- date_dt
+                                            out$gameday_link <- gameday_link
                                             out
                                         }),
                                         
                                         pitching <- purrr::map_dfr(pitch_nodes, function(x) {
                                             out <- data.frame(t(xml2::xml_attrs(x)), stringsAsFactors=FALSE)
+                                            out$date <- date_dt
+                                            out$gameday_link <- gameday_link
                                             out
                                         })
                                     )
@@ -49,6 +56,7 @@ payload.gd_bis_boxscore <- function(urlz, ...) {
 #' @param ... additional arguments
 #' @keywords internal
 #' @import xml2
+#' @importFrom stringr str_sub str_replace_all
 #' @importFrom purrr map_dfr
 #' @importFrom stats setNames
 #' @import foreach
@@ -61,7 +69,8 @@ payload.gd_game_events <- function(urlz, ...) {
             pitch_nodes <- c(xml2::xml_find_all(file, "/game/inning/top/atbat/pitch"), 
                              xml2::xml_find_all(file, "/game/inning/bottom/atbat/pitch")) 
             
-            date_dt <- as.Date(stringr::str_sub(urlz[[i]], 70, -39), format = "%Y-%m-%d")
+            date_dt <- stringr::str_sub(urlz[[i]], 71, 80) %>% stringr::str_replace_all("_", "-") %>%
+                as.Date(format = "%Y-%m-%d")            
             gameday_link <- stringr::str_sub(urlz[[i]], 66, -23)
             
             events <- purrr::map_dfr(pitch_nodes, function(x) {
@@ -106,7 +115,7 @@ payload.gd_game_events <- function(urlz, ...) {
 #' @param ... additional arguments
 #' @keywords internal
 #' @import xml2
-#' @importFrom stringr str_sub
+#' @importFrom stringr str_sub str_replace_all
 #' @importFrom dplyr bind_rows left_join rename
 #' @importFrom purrr map_dfr
 #' @importFrom stats setNames
@@ -134,7 +143,8 @@ payload.gd_inning_all <- function(urlz, ...) {
                                     po_nodes <- c(xml2::xml_find_all(file, "./inning/top/atbat/po"), 
                                                   xml2::xml_find_all(file, "./inning/bottom/atbat/po"))
                                     url <- urlz[[i]]
-                                    date_dt <- as.Date(stringr::str_sub(urlz[[i]], 70, -39), format = "%Y-%m-%d")
+                                    date_dt <- stringr::str_sub(urlz[[i]], 71, 80) %>% stringr::str_replace_all("_", "-") %>%
+                                        as.Date(format = "%Y-%m-%d")
                                     gameday_link <- stringr::str_sub(urlz[[i]], 66, -23)
                                     
                                     list(                        
@@ -224,6 +234,7 @@ payload.gd_inning_all <- function(urlz, ...) {
 #' @param ... additional arguments
 #' @keywords internal
 #' @import xml2
+#' @importFrom stringr str_sub str_replace_all
 #' @importFrom purrr map_dfr
 #' @importFrom stats setNames
 #' @import foreach
@@ -233,7 +244,8 @@ payload.gd_inning_hit <- function(urlz, ...) {
     innings_df <- foreach::foreach(i = seq_along(urlz), .combine="rbind", .multicombine=T, .inorder=TRUE) %dopar% {
         file <- tryCatch(xml2::read_xml(urlz[[i]][[1]]), error=function(e) NULL)
         if(!is.null(file)){
-            date_dt <- as.Date(stringr::str_sub(urlz[[1]], 70, -39), format = "%Y-%m-%d")
+            date_dt <- stringr::str_sub(urlz[[i]], 71, 80) %>% stringr::str_replace_all("_", "-") %>%
+                as.Date(format = "%Y-%m-%d")
             gameday_link <- stringr::str_sub(urlz[[i]], 66, -23)
             hip_nodes <- xml2::xml_find_all(file, "/hitchart/hip")
             game <- purrr::map_dfr(hip_nodes, function(x) {
@@ -253,6 +265,7 @@ payload.gd_inning_hit <- function(urlz, ...) {
 #' @param ... additional arguments
 #' @keywords internal
 #' @import xml2
+#' @importFrom stringr str_sub str_replace_all
 #' @importFrom dplyr bind_rows rename
 #' @importFrom purrr map_dfr
 #' @importFrom stats setNames
@@ -267,7 +280,8 @@ payload.gd_linescore <- function(urlz, ...) {
                             .init=list(list(), list())) %dopar% {
                                 file <- tryCatch(xml2::read_xml(urlz[[i]][[1]]), error=function(e) NULL)
                                 if(!is.null(file)){
-                                    date_dt <- as.Date(stringr::str_sub(urlz[[1]], 70, -39), format = "%Y-%m-%d")
+                                    date_dt <- stringr::str_sub(urlz[[i]], 71, 80) %>% stringr::str_replace_all("_", "-") %>%
+                                        as.Date(format = "%Y-%m-%d")
                                     gameday_link <- stringr::str_sub(urlz[[i]], 66, -23)
                                     game_nodes <- xml2::xml_find_all(file, "/game")
                                     media_nodes <- xml2::xml_find_all(file, "/game/game_media/media")
@@ -300,6 +314,7 @@ payload.gd_linescore <- function(urlz, ...) {
 #' @param ... additional arguments
 #' @keywords internal
 #' @import xml2
+#' @importFrom stringr str_sub str_replace_all
 #' @importFrom purrr map_dfr
 #' @importFrom stats setNames
 #' @import foreach
@@ -309,7 +324,8 @@ payload.gd_game <- function(urlz, ...) {
     innings_df <- foreach::foreach(i = seq_along(urlz), .combine="rbind", .multicombine=T, .inorder=TRUE) %dopar% {
         file <- tryCatch(xml2::read_xml(urlz[[i]][[1]]), error=function(e) NULL)
         if(!is.null(file)){
-            date_dt <- as.Date(stringr::str_sub(urlz[[1]], 70, -39), format = "%Y-%m-%d")
+            date_dt <- stringr::str_sub(urlz[[i]], 71, 80) %>% stringr::str_replace_all("_", "-") %>%
+                as.Date(format = "%Y-%m-%d")
             gameday_link <- stringr::str_sub(urlz[[i]], 66, -23)
             game_nodes <- xml2::xml_find_all(file, "/game/team")
             game <- purrr::map_dfr(game_nodes, function(x) {

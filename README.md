@@ -4,7 +4,7 @@
 Why mlbgameday?
 ---------------
 
-Designed to facilitate extract, transform and load for MLBAM “gameday” data. The package is optimized for parallel processing of data that may be larger than memory. There are other packages in the R universe that were built to perform statistics and visualizations on these data, but `mlbgameday` is concerned primarily with data collection. More uses of these data can be found in the `pitchRx`, `openWAR`, and `baseballr` packages.
+Designed to facilitate extract, transform and load for MLBAM “Gameday” data. The package is optimized for parallel processing of data that may be larger than memory. There are other packages in the R universe that were built to perform statistics and visualizations on these data, but `mlbgameday` is concerned primarily with data collection. More uses of these data can be found in the `pitchRx`, `openWAR`, and `baseballr` packages.
 
 Install
 -------
@@ -78,7 +78,7 @@ Note: The `mlbgameday` package is inteded for use on a single machine, using mul
 Databases
 ---------
 
-When collecting several seasons worth of data, the data may become larger than memory. If this is the case, the `mlbgameday` package includes functionality to break the data into "chunks" and load into a database. Database connections are provided by the `DBI` package, which includes connections for most modern relational databases. Below is an example that creates a SQLite database in our working directory and populates it with MLBgameday data. Although this technique is fast, it is also a system intensive process. The authors of `mlbgameday` suggest loading no more than a single season per R session.
+When collecting several seasons worth of data, the data may become larger than memory. If this is the case, the `mlbgameday` package includes functionality to break the data into "chunks" and load into a database. Database connections are provided by the `DBI` package, which includes connections for most modern relational databases. Below is an example that creates a SQLite database in our working directory and populates it with MLBAM Gameday data. Although this technique is fast, it is also a system intensive process. The authors of `mlbgameday` suggest loading no more than a single season per R session.
 
 ``` r
 library(mlbgameday)
