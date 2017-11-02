@@ -15,7 +15,7 @@
 payload.gd_bis_boxscore <- function(urlz, ...) {
     batting <- list(); pitching <- list()
     lnames <- list(batting=batting,pitching=pitching)
-    out <- foreach::foreach(i = seq_along(urlz), .combine="comb_pload", .multicombine=T, .inorder=TRUE,
+    out <- foreach::foreach(i = seq_along(urlz), .combine="comb_pload", .multicombine=T, .inorder=FALSE,
                             .final = function(x) stats::setNames(x, names(lnames)),
                             .init=list(list(), list())) %dopar% {
                                 file <- tryCatch(xml2::read_xml(urlz[[i]][[1]]), error=function(e) NULL)
@@ -46,7 +46,8 @@ payload.gd_bis_boxscore <- function(urlz, ...) {
     batting <- dplyr::bind_rows(out$batting)
     pitching <- dplyr::bind_rows(out$pitching)
     innings_df <- list(batting=batting, pitching=pitching)
-    innings_df <- structure(innings_df, class="list_bis_boxscore")
+    innings_df <- structure(innings_df, class="list_bis_boxscore") %>%
+        transform_pload()
     return(innings_df)
     
 }
@@ -63,7 +64,7 @@ payload.gd_bis_boxscore <- function(urlz, ...) {
 #' @export
 #' 
 payload.gd_game_events <- function(urlz, ...) {
-    innings_df <- foreach::foreach(i = seq_along(urlz), .combine="rbind", .multicombine=T, .inorder=TRUE) %dopar% {
+    innings_df <- foreach::foreach(i = seq_along(urlz), .combine="rbind", .multicombine=T, .inorder=FALSE) %dopar% {
         file <- tryCatch(xml2::read_xml(urlz[[i]][[1]]), error=function(e) NULL)
         if(!is.null(file)){
             pitch_nodes <- c(xml2::xml_find_all(file, "/game/inning/top/atbat/pitch"), 
@@ -103,7 +104,8 @@ payload.gd_game_events <- function(urlz, ...) {
             })
         }
     }
-    innings_df <- structure(innings_df, class="df_game_events")
+    innings_df <- structure(innings_df, class="df_game_events") %>%
+        transform_pload()
     
     return(innings_df)
 }
@@ -126,7 +128,7 @@ payload.gd_inning_all <- function(urlz, ...) {
     # Make some place-holders for the function.
     atbat <- list(); action <- list(); pitch <- list(); runner <- list(); po <- list()
     lnames <- list(atbat=atbat, action=action, pitch=pitch, runner=runner, po=po)
-    out <- foreach::foreach(i = seq_along(urlz), .combine="comb_pload", .multicombine=T, .inorder=TRUE,
+    out <- foreach::foreach(i = seq_along(urlz), .combine="comb_pload", .multicombine=T, .inorder=FALSE,
                             .final = function(x) stats::setNames(x, names(lnames)),
                             .init=list(list(), list(), list(), list(), list())) %dopar% {
                                 file <- tryCatch(xml2::read_xml(urlz[[i]][[1]]), error=function(e) NULL)
@@ -151,8 +153,8 @@ payload.gd_inning_all <- function(urlz, ...) {
                                         atbat <- purrr::map_dfr(atbat_nodes, function(x) {
                                             out <- data.frame(t(xml2::xml_attrs(x)), stringsAsFactors=FALSE)
                                             out$inning <- as.numeric(xml2::xml_parent(xml2::xml_parent(x)) %>% xml2::xml_attr("num"))
-                                            out$next_ <- xml2::xml_parent(xml2::xml_parent(x)) %>% xml2::xml_attr("next")
-                                            out$inning_side <- xml2::xml_name(xml2::xml_parent(x))
+                                            out$next_ <- as.character(xml2::xml_parent(xml2::xml_parent(x)) %>% xml2::xml_attr("next"))
+                                            out$inning_side <- as.character(xml2::xml_name(xml2::xml_parent(x)))
                                             out$url <- url
                                             out$date <- date_dt
                                             out$gameday_link <- gameday_link
@@ -162,8 +164,8 @@ payload.gd_inning_all <- function(urlz, ...) {
                                         action <- purrr::map_dfr(action_nodes, function(x) {
                                             out <- data.frame(t(xml2::xml_attrs(x)), stringsAsFactors=FALSE)
                                             out$inning <- as.numeric(xml2::xml_parent(xml2::xml_parent(x)) %>% xml2::xml_attr("num"))
-                                            out$next_ <- xml2::xml_parent(xml2::xml_parent(x)) %>% xml2::xml_attr("next")
-                                            out$inning_side <- xml2::xml_name(xml2::xml_parent(x))
+                                            out$next_ <- as.character(xml2::xml_parent(xml2::xml_parent(x)) %>% xml2::xml_attr("next"))
+                                            out$inning_side <- as.character(xml2::xml_name(xml2::xml_parent(x)))
                                             out$url <- url
                                             out$gameday_link <- gameday_link
                                             out
@@ -172,8 +174,8 @@ payload.gd_inning_all <- function(urlz, ...) {
                                         pitch <- purrr::map_dfr(pitch_nodes, function(x) {
                                             out <- data.frame(t(xml2::xml_attrs(x)), stringsAsFactors=FALSE)
                                             out$inning <- as.numeric(xml2::xml_parent(xml2::xml_parent(xml2::xml_parent(x))) %>% xml2::xml_attr("num"))
-                                            out$next_ <- xml2::xml_parent(xml2::xml_parent(xml2::xml_parent(x))) %>% xml2::xml_attr("next")
-                                            out$inning_side <- xml2::xml_name(xml2::xml_parent(xml2::xml_parent(x)))
+                                            out$next_ <- as.character(xml2::xml_parent(xml2::xml_parent(xml2::xml_parent(x))) %>% xml2::xml_attr("next"))
+                                            out$inning_side <- as.character(xml2::xml_name(xml2::xml_parent(xml2::xml_parent(x))))
                                             out$url <- url
                                             out$gameday_link <- gameday_link
                                             out$num <- as.numeric(xml2::xml_parent(x) %>% xml2::xml_attr("num"))
@@ -185,8 +187,8 @@ payload.gd_inning_all <- function(urlz, ...) {
                                         runner <- purrr::map_dfr(runner_nodes, function(x) {
                                             out <- data.frame(t(xml2::xml_attrs(x)), stringsAsFactors=FALSE)
                                             out$inning <- as.numeric(xml2::xml_parent(xml2::xml_parent(x)) %>% xml2::xml_attr("num"))
-                                            out$next_ <- xml2::xml_parent(xml2::xml_parent(x)) %>% xml2::xml_attr("next")
-                                            out$inning_side <- xml2::xml_name(xml2::xml_parent(x))
+                                            out$next_ <- as.character(xml2::xml_parent(xml2::xml_parent(x)) %>% xml2::xml_attr("next"))
+                                            out$inning_side <- as.character(xml2::xml_name(xml2::xml_parent(x)))
                                             out$url <- url
                                             out$gameday_link <- gameday_link
                                             out
@@ -195,8 +197,8 @@ payload.gd_inning_all <- function(urlz, ...) {
                                         po <- purrr::map_dfr(po_nodes, function(x) {
                                             out <- data.frame(t(xml2::xml_attrs(x)), stringsAsFactors=FALSE)
                                             out$inning <- as.numeric( xml2::xml_parent(xml2::xml_parent(xml2::xml_parent(x))) %>% xml2::xml_attr("num"))
-                                            out$next_ <-  xml2::xml_parent(xml2::xml_parent(xml2::xml_parent(x))) %>% xml2::xml_attr("next")
-                                            out$inning_side <- xml2::xml_name(xml2::xml_parent(xml2::xml_parent(x)))
+                                            out$next_ <-  as.character(xml2::xml_parent(xml2::xml_parent(xml2::xml_parent(x))) %>% xml2::xml_attr("next"))
+                                            out$inning_side <- as.character(xml2::xml_name(xml2::xml_parent(xml2::xml_parent(x))))
                                             out$url <- url
                                             out$gameday_link <- gameday_link
                                             out
@@ -223,7 +225,8 @@ payload.gd_inning_all <- function(urlz, ...) {
         dplyr::left_join(player_ids, by = c("pitcher" = "id")) %>% 
         dplyr::rename(batter_name=full_name.x, pitcher_name=full_name.y)
     
-    innings_df <- structure(innings_df, class="list_inning_all")
+    innings_df <- structure(innings_df, class="list_inning_all") %>%
+        transform_pload()
     
     return(innings_df)
     
@@ -241,7 +244,7 @@ payload.gd_inning_all <- function(urlz, ...) {
 #' @export
 #' 
 payload.gd_inning_hit <- function(urlz, ...) {
-    innings_df <- foreach::foreach(i = seq_along(urlz), .combine="rbind", .multicombine=T, .inorder=TRUE) %dopar% {
+    innings_df <- foreach::foreach(i = seq_along(urlz), .combine="rbind", .multicombine=T, .inorder=FALSE) %dopar% {
         file <- tryCatch(xml2::read_xml(urlz[[i]][[1]]), error=function(e) NULL)
         if(!is.null(file)){
             date_dt <- stringr::str_sub(urlz[[i]], 71, 80) %>% stringr::str_replace_all("_", "-") %>%
@@ -256,7 +259,8 @@ payload.gd_inning_hit <- function(urlz, ...) {
             })
         }
     }
-    innings_df <- structure(innings_df, class="df_inning_hit")
+    innings_df <- structure(innings_df, class="df_inning_hit") %>%
+        transform_pload()
     return(innings_df)
 }
 
@@ -275,7 +279,7 @@ payload.gd_inning_hit <- function(urlz, ...) {
 payload.gd_linescore <- function(urlz, ...) {
     game <- list(); game_media <- list()
     lnames <- list(game=game, game_media=game_media)
-    out <- foreach::foreach(i = seq_along(urlz), .combine="comb_pload", .multicombine=T, .inorder=TRUE,
+    out <- foreach::foreach(i = seq_along(urlz), .combine="comb_pload", .multicombine=T, .inorder=FALSE,
                             .final = function(x) stats::setNames(x, names(lnames)),
                             .init=list(list(), list())) %dopar% {
                                 file <- tryCatch(xml2::read_xml(urlz[[i]][[1]]), error=function(e) NULL)
@@ -304,7 +308,8 @@ payload.gd_linescore <- function(urlz, ...) {
     game <- dplyr::bind_rows(out$game)
     game_media <- dplyr::bind_rows(out$game_media)
     innings_df <- list(game=game, game_media=game_media)
-    innings_df <- structure(innings_df, class="list_linescore")
+    innings_df <- structure(innings_df, class="list_linescore") %>%
+        transform_pload()
     return(innings_df)
 }
 
@@ -321,7 +326,7 @@ payload.gd_linescore <- function(urlz, ...) {
 #' @export
 #' 
 payload.gd_game <- function(urlz, ...) {
-    innings_df <- foreach::foreach(i = seq_along(urlz), .combine="rbind", .multicombine=T, .inorder=TRUE) %dopar% {
+    innings_df <- foreach::foreach(i = seq_along(urlz), .combine="rbind", .multicombine=T, .inorder=FALSE) %dopar% {
         file <- tryCatch(xml2::read_xml(urlz[[i]][[1]]), error=function(e) NULL)
         if(!is.null(file)){
             date_dt <- stringr::str_sub(urlz[[i]], 71, 80) %>% stringr::str_replace_all("_", "-") %>%
@@ -341,7 +346,8 @@ payload.gd_game <- function(urlz, ...) {
             })
         }
     }
-    innings_df <- structure(innings_df, class="df_game")
+    innings_df <- structure(innings_df, class="df_game") %>%
+        transform_pload()
     return(innings_df)
 }
 

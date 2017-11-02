@@ -45,7 +45,6 @@ urlTrue <- function(target) {
 #' @description Internal combine fucntion for foreach loop used in get_payload()
 #' @param x target
 #' @param ... additional args
-#' @importFrom purrr map
 #' @keywords internal
 #' @export
 comb_pload <- function(x, ...) {

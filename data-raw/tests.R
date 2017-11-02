@@ -47,7 +47,7 @@ registerDoParallel(cl)
 print(pryr::mem_used())
 start=Sys.time() ; print(start)
 #con <- DBI::dbConnect(RSQLite::SQLite(), dbname = "gameday.sqlite3")
-innings_df <- mlbgameday::get_payload(start = "2010-04-01", end = "2010-10-01", db_con = NULL)
+innings_df <- mlbgameday::get_payload(start = "2016-08-01", end = "2016-08-02", db_con = NULL)
 end=Sys.time()
 runtime = end - start
 runtime
@@ -60,17 +60,10 @@ rm(cl)
 DBI::dbDisconnect(con)
 rm(con)
 
-# object 'play_guid' not found 2008-2011
-
-
-
-innings_df <- get_payload(start = "2013-06-01", end = "2013-09-02", dataset="game_events")
-
-
 
 start=Sys.time() ; print(start)
 #scrape(start = "2016-04-03", end = "2016-10-02", connect = con)
-prx <- pitchRx::scrape(start = "2015-09-03", end = "2015-09-10")
+prx <- pitchRx::scrape(start = "2016-08-01", end = "2016-08-02")
 end = Sys.time()
 runtime = end-start
 runtime

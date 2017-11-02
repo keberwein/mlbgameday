@@ -72,7 +72,8 @@ get_payload <- function(start=NULL, end=NULL, league="mlb", dataset = NULL, game
             if(dataset=="inning_hit") innings_df <- payload.gd_inning_hit(urlz)
             if(dataset=="linescore") innings_df <- payload.gd_linescore(urlz)
             if(dataset=="game") innings_df <- payload.gd_game(urlz)
-            innings_df <- transform_pload(innings_df)
+            # Probably faster to do the transformation within the loop in cases where data gets very large.
+            #innings_df <- transform_pload(innings_df)
             
             for (i in names(innings_df)) DBI::dbWriteTable(conn = db_con, value = innings_df[[i]], name = i, append = TRUE)
             # Manual garbage collect after every loop of 300 games.
@@ -99,7 +100,8 @@ get_payload <- function(start=NULL, end=NULL, league="mlb", dataset = NULL, game
         if(dataset=="inning_hit") innings_df <- payload.gd_inning_hit(urlz)
         if(dataset=="linescore") innings_df <- payload.gd_linescore(urlz)
         if(dataset=="game") innings_df <- payload.gd_game(urlz)
-        innings_df <- transform_pload(innings_df)
+        # Probably faster to do the transformation within the loop in cases where data gets very large.
+        #innings_df <- transform_pload(innings_df)
     }
 }
 
