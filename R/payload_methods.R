@@ -131,7 +131,7 @@ payload.gd_inning_all <- function(urlz, ...) {
     out <- foreach::foreach(i = seq_along(urlz), .combine="comb_pload", .multicombine=T, .inorder=FALSE,
                             .final = function(x) stats::setNames(x, names(lnames)),
                             .init=list(list(), list(), list(), list(), list())) %dopar% {
-                                file <- tryCatch(xml2::read_xml(urlz[[i]][[1]]), error=function(e) NULL)
+                                file <- tryCatch(xml2::read_xml(urlz[[i]][[1]], n=256), error=function(e) NULL)
                                 if(!is.null(file)){
                                     #message(as.character(urlz[[i]]))
                                     atbat_nodes <- c(xml2::xml_find_all(file, "./inning/top/atbat"), 
@@ -225,8 +225,8 @@ payload.gd_inning_all <- function(urlz, ...) {
         dplyr::left_join(player_ids, by = c("pitcher" = "id")) %>% 
         dplyr::rename(batter_name=full_name.x, pitcher_name=full_name.y)
     
-    innings_df <- structure(innings_df, class="list_inning_all") %>%
-        transform_pload()
+    innings_df <- structure(innings_df, class="list_inning_all") #%>%
+        #transform_pload()
     
     return(innings_df)
     
@@ -282,7 +282,7 @@ payload.gd_linescore <- function(urlz, ...) {
     out <- foreach::foreach(i = seq_along(urlz), .combine="comb_pload", .multicombine=T, .inorder=FALSE,
                             .final = function(x) stats::setNames(x, names(lnames)),
                             .init=list(list(), list())) %dopar% {
-                                file <- tryCatch(xml2::read_xml(urlz[[i]][[1]]), error=function(e) NULL)
+                                file <- tryCatch(xml2::read_xml(urlz[[i]][[1]], n=256), error=function(e) NULL)
                                 if(!is.null(file)){
                                     date_dt <- stringr::str_sub(urlz[[i]], 71, 80) %>% stringr::str_replace_all("_", "-") %>%
                                         as.Date(format = "%Y-%m-%d")

@@ -29,6 +29,7 @@ rm(cl)
 # Full season still slower than pitchrx. This may be due to the pitchrx DB con and garbage collection.
 game_ids <- search_gids(start = "2016-04-01", end = "2016-05-01", game_type = "r")
 zzz= mlbgameday::get_payload(game_ids = game_ids, dataset = "inning_all")
+urlz <- make_gids(start = "2016-08-01", end = "2016-08-02", dataset = "inning_all")
 
 # linescore not working. It's in the dopar loop. Checkt urlz.
 start=Sys.time() ; print(start)
