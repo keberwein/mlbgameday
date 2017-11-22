@@ -103,6 +103,8 @@ get_payload <- function(start=NULL, end=NULL, league="mlb", dataset = NULL, game
         # Probably faster to do the transformation within the loop in cases where data gets very large.
         #innings_df <- transform_pload(innings_df)
     }
+    
+    return(innings_df)
 }
 
 

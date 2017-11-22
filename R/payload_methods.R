@@ -225,8 +225,8 @@ payload.gd_inning_all <- function(urlz, ...) {
         dplyr::left_join(player_ids, by = c("pitcher" = "id")) %>% 
         dplyr::rename(batter_name=full_name.x, pitcher_name=full_name.y)
     
-    innings_df <- structure(innings_df, class="list_inning_all") #%>%
-        #transform_pload()
+    innings_df <- structure(innings_df, class="list_inning_all") %>%
+        transform_pload()
     
     return(innings_df)
     
