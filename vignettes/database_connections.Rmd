@@ -29,7 +29,7 @@ The package uses database connections from the `DBI` package. The package docume
 
 The easiest way to get going is to create an empty database and call the `get_paylaod()` function with the new database's connection in the `db_conn` argument. There is no need to create a database schema before-hand. The data are returned as integer, double, or character data types, and most databases will recognize that. An example using SQLite would look like this:
 
-```{r}
+```{r, eval=F}
 library(mlbgameday)
 library(RSQLite)
 library(DBI)
@@ -42,7 +42,7 @@ con <- DBI::dbConnect(RSQLite::SQLite(), dbname = "gameday.sqlite3")
 
 Now that the empty database is created in our working directory, we can populate it. For the sake of brevity, we will search for only the games played in the 2016 World Series.
 
-```{r}
+```{r, eval=F}
 
 # Create a list of game_ids for the 2016 World Series.
 
@@ -66,7 +66,7 @@ dbListTables(con)
 
 There are several methods for working with data in-database. Most commonly, if the data are larger than memory, we would want to subset or parse it before bringing it into our R environment. The most straight-forward way to do this is to use our database connection to perform a standard SQL query. The query below creates a data frame containing all the pitches thrown by Andrew Miller in the 2016 World Series.
 
-```{r}
+```{r, eval=F}
 
 # Bring data from database into memory via standard SQL.
 # Query a data frame of all pitches thrown by Andrew Miller in the 2016 World Series.
@@ -81,7 +81,7 @@ millerTime <- dbGetQuery(con,
 
 If we prefer not to work with SQL, the `dbplyr` package provides SQL backends that allow us to work with standard `dplyr` verbs. The data aren't pulled from the database until we call the `collect()` function, therefore no memory is wasted by processing the data. For example, if we wanted to see all of Kyle Schwarber's at-bats during the 2016 World Series, we could do the following:
 
-```{r}
+```{r, eval=F}
 library(dbplyr)
 library(dplyr)
 
@@ -97,7 +97,7 @@ query <- pitch %>% left_join(atbat, by = c("num", "url")) %>%
 
 ```
 
-```{r}
+```{r, eval=F}
 
 # Construct a query using dplyr verbs. Notice here that the "query" still hasn't loaded any data.
 
