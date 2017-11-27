@@ -4,12 +4,3 @@ Do final parallel and database tests.
 
 Run through README and vingnettes one more time.
 
-Warnings:
-
-Both these are dead links.
-
-2: In doTryCatch(return(expr), name, parentenv, handler) :
-  closing unused connection 3 (http://gd2.mlb.com/components/game/mlb//year_2016/month_09/day_25/gid_2016_09_25_atlmlb_miamlb_1/inning/inning_all.xml)
-  
-3: In .Internal(identical(x, y, num.eq, single.NA, attrib.as.set, ignore.bytecode,  :
-  closing unused connection 3 (http://gd2.mlb.com/components/game/mlb//year_2016/month_10/day_03/gid_2016_10_03_clemlb_detmlb_1/inning/inning_all.xml)
