@@ -19,28 +19,6 @@ NULL
 #' @export
 NULL
 
-#' @title urlTrue
-#' @description A utility function to run a tryCatch on a URL. Returns a logical TRUE / FALSE.
-#' @param target url
-#' @importFrom utils capture.output
-#' @keywords internal
-#' @export
-urlTrue <- function(target) {  
-    tryCatch({  
-        con <- url(target)  
-        a  <- capture.output(suppressWarnings(readLines(con)))  
-        close(con)  
-        TRUE;  
-    },  
-    error = function(err) {  
-        occur <- grep("cannot open the connection", capture.output(err));  
-        if(length(occur) > 0){
-            close(con)
-            FALSE;
-        } 
-    })  
-}
-
 #' @title comb_pload
 #' @description Internal combine fucntion for foreach loop used in get_payload()
 #' @param x target

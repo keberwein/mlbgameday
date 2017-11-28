@@ -29,11 +29,10 @@ rm(cl)
 # Full season still slower than pitchrx. This may be due to the pitchrx DB con and garbage collection.
 game_ids <- search_gids(start = "2016-04-01", end = "2016-05-01", game_type = "r")
 zzz= mlbgameday::get_payload(game_ids = game_ids, dataset = "inning_all")
-urlz <- make_gids(start = "2016-08-01", end = "2016-08-02", dataset = "inning_all")
 
 # linescore not working. It's in the dopar loop. Checkt urlz.
 start=Sys.time() ; print(start)
-innings_df <- mlbgameday::get_payload(start = "2015-09-03", end = "2015-09-04", dataset = "game")
+innings_df <- mlbgameday::get_payload(start = "2015-06-01", end = "2015-06-02", dataset = "game")
 end=Sys.time()
 runtime = end - start
 runtime
@@ -48,7 +47,7 @@ registerDoParallel(cl)
 print(pryr::mem_used())
 start=Sys.time() ; print(start)
 #con <- DBI::dbConnect(RSQLite::SQLite(), dbname = "gameday.sqlite3")
-test_df <- mlbgameday::get_payload(start = "2016-08-01", end = "2016-10-30", db_con = NULL)
+test_df <- mlbgameday::get_payload(start = "2015-06-01", end = "2015-06-02", db_con = NULL)
 end=Sys.time()
 runtime = end - start
 runtime
@@ -64,17 +63,18 @@ rm(con)
 
 start=Sys.time() ; print(start)
 #scrape(start = "2016-04-03", end = "2016-10-02", connect = con)
-prx <- pitchRx::scrape(start = "2016-08-01", end = "2016-10-31")
+prx <- pitchRx::scrape(start = "2015-08-01", end = "2015-08-14")
 end = Sys.time()
 runtime = end-start
 runtime
 
 ## 1 Day
-#tidy 24.5 clean environ 
+#tidy 36.2 clean environ
+## 23 seconds without the xml navigation pieces, maybe try sub-loop. 
 #pitchrx: 28.8 clean eviron
 #
 ## 1 Week
-#tidy 1.90
+#tidy 2.27
 #pitchrx 1.23 min.
 #
 ## 2 weeks / pitchrx 200 game limit
@@ -82,7 +82,31 @@ runtime
 #pitchrx 2.42 min. limit 200 games
 #
 
-library(openWAR)
-gd <- gameday()
+library(mlbgameday)
+library(doParallel)
+library(DBI)
+library(RSQLite)
 
-ds <- openWAR::getData()
+print(pryr::mem_used())
+start=Sys.time() ; print(start)
+
+# First we need to register our parallel cluster.
+no_cores <- detectCores() - 1
+cl <- makeCluster(no_cores)  
+registerDoParallel(cl)
+
+# Create the database in our working directory.
+con <- dbConnect(RSQLite::SQLite(), dbname = "gameday.sqlite3")
+
+# Collect all games, including pre and post-season for the 2016 season.
+innings_df <- get_payload(start = "2016-01-01", end = "2017-01-01", db_con = con, game_type = "r")
+
+# Don't forget to stop the cluster when finished.
+stopImplicitCluster()
+rm(cl)
+rm(con)
+
+end=Sys.time()
+runtime = end - start
+runtime
+print(pryr::mem_used())
