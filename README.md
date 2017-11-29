@@ -42,8 +42,8 @@ head(innings_df$atbat, 1)
 #> 1     Y         top
 #>                                                                                                                      url
 #> 1 http://gd2.mlb.com/components/game/mlb//year_2017/month_04/day_03/gid_2017_04_03_miamlb_wasmlb_1/inning/inning_all.xml
-#>   date                    gameday_link score
-#> 1 <NA> /gid_2017_04_03_miamlb_wasmlb_1  <NA>
+#>         date                    gameday_link score
+#> 1 2017-04-03 /gid_2017_04_03_miamlb_wasmlb_1  <NA>
 #>                              play_guid event2 event2_es event3 event3_es
 #> 1 76e23666-26f1-4339-967f-c6f759d864f4   <NA>      <NA>   <NA>      <NA>
 #>      batter_name      pitcher_name
@@ -87,7 +87,7 @@ library(DBI)
 library(RSQLite)
 
 # First we need to register our parallel cluster.
-no_cores <- detectCores() - 2
+no_cores <- detectCores() - 1
 cl <- makeCluster(no_cores)  
 registerDoParallel(cl)
 
