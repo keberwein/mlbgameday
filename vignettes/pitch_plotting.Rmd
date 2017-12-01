@@ -33,7 +33,7 @@ pitches <- inner_join(gamedat$pitch, gamedat$atbat, by = c("num", "url")) %>%
 
 ## Ggplot2
 
-The ggplot2 package can be used stand-alone, or in conjunction with Carson Silvert's pitchRx package, which has additional visualization offerings that are based on ggplot2.
+The ggplot2 package can be used stand-alone, or in conjunction with Carson Silvert's [pitchRx](https://github.com/cpsievert/pitchRx) package, which has additional visualization offerings that are based on ggplot2.
 
 ```{r}
 library(ggplot2)
