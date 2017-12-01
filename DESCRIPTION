@@ -1,5 +1,5 @@
 Package: mlbgameday
-Title: Tools to Gather Data From Major League Baseball Advanced Media (MLBAM)
+Title: Tools to Gather Data from Major League Baseball Advanced Media (MLBAM)
 Version: 0.0.1
 Authors@R: person("Kris", "Eberwein", email = "eberwein@knights.ucf.edu",
                   role = c("aut", "cre"))
