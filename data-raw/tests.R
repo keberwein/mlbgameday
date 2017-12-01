@@ -17,7 +17,7 @@ end = Sys.time()
 runtime = end-start
  
 
-no_cores <- detectCores() - 2
+no_cores <- detectCores() - 1
 cl <- makeCluster(no_cores)  
 registerDoParallel(cl)
 stopImplicitCluster()
