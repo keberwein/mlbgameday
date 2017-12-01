@@ -9,6 +9,12 @@ Designed to facilitate extract, transform and load for MLBAM “Gameday” data.
 Install
 -------
 
+-   Stable version from CRAN
+
+``` r
+install.packages("mlbgameday")
+```
+
 -   The latest development version from GitHub:
 
 ``` r
