@@ -1,4 +1,4 @@
-#' Method for paylaod objects.
+#' Method for payload objects.
 #' @param payload_obj An object returned by \code{get_payload()}.
 #' @param ... additional arguments
 #' @keywords internal

@@ -8,7 +8,7 @@
 \alias{transform_pload.list_inning_all}
 \alias{transform_pload.list_linescore}
 \alias{transform_pload.df_game}
-\title{Method for paylaod objects.}
+\title{Method for payload objects.}
 \usage{
 transform_pload(payload_obj, ...)
 
@@ -30,6 +30,6 @@ transform_pload(payload_obj, ...)
 \item{...}{additional arguments}
 }
 \description{
-Method for paylaod objects.
+Method for payload objects.
 }
 \keyword{internal}

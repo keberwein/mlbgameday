@@ -3,7 +3,7 @@
 \docType{data}
 \name{umpire_ids}
 \alias{umpire_ids}
-\title{Internal dataset containing MLB Ummpire IDs.}
+\title{Internal dataset containing MLB Umpire IDs.}
 \format{An object of class \code{data.frame} with 234 rows and 2 columns.}
 \usage{
 data(umpire_ids)

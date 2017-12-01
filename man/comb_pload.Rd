@@ -12,6 +12,6 @@ comb_pload(x, ...)
 \item{...}{additional args}
 }
 \description{
-Internal combine fucntion for foreach loop used in get_payload()
+Internal combine function for foreach loop used in get_payload()
 }
 \keyword{internal}

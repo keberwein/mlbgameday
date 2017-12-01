@@ -20,7 +20,7 @@ NULL
 NULL
 
 #' @title comb_pload
-#' @description Internal combine fucntion for foreach loop used in get_payload()
+#' @description Internal combine function for foreach loop used in get_payload()
 #' @param x target
 #' @param ... additional args
 #' @keywords internal
@@ -46,7 +46,7 @@ gid_date <- function(gidlist=NULL, ...){
 
 
 #' Internal function to cast the first letter of a word to upper-case.
-#' @param x A word or string to capatalize
+#' @param x A word or string to capitalize
 #' @param ... additional arguments.
 #' @keywords internal
 #' @export

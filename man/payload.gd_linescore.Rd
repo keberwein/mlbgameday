@@ -2,7 +2,7 @@
 % Please edit documentation in R/payload_methods.R
 \name{payload.gd_linescore}
 \alias{payload.gd_linescore}
-\title{An internal function for linescore playload.}
+\title{An internal function for linescore payload.}
 \usage{
 payload.gd_linescore(urlz, ...)
 }
@@ -12,6 +12,6 @@ payload.gd_linescore(urlz, ...)
 \item{...}{additional arguments}
 }
 \description{
-An internal function for linescore playload.
+An internal function for linescore payload.
 }
 \keyword{internal}

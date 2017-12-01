@@ -24,7 +24,7 @@
 #'
 "player_ids"
 
-#' Internal dataset containing MLB Ummpire IDs.
+#' Internal dataset containing MLB Umpire IDs.
 #' 
 #' A character set with most player name and player ids.
 #' 

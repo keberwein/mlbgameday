@@ -9,7 +9,7 @@ validate_gids(gidslist = NULL, league = "mlb", ...)
 \arguments{
 \item{gidslist}{a list of gids.}
 
-\item{league}{The leauge to gather gids for. The default is \code{"mlb"}. Other options include \code{"aaa"} and \code{"aa"}.}
+\item{league}{The league to gather gids for. The default is \code{"mlb"}. Other options include \code{"aaa"} and \code{"aa"}.}
 
 \item{...}{additional arguments}
 }

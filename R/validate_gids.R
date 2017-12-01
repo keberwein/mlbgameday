@@ -1,6 +1,6 @@
 #' Internal function to validate gids produced by try_gids.
 #' @param gidslist a list of gids.
-#' @param league The leauge to gather gids for. The default is \code{"mlb"}. Other options include \code{"aaa"} and \code{"aa"}.
+#' @param league The league to gather gids for. The default is \code{"mlb"}. Other options include \code{"aaa"} and \code{"aa"}.
 #' @param ... additional arguments
 #' @import foreach
 #' @importFrom purrr map map_chr
@@ -11,7 +11,7 @@
 #' @export
 
 validate_gids <- function(gidslist=NULL, league="mlb", ...) {
-    # Rename leauge because it conflicts with some downloaded xml values.
+    # Rename league because it conflicts with some downloaded xml values.
     lg <- league
     # Create an emply list to hold the results of the loop.
     gidslist_dt=i=str_length=NULL

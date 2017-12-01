@@ -265,7 +265,7 @@ payload.gd_inning_hit <- function(urlz, ...) {
     return(innings_df)
 }
 
-#' An internal function for linescore playload.
+#' An internal function for linescore payload.
 #' @param urlz An urlzect created from a urlz link
 #' @param ... additional arguments
 #' @keywords internal

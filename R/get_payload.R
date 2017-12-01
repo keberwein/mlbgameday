@@ -1,7 +1,7 @@
 #' Get Gameday data from MLBAM.
 #' @param start A start date passed as a character in ISO 8601 format. \code{"2017-05-01"}
 #' @param end An end date passed as a character in ISO 8601 format. \code{"2017-09-01"}
-#' @param league The leauge to gather gids for. The default is \code{"mlb"}. Other options include \code{"aaa"} and \code{"aa"}
+#' @param league The league to gather gids for. The default is \code{"mlb"}. Other options include \code{"aaa"} and \code{"aa"}
 #' @param dataset The dataset to be scraped. The default is "inning_all." Other options include, "inning_hit", "linescore".
 #' @param game_ids A list of user-supplied gameIds.
 #' @param db_con A database connection from the \code{DBI} package.
