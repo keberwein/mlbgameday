@@ -62,7 +62,7 @@ transform_pload.df_inning_hit <- function(payload_obj, ...) {
 
 
 #' @rdname transform_pload
-#' @importFrom dplyr mutate
+#' @importFrom dplyr mutate rename
 #' @method transform_pload list_inning_all
 #' @export
 
@@ -72,19 +72,21 @@ transform_pload.list_inning_all <- function(payload_obj, ...) {
        dplyr::mutate(play_guid = if (exists('play_guid', where = payload_obj$atbat)) play_guid else NA,
                       event2 = if (exists('event2', where = payload_obj$atbat)) event2 else NA,
                       event2_es = if (exists('event2_es', where = payload_obj$atbat)) event2_es else NA,
-                      event3 = if (exists('event3', where = payload_obj$atbat)) event3 else NA,
-                      event3_es = if (exists('event3_es', where = payload_obj$atbat)) event3_es else NA,
+                      #event3 = if (exists('event3', where = payload_obj$atbat)) event3 else NA,
+                      #event3_es = if (exists('event3_es', where = payload_obj$atbat)) event3_es else NA,
                       des_es = if (exists('des_es', where = payload_obj$atbat)) des_es else NA) %>%
 
         dplyr::mutate(num=as.numeric(num), b=as.numeric(b), s=as.numeric(s), o=as.numeric(o),
                                          start_tfs=as.numeric(start_tfs), batter=as.numeric(batter), pitcher=as.numeric(pitcher),
                                          event_num=as.numeric(event_num), home_team_runs=as.numeric(home_team_runs),
                                          away_team_runs=as.numeric(away_team_runs)) %>%
+        # Rename a couple columns to fit with the pitchRx schema.
+        dplyr::rename(atbat_des = des, des_es = atbat_des_es)
         
     # Column order gets crossed up in some cases, which makes it difficult to "chunk" into a database. Order manually for now.
-        dplyr::select(num, b, s, o, start_tfs, start_tfs_zulu, batter, stand, b_height, pitcher, p_throws, des, des_es, event_num,     
-            event, event_es, home_team_runs, away_team_runs, inning, next_, inning_side, url, date, gameday_link, score, play_guid,
-            event2, event2_es, event3, event3_es, batter_name, pitcher_name)
+        dplyr::select(pitcher, batter, num, b, s, o, start_tfs, start_tfs_zulu, stand, b_height, p_throws, des, des_es, event_num,     
+            event, event_es, play_guid, home_team_runs, away_team_runs, url, inning_side, inning, next_, score,
+            event2, event2_es, batter_name, pitcher_name, gameday_link, date)
     
     payload_obj$action %<>% 
         # Add columns that may not exist.
