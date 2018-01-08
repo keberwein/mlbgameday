@@ -67,7 +67,7 @@ For this visualization, we will subset the data to only pitches that the umpire 
 
 ```{r}
 # Subset the data to only called strikes.
-strikes <- subset(pitches, des.x == "Called Strike")
+strikes <- subset(pitches, des == "Called Strike")
 
 library(pitchRx)
 library(viridis)

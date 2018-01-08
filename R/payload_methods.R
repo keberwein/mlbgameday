@@ -188,9 +188,10 @@ payload.gd_inning_all <- function(urlz, ...) {
                                         
                                         runner <- purrr::map_dfr(runner_nodes, function(x) {
                                             out <- data.frame(t(xml2::xml_attrs(x)), stringsAsFactors=FALSE)
-                                            out$inning <- as.numeric(xml2::xml_parent(xml2::xml_parent(x)) %>% xml2::xml_attr("num"))
-                                            out$next_ <- as.character(xml2::xml_parent(xml2::xml_parent(x)) %>% xml2::xml_attr("next"))
-                                            out$inning_side <- as.character(xml2::xml_name(xml2::xml_parent(x)))
+                                            out$inning <- as.numeric(xml2::xml_parent(xml2::xml_parent(xml2::xml_parent(x))) %>% xml2::xml_attr("num"))
+                                            out$next_ <- as.character(xml2::xml_parent(xml2::xml_parent(xml2::xml_parent(x))) %>% xml2::xml_attr("next"))
+                                            out$num <- as.character(xml2::xml_parent(x) %>% xml2::xml_attr("num"))
+                                            out$inning_side <- as.character(xml2::xml_name(xml2::xml_parent(xml2::xml_parent(x))))
                                             out$url <- url
                                             out$gameday_link <- gameday_link
                                             out

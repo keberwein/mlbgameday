@@ -129,7 +129,7 @@ transform_pload.list_inning_all <- function(payload_obj, ...) {
             url, gameday_link, num, count, on_2b, on_1b, on_3b)
     
     payload_obj$runner %<>% dplyr::mutate(id=as.numeric(id), event_num=as.numeric(event_num)) %>%
-        dplyr::select(id, start, end, event, event_num, inning, next_, inning_side, url, gameday_link, score, rbi, earned)
+        dplyr::select(id, start, end, event, num, event_num, inning, next_, inning_side, url, gameday_link, score, rbi, earned)
     
     payload_obj$po %<>% 
         # Add columns that may not exist.
