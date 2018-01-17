@@ -20,7 +20,7 @@
 
 make_gids <- function(start=NULL, end=NULL, league="mlb", dataset=NULL, game_ids=NULL, ...) {
 
-    root <- paste0("http://gd2.mlb.com/components/game/", league, "/")
+    root <- paste0("http://gd2.mlb.com/components/game/", league)
     
     if(!is.null(game_ids)){
         game_ids <- paste0(root, "year_", str_sub(game_ids, 5, 8), "/month_", str_sub(game_ids, 10, 11), 

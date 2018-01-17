@@ -1,3 +1,9 @@
+# mlbgameday 0.0.2
+
+# Bug Fixes
+
+* Fixed mal-formed urls returned by the `make_gids()` function.
+
 # mlbgameday 0.0.1
 
 ## Enhancements
