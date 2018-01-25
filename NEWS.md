@@ -1,6 +1,10 @@
-# mlbgameday 0.0.2
+# mlbgameday 0.1.0
 
-# Bug Fixes
+## Enhancements
+
+* Added atbat num to the output of the action table.
+
+## Bug Fixes
 
 * Fixed mal-formed urls returned by the `make_gids()` function.
 
