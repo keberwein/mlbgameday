@@ -2,7 +2,7 @@
 
 ## Enhancements
 
-* Added atbat num to the output of the action table.
+* Added atbat num to the output of the action table of the innings_all payload.
 
 ## Bug Fixes
 
