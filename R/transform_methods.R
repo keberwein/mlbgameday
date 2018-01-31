@@ -139,7 +139,7 @@ transform_pload.list_inning_all <- function(payload_obj, ...) {
                       event_num = if (exists('event_num', where = payload_obj$po)) event_num else NA,
                       event_num  = as.numeric(event_num)) %>%
         
-        dplyr::select(des, des_es, event_num, inning, next_, inning_side, url, gameday_link, play_guid, catcher)
+        dplyr::select(des, des_es, event_num, inning, next_, inning_side, url, gameday_link, play_guid, num, catcher)
     
     return(payload_obj)
 }

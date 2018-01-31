@@ -211,6 +211,7 @@ payload.gd_inning_all <- function(urlz, ...) {
                                             out$inning <- as.numeric( xml2::xml_parent(xml2::xml_parent(xml2::xml_parent(x))) %>% xml2::xml_attr("num"))
                                             out$next_ <-  as.character(xml2::xml_parent(xml2::xml_parent(xml2::xml_parent(x))) %>% xml2::xml_attr("next"))
                                             out$inning_side <- as.character(xml2::xml_name(xml2::xml_parent(xml2::xml_parent(x))))
+                                            out$num <- as.numeric(xml2::xml_parent(x) %>% xml2::xml_attr("num"))
                                             out$url <- url
                                             out$gameday_link <- gameday_link
                                             out
