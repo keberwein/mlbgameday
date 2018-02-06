@@ -100,8 +100,8 @@ transform_pload.list_inning_all <- function(payload_obj, ...) {
                       event_num=as.numeric(event_num), home_team_runs=as.numeric(home_team_runs),
                       away_team_runs=as.numeric(away_team_runs)) %>%
         
-        dplyr::select(b, s, o, des, des_es, event, event_es, tfs, tfs_zulu, player, pitch, event_num, home_team_runs,
-                      away_team_runs, url, inning_side, inning, next_, num, play_guid, score, event2, event2_es, gameday_link)
+        dplyr::select(b, s, o, des, des_es, event, event_es, tfs, tfs_zulu, player, pitch, event_num, play_guid, home_team_runs,
+                      away_team_runs, url, inning_side, inning, next_, num, score, event2, event2_es, gameday_link)
     
     payload_obj$pitch %<>%
         # Add columns that may not exist.
@@ -125,11 +125,11 @@ transform_pload.list_inning_all <- function(payload_obj, ...) {
         
         dplyr::select(des, des_es, id, type, tfs, tfs_zulu, x, y, event_num, sv_id, play_guid, start_speed, end_speed, sz_top,         
                       sz_bot, pfx_x, pfx_z, px, pz, x0, y0, z0, vx0, vy0, vz0, ax, ay, az, break_y, break_angle, break_length, pitch_type, 
-                      type_confidence, zone, nasty, spin_dir, spin_rate, cc, mt, inning, next_, inning_side,    
-                      url, gameday_link, num, count, on_2b, on_1b, on_3b)
+                      type_confidence, zone, nasty, spin_dir, spin_rate, cc, mt, url, inning_side, inning, next_, num, on_1b, on_2b,
+                      on_3b, gameday_link, count)
     
     payload_obj$runner %<>% dplyr::mutate(id=as.numeric(id), event_num=as.numeric(event_num)) %>%
-        dplyr::select(id, start, end, event, num, event_num, inning, next_, inning_side, url, gameday_link, score, rbi, earned)
+        dplyr::select(id, start, end, event, event_num, url, inning_side, inning, next_, num, score, rbi, earned, gameday_link)
     
     payload_obj$po %<>% 
         # Add columns that may not exist.
@@ -139,7 +139,7 @@ transform_pload.list_inning_all <- function(payload_obj, ...) {
                       event_num = if (exists('event_num', where = payload_obj$po)) event_num else NA,
                       event_num  = as.numeric(event_num)) %>%
         
-        dplyr::select(des, des_es, event_num, inning, next_, inning_side, url, gameday_link, play_guid, num, catcher)
+        dplyr::select(des, des_es, event_num, play_guid, url, inning_side, inning, next_, num, catcher, gameday_link)
     
     return(payload_obj)
 }
