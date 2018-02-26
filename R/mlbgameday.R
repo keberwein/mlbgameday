@@ -13,4 +13,4 @@ hr=id=inning=lob=nasty=np=num=on_1b=on_2b=on_3b=original_date=out=outs=pfx_x=pfx
 scheduled_innings=sf=so=spin_dir=spin_rate=start_speed=start_tfs=strikes=sz_bot=sz_top=tfs=type_confidence=venue_id=w=
 x=y=x0=y0=z0=vx0=vy0=vz0=l=league_id=play_guid=event2=event2_es=catcher=b_height=batter_name=catcher=cc=count=des=des_es=earned=end=event=
 event2=event2_es=event3=event3_es=event_es=inning_side=league_id=mt=next_=p_throws=pitch_type=pitcher_name=play_guid=score=stand=start=
-start_tfs_zulu=sv_id=tfs_zulu=type=zone=atbat_des=atbat_des_es=NULL
+start_tfs_zulu=sv_id=tfs_zulu=type=zone=atbat_des=atbat_des_es=end_tfs_zulu=code=NULL
