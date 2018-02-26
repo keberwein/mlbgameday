@@ -82,7 +82,7 @@ transform_pload.list_inning_all <- function(payload_obj, ...) {
         dplyr::rename(atbat_des = des, atbat_des_es = des_es) %>%
         
         # Column order gets crossed up in some cases, which makes it difficult to "chunk" into a database. Order manually for now.
-        dplyr::select(pitcher, batter, num, b, s, o, start_tfs, start_tfs_zulu, stand, b_height, p_throws, atbat_des, 
+        dplyr::select(pitcher, batter, num, b, s, o, start_tfs, start_tfs_zulu, end_tfs_zulu, stand, b_height, p_throws, atbat_des, 
                       atbat_des_es, event_num, event, event_es, play_guid, home_team_runs, away_team_runs, url, inning_side, 
                       inning, next_, score, event2, event2_es, batter_name, pitcher_name, gameday_link, date)
     
@@ -117,7 +117,7 @@ transform_pload.list_inning_all <- function(payload_obj, ...) {
                       nasty=as.numeric(nasty), spin_dir=as.numeric(spin_dir), spin_rate=as.numeric(spin_rate),
                       on_1b=as.numeric(on_1b), on_2b=as.numeric(on_2b), on_3b=as.numeric(on_3b), count=as.factor(count)) %>%
         
-        dplyr::select(des, des_es, id, type, tfs, tfs_zulu, x, y, event_num, sv_id, play_guid, start_speed, end_speed, sz_top,         
+        dplyr::select(des, des_es, id, type, code, tfs, tfs_zulu, x, y, event_num, sv_id, play_guid, start_speed, end_speed, sz_top,         
                       sz_bot, pfx_x, pfx_z, px, pz, x0, y0, z0, vx0, vy0, vz0, ax, ay, az, break_y, break_angle, break_length, pitch_type, 
                       type_confidence, zone, nasty, spin_dir, spin_rate, cc, mt, url, inning_side, inning, next_, num, on_1b, on_2b,
                       on_3b, gameday_link, count)
