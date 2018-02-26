@@ -5,7 +5,7 @@ Authors@R: person("Kris", "Eberwein", email = "eberwein@knights.ucf.edu",
                   role = c("aut", "cre"))
 Description: Multi-core processing of Gameday data from Major League Baseball Advanced Media <http://gd2.mlb.com/components/game/mlb/>. Additional tools to parallelize large data sets and write them to a database. 
 Depends:
-	R (>= 3.3.3)
+	R (>= 3.3.0)
 Imports:
 	magrittr,
 	xml2,
