@@ -2,7 +2,7 @@
 mlbgameday <img src="man/figures/mlbgameday_hex.png" align="right" />
 =====================================================================
 
-[![Build Status](https://travis-ci.org/keberwein/mlbgameday.png?branch=master)](https://travis-ci.org/keberwein/mlbgameday) [![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/mlbgameday)](http://www.r-pkg.org/badges/version/mlbgameday) [![Project Status: Active - The project has reached a stable, usable state and is being actively developed.](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active)
+[![Build Status](https://travis-ci.org/keberwein/mlbgameday.png?branch=master)](https://travis-ci.org/keberwein/mlbgameday) [![CRAN\_Status\_Badge](https://www.r-pkg.org/badges/version/mlbgameday)](http://www.r-pkg.org/badges/version/mlbgameday) [![Project Status: Active - The project has reached a stable, usable state and is being actively developed.](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active)
 
 Why mlbgameday?
 ---------------
