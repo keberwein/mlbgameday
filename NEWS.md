@@ -8,6 +8,8 @@
 
 * Fixed mal-formed urls returned by the `make_gids()` function.
 
+* Added error checks to the xml mapping in the `transform_payload()` function.
+
 # mlbgameday 0.0.1
 
 ## Enhancements
