@@ -62,6 +62,7 @@ get_payload <- function(start=NULL, end=NULL, league="mlb", dataset = NULL, game
     if(!is.null(db_con)){
         # Chunk out URLs in groups of 300 if a database connection is available.
         url_chunks <- split(urlz, ceiling(seq_along(urlz)/500))
+        innings_df=NULL
         
         for(i in seq_along(url_chunks)){
             message(paste0("Processing data chunk ", i, " of ", length(url_chunks)))
@@ -82,8 +83,9 @@ get_payload <- function(start=NULL, end=NULL, league="mlb", dataset = NULL, game
         
         DBI::dbDisconnect(db_con)
         message(paste0("Transaction complete, disconnecting from the database.", " ", Sys.time()))
-        
-    }else{
+    }
+    
+    if(is.null(db_con)){
         # If no database connection, just return a dataframe.
         # If the returned dataframe looks like it's going to be large, warn the user.
         if(length(urlz) > 3500) { # One full season including spring training and playoffs is around 3000 games.
@@ -102,9 +104,9 @@ get_payload <- function(start=NULL, end=NULL, league="mlb", dataset = NULL, game
         if(dataset=="game") innings_df <- payload.gd_game(urlz)
         # Probably faster to do the transformation within the loop in cases where data gets very large.
         #innings_df <- transform_pload(innings_df)
+        
+        return(innings_df)
     }
-    
-    return(innings_df)
 }
 
 

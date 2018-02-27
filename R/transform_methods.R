@@ -91,13 +91,14 @@ transform_pload.list_inning_all <- function(payload_obj, ...) {
         dplyr::mutate(play_guid = if (exists('play_guid', where = payload_obj$action)) play_guid else NA,
                       event2 = if (exists('event2', where = payload_obj$action)) event2 else NA,
                       event2_es = if (exists('event2_es', where = payload_obj$action)) event2_es else NA,
-                      des_es = if (exists('des_es', where = payload_obj$action)) des_es else NA) %>%
+                      des_es = if (exists('des_es', where = payload_obj$action)) des_es else NA,
+                      score = if (exists('score', where = payload_obj$action)) score else NA) %>%
         
         dplyr::mutate(b=as.numeric(b), s=as.numeric(s), o=as.numeric(o), player=as.numeric(player), pitch=as.numeric(pitch),
                       num=as.character(num)) %>%
-        
-        dplyr::select(b, s, o, des, des_es, event, event_es, tfs, tfs_zulu, player, pitch, event_num, play_guid, home_team_runs,
-                      away_team_runs, url, inning_side, inning, next_, num, score, event2, event2_es, gameday_link)
+    
+    dplyr::select(b, s, o, des, des_es, event, event_es, tfs, tfs_zulu, player, pitch, event_num, play_guid, home_team_runs,
+        away_team_runs, url, inning_side, inning, next_, num, score, event2, event2_es, gameday_link)
     
     payload_obj$pitch %<>%
         # Add columns that may not exist.
