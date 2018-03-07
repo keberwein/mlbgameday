@@ -5,14 +5,18 @@ gidenv <- environment()
 data(game_ids, package = "mlbgameday", envir = gidenv)
 root <- paste0("http://gd2.mlb.com/components/game/mlb/")
 # Format the urls.
-glist <- game_ids %>% 
+# Format the urls.
+glist <- game_ids %>% select(gameday_link)
+glist = glist[,1]
+
+glist <- glist %>% 
     purrr::map_chr(~ paste0(root, "year_", stringr::str_sub(., 5, 8), 
                             "/month_", stringr::str_sub(., 10,11), 
                             "/day_", stringr::str_sub(., 13, 14),"/", ., "/players.xml")) %>% as.list()
 
 
 # NOTE: We only need to select the new gids that have been added. Any others would be doing double-work.
-glist = glist[1:27070]
+glist = glist[27070:29464]
 
 
 
@@ -47,7 +51,7 @@ rm(game_ids, glist, umpires); gc()
 current_umps <- mlbgameday::umpire_ids
 
 # A duplicate column is created on the join due to slight changes in name spellings. OK just to drop it.
-player_ids <- dplyr::left_join(current_umps, new_umps, by = "id") %>% 
+umpire_ids <- dplyr::left_join(current_umps, new_umps, by = "id") %>% 
     select("id", "full_name.x") %>% rename(full_name=full_name.x)
 
 # The list returns duplicate ids because players sometimes change thier names. Example, "B.J" Upton began calling himself "Melvin".
