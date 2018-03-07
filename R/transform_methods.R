@@ -106,9 +106,11 @@ transform_pload.list_inning_all <- function(payload_obj, ...) {
                       event2 = if (exists('event2', where = payload_obj$pitch)) event2 else NA,
                       event2_es = if (exists('event2_es', where = payload_obj$pitch)) event2_es else NA,
                       # tfs and tfs_zulu columns may be blank for older data sets. If blank, set them to NA.
-                      tfs = ifelse(tfs == "", NA, tfs), tfs_zulu = ifelse(tfs_zulu == "", NA, tfs_zulu)) %>%
+                      tfs = ifelse(tfs == "", NA, tfs), tfs_zulu = ifelse(tfs_zulu == "", NA, tfs_zulu),
+                      # Some spring training and minor league games may be missing speed data.
+                      start_speed = ifelse(start_speed == "", NA, as.numeric(start_speed))) %>%
         
-        dplyr::mutate(id=as.numeric(id), x=as.numeric(x), y=as.numeric(y), start_speed=as.numeric(start_speed), 
+        dplyr::mutate(id=as.numeric(id), x=as.numeric(x), y=as.numeric(y), 
                       end_speed=as.numeric(end_speed), sz_top=as.numeric(sz_top), sz_bot=as.numeric(sz_bot),
                       pfx_x=as.numeric(pfx_x), pfx_z=as.numeric(pfx_z), px=as.numeric(px), pz=as.numeric(pz),
                       x0=as.numeric(x0), y0=as.numeric(y0), z0=as.numeric(z0), vx0=as.numeric(vx0), 

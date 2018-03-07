@@ -1,3 +1,9 @@
+# mlbgameday 0.1.1
+
+## Bug Fixes
+
+* Enhanced the logic that ties action nodes to atbat nodes.
+
 # mlbgameday 0.1.0
 
 ## Enhancements

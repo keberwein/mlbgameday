@@ -12,6 +12,7 @@ Imports:
 	dplyr,
 	stringr,
 	purrr,
+	tidyr,
 	utils,
 	stats,
 	foreach,
