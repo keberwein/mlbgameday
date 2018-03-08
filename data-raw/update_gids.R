@@ -29,14 +29,13 @@ new_game_ids <- new_gids$game %>% subset(status = "Final",
            away_team_id = as.character(away_team_id), date_dt = as.character(date_dt))
 
 # Combine and re-save the dataframe.
-game_ids <- bind_rows(new_game_ids, gids)
+game_ids <- bind_rows(new_game_ids, gids) %>% arrange(date_dt)
 
 # Remove cluster.
 stopImplicitCluster()
 rm(cl)
 
 devtools::use_data(game_ids, overwrite = TRUE)
-
 
 
 

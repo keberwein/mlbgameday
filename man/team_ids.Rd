@@ -4,7 +4,7 @@
 \name{team_ids}
 \alias{team_ids}
 \title{Internal dataset containing MLB team IDs.}
-\format{An object of class \code{data.frame} with 35 rows and 3 columns.}
+\format{An object of class \code{data.frame} with 36 rows and 3 columns.}
 \usage{
 data(team_ids)
 }

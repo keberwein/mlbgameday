@@ -122,6 +122,7 @@ payload.gd_game_events <- function(urlz, ...) {
 #' @importFrom purrr map_dfr
 #' @importFrom stats setNames
 #' @importFrom tidyr fill
+#' @importFrom stats na.omit
 #' @import foreach
 #' @export
 
