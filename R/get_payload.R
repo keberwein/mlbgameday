@@ -5,6 +5,8 @@
 #' @param dataset The dataset to be scraped. The default is "inning_all." Other options include, "inning_hit", "linescore".
 #' @param game_ids A list of user-supplied gameIds.
 #' @param db_con A database connection from the \code{DBI} package.
+#' @param overwrite Logical. Should current database be overwritten? Inherited from the \code{dbWriteTable} function from the \code{DBI} package.
+#' The default value is FALSE.
 #' @param ... additional arguments
 #' @importFrom DBI dbWriteTable
 #' @import utils
@@ -38,7 +40,7 @@
 #' df <- get_payload(game_ids = mygids)
 #' 
 #' 
-get_payload <- function(start=NULL, end=NULL, league="mlb", dataset = NULL, game_ids = NULL, db_con = NULL, ...) {
+get_payload <- function(start=NULL, end=NULL, league="mlb", dataset = NULL, game_ids = NULL, db_con = NULL, overwrite = FALSE, ...) {
     if(is.null(dataset)) dataset <- "inning_all"
     message("Gathering Gameday data, please be patient...")
     
@@ -73,10 +75,14 @@ get_payload <- function(start=NULL, end=NULL, league="mlb", dataset = NULL, game
             if(dataset=="inning_hit") innings_df <- payload.gd_inning_hit(urlz)
             if(dataset=="linescore") innings_df <- payload.gd_linescore(urlz)
             if(dataset=="game") innings_df <- payload.gd_game(urlz)
-            # Probably faster to do the transformation within the loop in cases where data gets very large.
-            #innings_df <- transform_pload(innings_df)
             
-            for (i in names(innings_df)) DBI::dbWriteTable(conn = db_con, value = innings_df[[i]], name = i, append = TRUE)
+            if(isTRUE(overwrite)){
+                for (i in names(innings_df)) DBI::dbWriteTable(conn = db_con, value = innings_df[[i]], name = i, overwrite = TRUE)
+            }
+            if(!isTRUE(overwrite)){
+                for (i in names(innings_df)) DBI::dbWriteTable(conn = db_con, value = innings_df[[i]], name = i, append = TRUE)
+            }
+
             # Manual garbage collect after every loop of 300 games.
             rm(innings_df); gc()
         }

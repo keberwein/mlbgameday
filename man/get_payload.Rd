@@ -5,7 +5,8 @@
 \title{Get Gameday data from MLBAM.}
 \usage{
 get_payload(start = NULL, end = NULL, league = "mlb", dataset = NULL,
-  game_ids = NULL, db_con = NULL, ...)
+  game_ids = NULL, db_con = NULL, append = FALSE, overwrite = FALSE,
+  ...)
 }
 \arguments{
 \item{start}{A start date passed as a character in ISO 8601 format. \code{"2017-05-01"}}
@@ -19,6 +20,12 @@ get_payload(start = NULL, end = NULL, league = "mlb", dataset = NULL,
 \item{game_ids}{A list of user-supplied gameIds.}
 
 \item{db_con}{A database connection from the \code{DBI} package.}
+
+\item{append}{Logical. Should this be appended to the current database? Inherited from the \code{dbWriteTable} function from the \code{DBI} package.
+The default value is FALSE.}
+
+\item{overwrite}{Logical. Should current database be overwritten? Inherited from the \code{dbWriteTable} function from the \code{DBI} package.
+The default value is FALSE.}
 
 \item{...}{additional arguments}
 }
