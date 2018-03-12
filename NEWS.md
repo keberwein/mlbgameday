@@ -1,5 +1,9 @@
 # mlbgameday 0.1.1
 
+## Enhancements
+
+* Added overwrite argument to the `get_payload()` function.
+
 ## Bug Fixes
 
 * Enhanced the logic that ties action nodes to atbat nodes.
