@@ -270,7 +270,7 @@ payload.gd_inning_hit <- function(urlz, ...) {
     innings_df <- foreach::foreach(i = seq_along(urlz), .combine="rbind", .multicombine=T, .inorder=TRUE) %dopar% {
         file <- tryCatch(xml2::read_xml(urlz[[i]][[1]], n=256), error=function(e) NULL)
         if(!isTRUE(is.null(file))){
-            date_dt <- stringr::str_sub(urlz[[i]], 71, 80) %>% stringr::str_replace_all("_", "-") %>%
+            date_dt <- stringr::str_sub(urlz[[1]], 70, 79) %>% stringr::str_replace_all("_", "-") %>%
                 as.Date(format = "%Y-%m-%d")
             gameday_link <- stringr::str_sub(urlz[[i]], 66, -23)
             hip_nodes <- xml2::xml_find_all(file, "/hitchart/hip")

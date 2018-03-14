@@ -69,21 +69,42 @@ get_payload <- function(start=NULL, end=NULL, league="mlb", dataset = NULL, game
         for(i in seq_along(url_chunks)){
             message(paste0("Processing data chunk ", i, " of ", length(url_chunks)))
             urlz <- unlist(url_chunks[i])
-            if(dataset == "bis_boxscore") innings_df <- payload.gd_bis_boxscore(urlz)
-            if(dataset == "game_events") innings_df <- payload.gd_game_events(urlz)
-            if(dataset == "inning_all") innings_df <- payload.gd_inning_all(urlz)
-            if(dataset=="inning_hit") innings_df <- payload.gd_inning_hit(urlz)
-            if(dataset=="linescore") innings_df <- payload.gd_linescore(urlz)
-            if(dataset=="game") innings_df <- payload.gd_game(urlz)
-            
-            if(isTRUE(overwrite)){
-                for (i in names(innings_df)) DBI::dbWriteTable(conn = db_con, value = innings_df[[i]], name = i, overwrite = TRUE)
-            }
-            if(!isTRUE(overwrite)){
-                for (i in names(innings_df)) DBI::dbWriteTable(conn = db_con, value = innings_df[[i]], name = i, append = TRUE)
+            # inning_all and linescore contain multiple tables, so those need to be written in a loop.
+            if(dataset == "inning_all" | dataset=="linescore"){
+                if(dataset == "inning_all") innings_df <- payload.gd_inning_all(urlz)
+                if(dataset=="linescore") innings_df <- payload.gd_linescore(urlz)
+                
+                if(isTRUE(overwrite)){
+                    for (i in names(innings_df)) DBI::dbWriteTable(conn = db_con, value = innings_df[[i]], name = i, overwrite = TRUE)
+                }
+                if(!isTRUE(overwrite)){
+                    for (i in names(innings_df)) DBI::dbWriteTable(conn = db_con, value = innings_df[[i]], name = i, append = TRUE)
+                }
+                
+            } else {
+                if(dataset=="inning_hit"){
+                    innings_df <- payload.gd_inning_hit(urlz)
+                    if(isTRUE(overwrite)) DBI::dbWriteTable(conn = db_con, value = innings_df, name = "inning_hit", overwrite = TRUE)
+                    if(isTRUE(overwrite)) DBI::dbWriteTable(conn = db_con, value = innings_df, name = "inning_hit", append = TRUE)
+                }
+                if(dataset=="game_events"){
+                    innings_df <- payload.gd_inning_hit(urlz)
+                    if(isTRUE(overwrite)) DBI::dbWriteTable(conn = db_con, value = innings_df, name = "game_events", overwrite = TRUE)
+                    if(isTRUE(overwrite)) DBI::dbWriteTable(conn = db_con, value = innings_df, name = "game_events", append = TRUE)                    
+                }
+                if(dataset=="game"){
+                    innings_df <- payload.gd_inning_hit(urlz)
+                    if(isTRUE(overwrite)) DBI::dbWriteTable(conn = db_con, value = innings_df, name = "game", overwrite = TRUE)
+                    if(isTRUE(overwrite)) DBI::dbWriteTable(conn = db_con, value = innings_df, name = "game", append = TRUE)                         
+                }
+                if(dataset=="bis_boxscore"){
+                    innings_df <- payload.gd_inning_hit(urlz)
+                    if(isTRUE(overwrite)) DBI::dbWriteTable(conn = db_con, value = innings_df, name = "bis_boxscore", overwrite = TRUE)
+                    if(isTRUE(overwrite)) DBI::dbWriteTable(conn = db_con, value = innings_df, name = "bis_boxscore", append = TRUE)  
+                } 
             }
 
-            # Manual garbage collect after every loop of 300 games.
+            # Manual garbage collect after every loop of 500 games.
             rm(innings_df); gc()
         }
         
