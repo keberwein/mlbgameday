@@ -1,0 +1,69 @@
+---
+title: "mlbgameday: Data Automation"
+author: "Kris Eberwein"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{mlbgameday: Database Connections}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+```{r setup, include=TRUE}
+```
+
+## Creating A Database
+
+The `mlbgameday` package is able to work with several databases. Many examples use SQLite databases, but for long-term persistent storage, something a bit more stable is useful. Any database supported by the DBI package can be used.
+
+If using more full featured database systems such as MySQL or PostgreSQL, we would have to first create an empty database and sign in to that database with a username and password. For brevity, we will use SQLite.
+
+Below, create an empty database and populate it with one day of data, just to test. In this case, we populate with the first day of the 2018 MLB regular season.
+
+```{r}
+library(mlbgameday)
+library(RSQLite)
+
+# Create an empty database instance.
+con <- dbConnect(RSQLite::SQLite(), dbname = "mlbgameday.sqlite3")
+
+# Load the first day of the 2018 season.
+get_payload(start = "2018-03-28", end = "2018-03-28", db_con = con)
+
+```
+
+## Check The Default Instance
+
+```{r}
+# Re-connect to database since the get_payload() function closed the connection.
+con <- DBI::dbConnect(RSQLite::SQLite(), dbname = "gameday.sqlite3")
+
+# Take a look at our tables.
+dbListTables(con)
+```
+
+## Setting Up Automated Data Collection
+
+Once you have a database in-place, you can get started quickly. The `mlbgameday` package will work if your current database was gathered using the `pitchRx` package.
+
+```{r}
+library(mlbgameday)
+library(RSQLite)
+
+# Log into your database and retreive the most recent date.
+con <- dbConnect(RSQLite::SQLite(), dbname = "mlbgameday.sqlite3")
+
+# Find the last day of data in the current database.
+db_end <- dbGetQuery(con, "SELECT MAX(date) FROM atbat")
+
+# Use the max date +1 as the start date and today -1 for the end date for your new payload.
+get_payload(start = bd_end, end = Sys.Date() - 1, db_con = con)
+```
+
+## Task Scheduling
+
+I prefer to pull the day’s data early in the morning (for the day before.) What ever time you choose, you want to consider time zones and allow enough additional time to cover rain delays for late games, as not to miss any information. There are various task scheduling tools, depending on your operating system.
+
+* Linux or OSx: Cron is pretty much the universal standard. Cron is command line driven, but GUI interfaces exist for both operating systems.
+
+* Windows: Several options, but the built-in task scheduler is probably the best.
+
