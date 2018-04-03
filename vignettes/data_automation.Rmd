@@ -56,7 +56,7 @@ con <- dbConnect(RSQLite::SQLite(), dbname = "mlbgameday.sqlite3")
 db_end <- dbGetQuery(con, "SELECT MAX(date) FROM atbat")
 
 # Use the max date +1 as the start date and today -1 for the end date for your new payload.
-get_payload(start = db_end, end = Sys.Date() - 1, db_con = con)
+get_payload(start = as.Date(db_end[1,1]) + 1, end = Sys.Date() - 1, db_con = con)
 ```
 
 ## Task Scheduling
