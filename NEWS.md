@@ -1,3 +1,13 @@
+# mlbgameday 0.1.2
+
+## Enhancements
+
+* Added a `data_automation` vignette.
+
+## Bug Fixes
+
+* Fixed pitch count logic for the `pitch` table.
+
 # mlbgameday 0.1.1
 
 ## Enhancements

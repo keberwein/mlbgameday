@@ -192,8 +192,6 @@ payload.gd_inning_all <- function(urlz, ...) {
                                             out$url <- url
                                             out$gameday_link <- gameday_link
                                             out$num <- as.numeric(xml2::xml_parent(x) %>% xml2::xml_attr("num"))
-                                            out$count <- paste(xml2::xml_parent(x) %>% xml2::xml_attr("b"), 
-                                                               xml2::xml_parent(x) %>% xml2::xml_attr("s"), sep="-")
                                             out
                                         }),
                                         
@@ -238,6 +236,9 @@ payload.gd_inning_all <- function(urlz, ...) {
         tidyr::fill(num, .direction = "up") %>% na.omit()
     
     action <- dplyr::left_join(action, events, by = c("tfs_zulu", "inning", "inning_side", "des"))
+    
+    # Calculate the pitch count for the pitching table.
+    pitch <- pitch_count(dat=pitch)
     
     innings_df <- list(atbat=atbat, action=action, pitch=pitch, runner=runner, po=po)
     # Add batter and pitcher names to the atbat data frame

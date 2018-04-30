@@ -54,3 +54,24 @@ upperfirst <- function(x) {
     substr(x, 1, 1) <- toupper(substr(x, 1, 1))
     x
 }
+
+
+#' Internal function to calculate balls and strikes for an atbat.
+#' @param dat A pitch table
+#' @param ... additional arguments.
+#' @keywords internal
+#' @export
+pitch_count <- function(dat) {
+    balls <- as.numeric(dat[,"type"] %in% "B")
+    strikes <- as.numeric(dat[,"type"] %in% "S")
+    atbat_id <- paste(dat[,"gameday_link"], dat[,"num"])
+    atbat_list <- factor(atbat_id, levels=unique(atbat_id))
+    bbs <- unlist(tapply(balls, INDEX=atbat_list, function(x){ 
+        n <- length(x); pmin(cumsum(c(0, x[-n])), 3) 
+    }))
+    ks <- unlist(tapply(strikes, INDEX=atbat_list, function(x) { 
+        n <- length(x); pmin(cumsum(c(0, x[-n])), 2) 
+    }))
+    count <- paste(bbs, ks, sep = "-")
+    return(cbind(dat, count))
+}
