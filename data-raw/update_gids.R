@@ -18,7 +18,7 @@ new_gids <- mlbgameday::get_payload(start = as.character(last.date), end = "2017
 
 # Format the linescore dataframe to match the gids df.
 new_game_ids <- new_gids$game %>% subset(status = "Final", 
-                                         select = c("gameday_link", "venue", "home_team_city", "home_team_name",
+                                         select = c("gameday_link", "game_pk", "venue", "home_team_city", "home_team_name",
                                                                       "away_team_city", "away_team_name", "game_type", "venue_id",
                                                                       "home_team_id", "away_team_id", "date")) %>%
     # mutate(gameday_link = paste0("gid_", gameday_link)) %>%
