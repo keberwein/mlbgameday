@@ -104,7 +104,7 @@ registerDoParallel(cl)
 con <- dbConnect(RSQLite::SQLite(), dbname = "gameday.sqlite3")
 
 # Collect all games, including pre and post-season for the 2016 season.
-innings_df <- get_payload(start = "2016-01-01", end = "2017-01-01", db_con = con)
+get_payload(start = "2016-01-01", end = "2017-01-01", db_con = con)
 
 # Don't forget to stop the cluster when finished.
 stopImplicitCluster()
