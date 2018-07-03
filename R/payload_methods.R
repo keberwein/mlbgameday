@@ -22,7 +22,7 @@ payload.gd_bis_boxscore <- function(urlz, ...) {
                                 if(!isTRUE(is.null(file))){
                                     date_dt <- stringr::str_sub(urlz[[i]], 71, 80) %>% stringr::str_replace_all("_", "-") %>%
                                         as.Date(format = "%Y-%m-%d")
-                                    gameday_link <- stringr::str_sub(urlz[[i]], 66, -23)
+                                    gameday_link <- stringr::str_sub(urlz[[i]], 66, -18)
                                     pitch_nodes <- xml2::xml_find_all(file, "/boxscore/pitching/pitcher")
                                     bat_nodes <- xml2::xml_find_all(file, "/boxscore/batting/batter")
                                     

@@ -1,4 +1,8 @@
-# mlbgameday 0.1.2.0000001
+# mlbgameday 0.1.2.1
+
+## Bug fixes
+
+* Game ids were being cut off in the bis_boxscore dataset. Fixed the string length.
 
 
 # mlbgameday 0.1.2
