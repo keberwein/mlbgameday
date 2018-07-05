@@ -4,6 +4,8 @@
 
 * Game ids were being cut off in the bis_boxscore dataset. Fixed the string length.
 
+* Calculation for atbat number changed from end_tfs_zulu to start_tfs_zulu due to missing data for some games.
+
 
 # mlbgameday 0.1.2
 
