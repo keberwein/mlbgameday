@@ -1,3 +1,9 @@
+# mlbgameday 0.1.2.2
+
+## Vignettes
+
+* Removed `plotly` from documentation due to downstream dependency issues.
+
 # mlbgameday 0.1.2.1
 
 ## Bug fixes
