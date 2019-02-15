@@ -14,16 +14,13 @@ registerDoParallel(cl)
 # use make_gids function to get gids not yet in the internal database.
 #new_gids <- mlbgameday::get_payload(start = as.character(last.date), end = as.character(Sys.Date()-1), dataset = "linescore")
 
-new_gids <- mlbgameday::get_payload(start = as.character(last.date), end = "2017-11-02", dataset = "linescore")
+new_gids <- mlbgameday::get_payload(start = as.character(last.date), end = "2019-02-01", dataset = "linescore")
 
 # Format the linescore dataframe to match the gids df.
 new_game_ids <- new_gids$game %>% subset(status = "Final", 
                                          select = c("gameday_link", "game_pk", "venue", "home_team_city", "home_team_name",
                                                                       "away_team_city", "away_team_name", "game_type", "venue_id",
                                                                       "home_team_id", "away_team_id", "date")) %>%
-    # mutate(gameday_link = paste0("gid_", gameday_link)) %>%
-    # Add dates to the df just so we can sort it.
-    #mlbgameday::gid_date() %>% arrange(date_dt)
     rename(date_dt = date) %>% arrange(date_dt) %>%
     mutate(venue_id = as.character(venue_id), home_team_id = as.character(home_team_id),
            away_team_id = as.character(away_team_id), date_dt = as.character(date_dt))
@@ -35,7 +32,7 @@ game_ids <- bind_rows(new_game_ids, gids) %>% arrange(date_dt)
 stopImplicitCluster()
 rm(cl)
 
-devtools::use_data(game_ids, overwrite = TRUE)
+usethis::use_data(game_ids, overwrite = TRUE)
 
 
 

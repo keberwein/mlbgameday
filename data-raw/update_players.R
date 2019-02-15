@@ -15,12 +15,12 @@ glist <- glist %>%
 
 
 # NOTE: We only need to select the new gids that have been added. Any others would be doing double-work.
-glist = glist[27071:29465]
+glist = glist[27071:29728]
 
 
 
 # Use parallel here, otherwise it would take forever.
-no_cores <- detectCores() - 2
+no_cores <- detectCores() - 4
 cl <- makeCluster(no_cores, type="FORK")  
 registerDoParallel(cl)
 
@@ -42,12 +42,9 @@ rm(cl)
 new_players <- dplyr::bind_rows(players) %>% select("id", "first", "last") %>% 
     tidyr::unite(full_name, c("first", "last"), sep = " ") %>%
     filter(!is.na(full_name)) %>% unique()
-    
-
 rm(players, game_ids, glist, playergids, players); gc()
 
 # Now we've got a data frame with uniqe player ids. We need to pull the current player data and do a left join.
-
 current_players <- mlbgameday::player_ids
 
 # A duplicate column is created on the join due to slight changes in name spellings. OK just to drop it.
@@ -60,5 +57,5 @@ player_ids <- player_ids[!duplicated(player_ids$id),]
 
 
 # Save new ids
-devtools::use_data(player_ids, overwrite = TRUE)
+usethis::use_data(player_ids, overwrite = TRUE)
 

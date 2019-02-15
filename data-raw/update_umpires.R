@@ -59,5 +59,5 @@ umpire_ids <- dplyr::left_join(current_umps, new_umps, by = "id") %>%
 umpire_ids <- umpire_ids[!duplicated(umpire_ids$id),]
 
 # Save new ids
-devtools::use_data(umpire_ids, overwrite = TRUE)
+usethis::use_data(umpire_ids, overwrite = TRUE)
 
