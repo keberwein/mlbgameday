@@ -24,8 +24,6 @@ Suggests:
 	testthat,
 	knitr,
 	rmarkdown,
-	pitchRx,
-	viridis,
 	ggplot2,
 	RSQLite,
 	dbplyr

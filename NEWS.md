@@ -1,8 +1,10 @@
-# mlbgameday 0.1.2.2
+# mlbgameday 0.1.3.0
 
 ## Vignettes
 
 * Removed `plotly` from documentation due to downstream dependency issues.
+
+* Removed 'pitchRx' and dependency `viridis` due to deprecation.
 
 # mlbgameday 0.1.2.1
 

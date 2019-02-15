@@ -61,21 +61,3 @@ ggplot() +
 ```
 
 
-## PitchRx and ggplot2
-
-For this visualization, we will subset the data to only pitches that the umpire called a strike. This will give us location densities of all called strikes in that game with a view from the umpire's prospective.
-
-```{r}
-# Subset the data to only called strikes.
-strikes <- subset(pitches, des == "Called Strike")
-
-library(pitchRx)
-library(viridis)
-pitchRx::strikeFX(pitches, geom = "tile") + 
-    facet_grid(pitcher_name ~ stand) +
-    coord_equal() +
-    theme_bw() +
-    scale_fill_viridis()
-
-```
-
