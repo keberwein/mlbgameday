@@ -17,7 +17,7 @@ In many cases, we may want to search for a specific player, stadium, or team. Th
 
 Find only regular season games for the 2016 season.
 
-```{r, eval=FALSE}
+```{r}
 library(mlbgameday)
 
 gids <- search_gids(start = "2016-01-01", end = "2017-01-01", game_type = "r")

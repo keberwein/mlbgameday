@@ -16,6 +16,8 @@
 
 * Removed `pitchRx` and dependency `viridis` due to deprecation.
 
+* Removed Data Storage and Parallel Processing vignettes becuase that material is covered elsewhere.
+
 # mlbgameday 0.1.2.1
 
 ## Bug fixes
