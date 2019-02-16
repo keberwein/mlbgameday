@@ -1,3 +1,9 @@
+# mlbgameday 0.1.4
+
+## Bug Fix
+
+* Removed duplicate vignette titles
+
 # mlbgameday 0.1.3
 
 ## Data

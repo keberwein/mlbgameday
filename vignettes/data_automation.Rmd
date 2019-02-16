@@ -4,7 +4,7 @@ author: "Kris Eberwein"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{mlbgameday: Database Connections}
+  %\VignetteIndexEntry{mlbgameday: Data Automation}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
