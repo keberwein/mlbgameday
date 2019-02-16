@@ -310,7 +310,7 @@ payload.gd_linescore <- function(urlz, ...) {
                                 if(!isTRUE(is.null(file))){
                                     date_dt <- stringr::str_sub(urlz[[i]], 70, 80) %>% stringr::str_replace_all("_", "-") %>%
                                         as.Date(format = "%Y-%m-%d")
-                                    gameday_link <- stringr::str_sub(urlz[[1]], 66, -15)
+                                    gameday_link <- stringr::str_sub(urlz[[i]], 66, -15)
                                     game_nodes <- xml2::xml_find_all(file, "/game")
                                     media_nodes <- xml2::xml_find_all(file, "/game/game_media/media")
                                     

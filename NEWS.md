@@ -8,7 +8,7 @@
 
 * Updated 2018 venues
 
-* 
+* Updated 2018 umpires
 
 ## Vignettes
 

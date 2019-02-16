@@ -27,7 +27,7 @@ library(RSQLite)
 con <- dbConnect(RSQLite::SQLite(), dbname = "mlbgameday.sqlite3")
 
 # Load the first day of the 2018 season.
-get_payload(start = "2018-03-28", end = "2018-03-28", db_con = con)
+get_payload(start = "2018-03-30", end = "2018-03-30", db_con = con)
 
 ```
 
@@ -35,7 +35,7 @@ get_payload(start = "2018-03-28", end = "2018-03-28", db_con = con)
 
 ```{r}
 # Re-connect to database since the get_payload() function closed the connection.
-con <- DBI::dbConnect(RSQLite::SQLite(), dbname = "gameday.sqlite3")
+con <- DBI::dbConnect(RSQLite::SQLite(), dbname = "mlbgameday.sqlite3")
 
 # Take a look at our tables.
 dbListTables(con)

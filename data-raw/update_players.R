@@ -1,6 +1,7 @@
 library(purrr); library(doParallel); library(foreach); library(mlbgameday); 
 library(stringr); library(xml2); library(dplyr); library(tidyr)
 # Get a list of the current gids and fromat them to grab the "/players.xml" file for each gid.
+# the update_gids.R script should be run prior to this. Otherwise we'll miss new players.
 gidenv <- environment()
 data(game_ids, package = "mlbgameday", envir = gidenv)
 root <- paste0("http://gd2.mlb.com/components/game/mlb/")
