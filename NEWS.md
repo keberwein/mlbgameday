@@ -1,3 +1,13 @@
+# mlbgameday 0.2.0
+
+## Enhancements
+
+* Refactored `get_payload()` to deal with 2019 schema changes, making it compatible with prior years data.
+
+## Bug Fix
+
+* Added try/catch logic to reconcile columns that no loger exist in the `inning_all` data set.
+
 # mlbgameday 0.1.4
 
 ## Bug Fix

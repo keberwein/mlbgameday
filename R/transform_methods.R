@@ -75,6 +75,7 @@ transform_pload.list_inning_all <- function(payload_obj, ...) {
                       event3 = if (exists('event3', where = payload_obj$atbat)) event3 else NA,
                       event4 = if (exists('event4', where = payload_obj$atbat)) event4 else NA,
                       end_tfs_zulu = if (exists('end_tfs_zulu', where = payload_obj$atbat)) end_tfs_zulu else NA,
+                      score = if(exists('score',  where = payload_obj$atbat)) score else NA,
                       des_es = if (exists('des_es', where = payload_obj$atbat)) des_es else NA) %>%
         
         dplyr::mutate(num=as.numeric(num), b=as.numeric(b), s=as.numeric(s), o=as.numeric(o),
@@ -83,7 +84,7 @@ transform_pload.list_inning_all <- function(payload_obj, ...) {
         dplyr::rename(atbat_des = des, atbat_des_es = des_es) %>%
         
         dplyr::select(pitcher, batter, num, b, s, o, start_tfs, start_tfs_zulu, stand, b_height, p_throws, atbat_des, 
-                      atbat_des_es, event, score, home_team_runs, away_team_runs, url, inning_side, inning, next_, event2, event3,
+                      atbat_des_es, event, home_team_runs, away_team_runs, url, inning_side, inning, next_, event2, event3,
                       batter_name, pitcher_name, event4, gameday_link, date, end_tfs_zulu, event_num, event_es, play_guid, event2_es)
     
     payload_obj$action %<>% 
@@ -106,13 +107,23 @@ transform_pload.list_inning_all <- function(payload_obj, ...) {
                       des_es = if (exists('des_es', where = payload_obj$pitch)) des_es else NA,
                       event2 = if (exists('event2', where = payload_obj$pitch)) event2 else NA,
                       event2_es = if (exists('event2_es', where = payload_obj$pitch)) event2_es else NA,
+                      on_1b = if (exists('on_1b', where = payload_obj$pitch)) on_1b else NA,
+                      on_2b = if (exists('on_2b', where = payload_obj$pitch)) on_2b else NA,
+                      on_3b = if (exists('on_3b', where = payload_obj$pitch)) on_3b else NA,
                       code = if (exists('code', where = payload_obj$pitch)) code else NA,
                       # tfs and tfs_zulu columns may be blank for older data sets. If blank, set them to NA.
                       tfs = ifelse(tfs == "", NA, tfs), tfs_zulu = ifelse(tfs_zulu == "", NA, tfs_zulu),
+                      # Same with x and y for 2019 season and beyond.
+                      x = ifelse(x == "None", NA, x), y = ifelse(y == "None", NA, tfs_zulu),
+                      # Starting in 2019 zone and type_confidence sometimes comes through as 'placeholder'
+                      zone = ifelse(zone == "placeholder", NA, zone), type_confidence = ifelse(type_confidence == "placeholder", NA, type_confidence),
+                      # Same with spin_dir and spin_rate
+                      spin_dir = ifelse(spin_dir == "placeholder", NA, spin_dir), spin_rate = ifelse(spin_rate == "placeholder", NA, spin_rate),
+
                       # Some spring training and minor league games may be missing speed data.
                       start_speed = ifelse(start_speed == "", NA, as.numeric(start_speed))) %>%
         
-        dplyr::mutate(id=as.numeric(id), x=as.numeric(x), y=as.numeric(y), 
+        dplyr::mutate(id=as.numeric(id), x=as.numeric(x), 
                       end_speed=as.numeric(end_speed), sz_top=as.numeric(sz_top), sz_bot=as.numeric(sz_bot),
                       pfx_x=as.numeric(pfx_x), pfx_z=as.numeric(pfx_z), px=as.numeric(px), pz=as.numeric(pz),
                       x0=as.numeric(x0), y0=as.numeric(y0), z0=as.numeric(z0), vx0=as.numeric(vx0), 
