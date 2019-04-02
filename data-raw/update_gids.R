@@ -2,6 +2,7 @@ library(dplyr);library(stringr); library(purrr)
 library(mlbgameday); library(doParallel); library(foreach)
 
 # Get current game_ids and check for the last date.
+bkup_gids <- mlbgameday::game_ids
 gids <- mlbgameday::game_ids
 last.game <- sort(gids$gameday_link)[length(gids$gameday_link)]
 last.date <- as.Date(substr(last.game, 5, 14), format = "%Y_%m_%d") %>% + 1
@@ -14,7 +15,7 @@ registerDoParallel(cl)
 # use make_gids function to get gids not yet in the internal database.
 #new_gids <- mlbgameday::get_payload(start = as.character(last.date), end = as.character(Sys.Date()-1), dataset = "linescore")
 
-new_gids <- mlbgameday::get_payload(start = as.character(last.date), end = "2018-10-31", dataset = "linescore")
+new_gids <- mlbgameday::get_payload(start = as.character(last.date), end = "2019-04-01", dataset = "linescore")
 
 # Format the linescore dataframe to match the gids df.
 new_game_ids <- new_gids$game %>% subset(status = "Final", 

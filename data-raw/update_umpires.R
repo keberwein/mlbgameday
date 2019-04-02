@@ -17,7 +17,7 @@ glist <- glist %>%
 
 
 # NOTE: We only need to select the new gids that have been added. Any others would be doing double-work.
-glist = glist[27070:29464]
+glist1 = glist[32753:length(glist)]
 
 
 
@@ -26,7 +26,7 @@ no_cores <- detectCores() - 2
 cl <- makeCluster(no_cores, type="FORK")  
 registerDoParallel(cl)
 
-umpires <- foreach::foreach(i = seq_along(glist)) %dopar% {
+umpires <- foreach::foreach(i = seq_along(glist1)) %dopar% {
     file <- tryCatch(xml2::read_xml(glist[[i]]), error=function(e) NULL)
     if(!is.null(file)){
         ump_nodes <- xml2::xml_find_all(file, "./umpires/umpire")
@@ -48,7 +48,7 @@ new_umps <- dplyr::bind_rows(umpires) %>% select("id", "first", "last") %>% filt
 rm(game_ids, glist, umpires); gc()
 
 # Now we've got a data frame with uniqe player ids. We need to pull the current player data and do a left join.
-
+bkup_current_umps <- mlbgameday::umpire_ids
 current_umps <- mlbgameday::umpire_ids
 
 # A duplicate column is created on the join due to slight changes in name spellings. OK just to drop it.
