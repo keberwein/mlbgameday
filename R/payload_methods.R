@@ -136,22 +136,17 @@ payload.gd_inning_all <- function(urlz, ...) {
                                 file <- tryCatch(xml2::read_xml(urlz[[i]][[1]], n=256), error=function(e) NULL)
                                 if(!isTRUE(is.null(file))){
                                     atbat_nodes <- c(xml2::xml_find_all(file, "./inning/top/atbat"), 
-                                                     xml2::xml_find_all(file, "./inning/bottom/atbat")) 
+                                                     xml2::xml_find_all(file, "./inning/bottom/atbat"))
+                                    
                                     action_nodes <- c(xml2::xml_find_all(file, "./inning/top/action"), 
                                                       xml2::xml_find_all(file, "./inning/bottom/action"))
-
-                                    # Make action nodes a child of atbat so we can get the at-bat number for which the action took place.
-                                    #for (a in seq_along(action_nodes)) {
-                                    #    xml2::xml_add_child(atbat_nodes[[a]], action_nodes[[a]], .where = "after", free = T)
-                                    #}
-
-                                    #action_nodes <- c(xml2::xml_find_all(file, "./inning/top/atbat/action"), 
-                                    #                  xml2::xml_find_all(file, "./inning/bottom/atbat/actioin"))
                                     
                                     pitch_nodes <- c(xml2::xml_find_all(file, "./inning/top/atbat/pitch"),
                                                      xml2::xml_find_all(file, "./inning/bottom/atbat/pitch"))
+                                    
                                     runner_nodes <- c(xml2::xml_find_all(file, "./inning/top/atbat/runner"), 
-                                                      xml2::xml_find_all(file, "./inning/bottom/atbat/runner")) 
+                                                      xml2::xml_find_all(file, "./inning/bottom/atbat/runner"))
+                                    
                                     po_nodes <- c(xml2::xml_find_all(file, "./inning/top/atbat/po"), 
                                                   xml2::xml_find_all(file, "./inning/bottom/atbat/po"))
                                     

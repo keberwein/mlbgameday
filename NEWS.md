@@ -8,6 +8,8 @@
 
 * Added try/catch logic to reconcile columns that no loger exist in the `inning_all` data set.
 
+* Added error-handling for bis_boxscore data set, which isn't available after 2018.
+
 # mlbgameday 0.1.4
 
 ## Bug Fix
