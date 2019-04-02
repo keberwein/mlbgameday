@@ -10,6 +10,10 @@
 
 * Added error-handling for bis_boxscore data set, which isn't available after 2018.
 
+## Data
+
+* Updated gids, playerids, and umpireids through Spring Training 2019.
+
 # mlbgameday 0.1.4
 
 ## Bug Fix
