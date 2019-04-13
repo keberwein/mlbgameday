@@ -212,7 +212,7 @@ payload.gd_inning_all <- function(urlz, ...) {
                                             out$url <- url
                                             out$gameday_link <- gameday_link
                                             out
-                                        })
+                                        }),
                                         team <- map_dfr(team_nodes ,function(x){
                                             out <- data.frame(t(xml2::xml_attrs(x)), stringsAsFactors=FALSE)
                                             out$gameday_link <- gameday_link
