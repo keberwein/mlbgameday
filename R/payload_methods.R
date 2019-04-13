@@ -128,8 +128,8 @@ payload.gd_game_events <- function(urlz, ...) {
 
 payload.gd_inning_all <- function(urlz, ...) {
     # Make some place-holders for the function.
-    atbat <- list(); action <- list(); pitch <- list(); runner <- list(); po <- list()
-    lnames <- list(atbat=atbat, action=action, pitch=pitch, runner=runner, po=po)
+    atbat <- list(); action <- list(); pitch <- list(); runner <- list(); po <- list(); team <- list();
+    lnames <- list(atbat=atbat, action=action, pitch=pitch, runner=runner, po=po,team=team)
     out <- foreach::foreach(i = seq_along(urlz), .combine="comb_pload", .multicombine=T, .inorder=TRUE,
                             .final = function(x) stats::setNames(x, names(lnames)),
                             .init=list(list(), list(), list(), list(), list())) %dopar% {
@@ -149,6 +149,8 @@ payload.gd_inning_all <- function(urlz, ...) {
                                     
                                     po_nodes <- c(xml2::xml_find_all(file, "./inning/top/atbat/po"), 
                                                   xml2::xml_find_all(file, "./inning/bottom/atbat/po"))
+
+                                    team_nodes <- c(xml2::xml_find_all(xml, "./inning")
                                     
                                     url <- urlz[[i]]
                                     
@@ -211,6 +213,12 @@ payload.gd_inning_all <- function(urlz, ...) {
                                             out$gameday_link <- gameday_link
                                             out
                                         })
+                                        team <- map_dfr(game_info,function(x){
+                                            out <- data.frame(t(xml2::xml_attrs(x)), stringsAsFactors=FALSE)
+                                            out$gameday_link <- gameday_link
+                                            out$url <- url
+                                        })
+
                                     )
                                 }
                             }
@@ -222,6 +230,7 @@ payload.gd_inning_all <- function(urlz, ...) {
     pitch <- dplyr::bind_rows(out$pitch)
     runner <- dplyr::bind_rows(out$runner)
     po <- dplyr::bind_rows(out$po)
+    team <- dplyr::bind_rows(team$team)
     
     # Make of game timeline of atbat and action so we know which atbat to assign an action to.
     acts <- action %>% dplyr::select(tfs_zulu, inning, inning_side, des)
@@ -235,7 +244,7 @@ payload.gd_inning_all <- function(urlz, ...) {
     # Calculate the pitch count for the pitching table.
     pitch <- pitch_count(dat=pitch)
     
-    innings_df <- list(atbat=atbat, action=action, pitch=pitch, runner=runner, po=po)
+    innings_df <- list(atbat=atbat, action=action, pitch=pitch, runner=runner, po=po,team=team)
     # Add batter and pitcher names to the atbat data frame
     player.env <- environment()
     data(player_ids, package="mlbgameday", envir=player.env)
