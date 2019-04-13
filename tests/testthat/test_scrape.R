@@ -27,7 +27,7 @@ if(isTRUE(url_out)){
     mygids <- search_gids(team = "indians", start = "2016-05-01", end = "2016-05-01")
     df <- get_payload(game_ids = mygids)
     # Since this is an old game, we know what kind of structure to expect.
-    expect_length(df, 5)
+    expect_length(df, 6)
 }
 
 
