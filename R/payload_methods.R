@@ -128,6 +128,7 @@ payload.gd_game_events <- function(urlz, ...) {
 
 payload.gd_inning_all <- function(urlz, ...) {
     # Make some place-holders for the function.
+    message('gd_inning_all started')
     atbat <- list(); action <- list(); pitch <- list(); runner <- list(); po <- list(); team <- list();
     lnames <- list(atbat=atbat, action=action, pitch=pitch, runner=runner, po=po, team=team)
     out <- foreach::foreach(i = seq_along(urlz), .combine="comb_pload", .multicombine=T, .inorder=TRUE,
@@ -244,7 +245,7 @@ payload.gd_inning_all <- function(urlz, ...) {
     # Calculate the pitch count for the pitching table.
     pitch <- pitch_count(dat=pitch)
     
-    innings_df <- list(atbat=atbat, action=action, pitch=pitch, runner=runner, po=po,team=team)
+    innings_df <- list(atbat=atbat, action=action, pitch=pitch, runner=runner, po=po, team=team)
     # Add batter and pitcher names to the atbat data frame
     player.env <- environment()
     data(player_ids, package="mlbgameday", envir=player.env)
