@@ -128,7 +128,6 @@ payload.gd_game_events <- function(urlz, ...) {
 
 payload.gd_inning_all <- function(urlz, ...) {
     # Make some place-holders for the function.
-    message('gd_inning_all started')
     atbat <- list(); action <- list(); pitch <- list(); runner <- list(); po <- list(); team <- list();
     lnames <- list(atbat=atbat, action=action, pitch=pitch, runner=runner, po=po, team=team)
     out <- foreach::foreach(i = seq_along(urlz), .combine="comb_pload", .multicombine=T, .inorder=TRUE,
@@ -153,7 +152,6 @@ payload.gd_inning_all <- function(urlz, ...) {
 
                                     team_nodes <- c(xml2::xml_find_all(file, "./inning"))
 
-                                    message('team_nodes done')
                                     url <- urlz[[i]]
                                     
                                     date_dt <- stringr::str_sub(urlz[[i]], 70, 81) %>% stringr::str_replace_all("_", "-") %>%
