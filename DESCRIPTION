@@ -3,7 +3,7 @@ Title: Tools to Gather Data from Major League Baseball Advanced Media
 Version: 0.2.1
 Authors@R: 
     c(person(given = "Kris", family = "Eberwein", email = "eberwein@knights.ucf.edu", role = c("aut", "cre")),
-    person(given = "Andy", family = "Troiano", role = "ctb"))
+    person(given = "Andy", family = "Troiano", email = "andytroiano@gmail.com", role = "ctb"))
 Description: Multi-core processing of data from Major League Baseball Advanced Media <http://gd2.mlb.com/components/game/mlb/>. Additional tools to parallel process large data sets and write them to a database. 
 Depends:
 	R (>= 3.3.0)
