@@ -129,10 +129,10 @@ payload.gd_game_events <- function(urlz, ...) {
 payload.gd_inning_all <- function(urlz, ...) {
     # Make some place-holders for the function.
     atbat <- list(); action <- list(); pitch <- list(); runner <- list(); po <- list(); team <- list();
-    lnames <- list(atbat=atbat, action=action, pitch=pitch, runner=runner, po=po,team=team)
+    lnames <- list(atbat=atbat, action=action, pitch=pitch, runner=runner, po=po, team=team)
     out <- foreach::foreach(i = seq_along(urlz), .combine="comb_pload", .multicombine=T, .inorder=TRUE,
                             .final = function(x) stats::setNames(x, names(lnames)),
-                            .init=list(list(), list(), list(), list(), list())) %dopar% {
+                            .init=list(list(), list(), list(), list(), list()),list()) %dopar% {
                                 file <- tryCatch(xml2::read_xml(urlz[[i]][[1]], n=256), error=function(e) NULL)
                                 if(!isTRUE(is.null(file))){
                                     atbat_nodes <- c(xml2::xml_find_all(file, "./inning/top/atbat"), 
@@ -151,7 +151,7 @@ payload.gd_inning_all <- function(urlz, ...) {
                                                   xml2::xml_find_all(file, "./inning/bottom/atbat/po"))
 
                                     team_nodes <- c(xml2::xml_find_all(file, "./inning"))
-                                    
+                                    message('team_nodes done')
                                     url <- urlz[[i]]
                                     
                                     date_dt <- stringr::str_sub(urlz[[i]], 70, 81) %>% stringr::str_replace_all("_", "-") %>%
@@ -213,7 +213,7 @@ payload.gd_inning_all <- function(urlz, ...) {
                                             out$gameday_link <- gameday_link
                                             out
                                         }),
-                                        team <- map_dfr(team_nodes ,function(x){
+                                        team <- purrr::map_dfr(team_nodes ,function(x){
                                             out <- data.frame(t(xml2::xml_attrs(x)), stringsAsFactors=FALSE)
                                             out$gameday_link <- gameday_link
                                             out$url <- url
@@ -230,7 +230,7 @@ payload.gd_inning_all <- function(urlz, ...) {
     pitch <- dplyr::bind_rows(out$pitch)
     runner <- dplyr::bind_rows(out$runner)
     po <- dplyr::bind_rows(out$po)
-    team <- dplyr::bind_rows(team$team)
+    team <- dplyr::bind_rows(out$team)
     
     # Make of game timeline of atbat and action so we know which atbat to assign an action to.
     acts <- action %>% dplyr::select(tfs_zulu, inning, inning_side, des)
