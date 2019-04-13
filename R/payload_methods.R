@@ -150,7 +150,7 @@ payload.gd_inning_all <- function(urlz, ...) {
                                     po_nodes <- c(xml2::xml_find_all(file, "./inning/top/atbat/po"), 
                                                   xml2::xml_find_all(file, "./inning/bottom/atbat/po"))
 
-                                    team_nodes <- c(xml2::xml_find_all(xml, "./inning")
+                                    team_nodes <- c(xml2::xml_find_all(xml, "./inning"))
                                     
                                     url <- urlz[[i]]
                                     
@@ -213,7 +213,7 @@ payload.gd_inning_all <- function(urlz, ...) {
                                             out$gameday_link <- gameday_link
                                             out
                                         })
-                                        team <- map_dfr(game_info,function(x){
+                                        team <- map_dfr(team_nodes ,function(x){
                                             out <- data.frame(t(xml2::xml_attrs(x)), stringsAsFactors=FALSE)
                                             out$gameday_link <- gameday_link
                                             out$url <- url
