@@ -1,3 +1,9 @@
+# mlbgameday 0.2.1
+
+## Enhancements
+
+* Removed manual intervention to load more than one season of data.
+
 # mlbgameday 0.2.0
 
 ## Enhancements
