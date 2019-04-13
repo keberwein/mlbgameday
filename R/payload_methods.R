@@ -150,7 +150,7 @@ payload.gd_inning_all <- function(urlz, ...) {
                                     po_nodes <- c(xml2::xml_find_all(file, "./inning/top/atbat/po"), 
                                                   xml2::xml_find_all(file, "./inning/bottom/atbat/po"))
 
-                                    team_nodes <- c(xml2::xml_find_all(xml, "./inning"))
+                                    team_nodes <- c(xml2::xml_find_all(file, "./inning"))
                                     
                                     url <- urlz[[i]]
                                     
