@@ -133,7 +133,7 @@ payload.gd_inning_all <- function(urlz, ...) {
     lnames <- list(atbat=atbat, action=action, pitch=pitch, runner=runner, po=po, team=team)
     out <- foreach::foreach(i = seq_along(urlz), .combine="comb_pload", .multicombine=T, .inorder=TRUE,
                             .final = function(x) stats::setNames(x, names(lnames)),
-                            .init=list(list(), list(), list(), list(), list()),list()) %dopar% {
+                            .init=list(list(), list(), list(), list(), list(),list()) %dopar% {
                                 file <- tryCatch(xml2::read_xml(urlz[[i]][[1]], n=256), error=function(e) NULL)
                                 if(!isTRUE(is.null(file))){
                                     atbat_nodes <- c(xml2::xml_find_all(file, "./inning/top/atbat"), 
