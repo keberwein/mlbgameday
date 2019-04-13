@@ -119,13 +119,9 @@ get_payload <- function(start=NULL, end=NULL, league="mlb", dataset = NULL, game
         # If no database connection, just return a dataframe.
         # If the returned dataframe looks like it's going to be large, warn the user.
         if(length(urlz) > 3500) { # One full season including spring training and playoffs is around 3000 games.
-            if(utils::menu(c("Yes", "No"), 
-                           title="Woah, that's a lot of data! Are you sure you want to continue without a database connection?")!=1){
-                stop(message("Download stopped. Try a database connection or a smaller data set."))
-            }else{ 
-                message("Starting download, this may take a while...") 
+            message("Woah, that's a lot of data! Think about using a Database Connection")
             }
-        }
+        message("Starting download, this may take a while...")
         if(dataset == "bis_boxscore") innings_df <- payload.gd_bis_boxscore(urlz)
         if(dataset == "game_events") innings_df <- payload.gd_game_events(urlz)
         if(dataset == "inning_all") innings_df <- payload.gd_inning_all(urlz)
